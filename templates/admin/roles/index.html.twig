@@ -1,0 +1,69 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Roles{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col"><h2 class="page-title">Roles</h2></div>
+        <div class="col-auto ms-auto">
+            <a href="{{ path('admin.roles.new') }}" class="btn btn-primary spa-link">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                     stroke-width="2" stroke="currentColor" fill="none">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Nuevo rol
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Clave</th>
+                    <th>Permisos</th>
+                    <th class="w-1">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for rol in roles %}
+                <tr>
+                    <td class="text-muted">{{ rol.id }}</td>
+                    <td>{{ rol.nombre }}</td>
+                    <td><code>ROLE_{{ rol.clave }}</code></td>
+                    <td>
+                        {% for p in rol.permisos %}
+                            <span class="badge bg-azure-lt me-1">{{ p.clave }}</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{{ path('admin.roles.edit', {id: rol.id}) }}"
+                               class="btn btn-sm btn-secondary spa-link">Editar</a>
+                            <form method="POST"
+                                  action="{{ path('admin.roles.delete', {id: rol.id}) }}"
+                                  onsubmit="return confirm('¿Eliminar este rol?')">
+                                <button type="submit" class="btn btn-sm btn-ghost-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">No hay roles registrados.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

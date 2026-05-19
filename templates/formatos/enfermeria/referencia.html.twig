@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; font-size: 12pt; color: #000; }
+        .container { width: 100%; max-width: 750px; margin: 0 auto; padding: 20px; }
+        .header { border-bottom: 2px solid #a3a3a3; padding-bottom: 15px; margin-bottom: 15px; }
+        .header img { float: left; width: 80px; }
+        .header h1 { text-align: center; font-size: 16pt; font-weight: bold; color: #000; margin: 0; padding-top: 15px; }
+        .header:after { content: ''; display: table; clear: both; }
+        .no-solicitud { text-align: right; margin-top: 15px; font-weight: bold; }
+        .section { border-bottom: 1px solid #a3a3a3; padding: 12px 0; margin-bottom: 12px; }
+        .section h3 { font-size: 12pt; font-weight: bold; color: #000; margin-bottom: 8px; }
+        p { margin: 6px 0; }
+        .highlight { font-weight: bold; font-size: 13pt; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>Instituto Mexicano del Seguro Social</h1>
+    </div>
+
+    <p class="no-solicitud">Número de solicitud: {{ user.idFormatted | default('') }}</p>
+
+    {% if solicitud is not null %}
+
+    <div class="section">
+        <h3>Formato para pago de Cuota de Recuperación para Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h3>
+        <p>OOAD: {{ solicitud.unidad.delegacion.nombre | upper | default('') }}</p>
+        <p>UNIDAD: {{ solicitud.unidad.nombreEnfermeria | upper | default('') }}</p>
+        <p>ALUMNO: {{ user.nombre | upper | default('') }}</p>
+    </div>
+
+    <div class="section">
+        <h3 style="text-align:center;">Modalidad de Pago: Pago único</h3>
+    </div>
+
+    <div class="section">
+        <h3 style="text-align:center;">Datos para realizar el pago</h3>
+        <p>Banco: Scotiabank Inverlat, S.A. de C.V.</p>
+        <p>No. de cuenta: 00104080092</p>
+        <p>CLABE: 044180001040800925</p>
+        <p>Nombre de la cuenta: R19 GYR IMSS DMF Fondo de Fomento a la Educación Ing. 2</p>
+        <p class="highlight">No. de Referencia: {{ referencia | upper | default('') }}</p>
+        <p class="highlight">Importe: ${{ (user.hasDiferencia ? user.montoDiferencia : user.monto) | default('') }}</p>
+    </div>
+
+    {% endif %}
+
+</div>
+</body>
+</html>

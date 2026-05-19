@@ -1,0 +1,26 @@
+{% extends 'layouts/gov_base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('build/enfermeria.base.css') }}">
+<style>
+    .wrapper-page { margin-top: 20px; margin-bottom: 80px; }
+</style>
+{% endblock %}
+
+{% block submenu %}
+    {% if app.user %}
+        <a href="{{ path('enfermeria.index') }}">Inicio</a>
+        <a href="{{ path('app_logout') }}">Cerrar sesión</a>
+    {% endif %}
+{% endblock %}
+
+{% block userbar_content %}
+    {% if app.user %}
+        <p class="text-bold">Escuelas de Enfermería del Instituto Mexicano del Seguro Social</p>
+        {% if app.user.unidades is not empty %}
+            <p>{{ app.user.unidades[0].nombreEnfermeria }}</p>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block userbar_aside %}{% endblock %}

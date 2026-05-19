@@ -1,0 +1,63 @@
+<style>
+    .ie-alumno-submenu {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+    .ie-alumno-submenu > * { margin-right: 15px; }
+    .ie-alumno-submenu > *:last-child { margin-left: auto; }
+    .ie-alumno-header {
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+    }
+    .ie-alumno-header__avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #006847;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+        flex-shrink: 0;
+    }
+    .ie-alumno-header__content {
+        margin-left: 20px;
+    }
+</style>
+
+<div class="container-fluid" style="background-color: whitesmoke;">
+    <div class="container">
+        <div class="ie-alumno-submenu">
+            <a href="{{ path('enfermeria_alumno.index') }}">Inicio</a>
+            <a href="{{ path('enfermeria_alumno.logout') }}">Cerrar sesión</a>
+        </div>
+    </div>
+</div>
+
+{% if alumno is defined %}
+<div class="container-fluid page-cut">
+    <div class="container">
+        <div class="ie-alumno-header">
+            <div class="ie-alumno-header__avatar">👤</div>
+            <div class="ie-alumno-header__content">
+                <p class="text-bold mb-0">{{ alumno.nombre }}</p>
+                <p class="mb-0">{{ alumno.email }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="container-fluid">
+    <div class="row">
+        {% for label, messages in app.flashes(['success', 'danger']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} text-center">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>

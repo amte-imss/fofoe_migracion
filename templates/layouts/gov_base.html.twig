@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Administración del FOFOE{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+    <style>
+        :root { --imss-green: #006847; --imss-green-dark: #004d34; }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* ── Header gob.mx ───────────────────────────────────── */
+        .gov-header { background: #003828; }
+        .gov-header .navbar { min-height: 48px; padding: 0; }
+        .gov-header .navbar-brand img { height: 55px; margin: 6px 0; }
+        .gov-header .nav-link { color: #fff !important; font-size: .82rem; padding: .75rem .9rem; }
+        .gov-header .nav-link:hover { color: #ccc !important; }
+        .gov-header .nav-link img { height: 16px; }
+
+        /* ── CSS copiado exacto de came/menu.html.twig ───────── */
+        .menu {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+        }
+        .menu__image {
+            width: 60px;
+            height: 60px;
+        }
+        .menu__content {
+            margin-left: 20px;
+            height: 60px;
+            display: flex;
+            justify-content: flex-end;
+            flex-direction: column;
+        }
+        .submenu {
+            background-color: whitesmoke;
+            text-align: right;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+        }
+        .submenu > * {
+            margin-right: 15px;
+        }
+        .delegacion {
+            position: absolute;
+            right: 16px;
+            text-align: center;
+        }
+        .delegacion h3 {
+            font-weight: bold;
+        }
+        @media only screen and (max-width: 600px) {
+            .delegacion { position: inherit; }
+        }
+        .fade-out {
+            animation: fadeOut ease 4s;
+            -webkit-animation: fadeOut ease 4s;
+        }
+        @keyframes fadeOut {
+            0%   { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* ── Contenido y footer ──────────────────────────────── */
+        .gov-content { flex: 1; }
+
+        .gov-footer {
+            background-color: #222;
+            background-size: cover;
+            padding: 2rem 0;
+            color: #fff;
+            font-size: .82rem;
+            margin-top: auto;
+        }
+        .gov-footer .list__title { font-weight: 700; font-size: .85rem; color: #fff; margin-bottom: .5rem; }
+        .gov-footer ul.list { list-style: none; padding: 0; margin: 0; }
+        .gov-footer ul.list li { margin-bottom: .25rem; }
+        .gov-footer ul.list li a { color: rgba(255,255,255,.8); text-decoration: none; }
+        .gov-footer ul.list li a:hover { color: #fff; }
+    </style>
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+{# ══ HEADER GOB.MX ══════════════════════════════════════════════════════ #}
+<header class="gov-header">
+    <nav class="navbar navbar-expand-md container">
+        <a class="navbar-brand" href="https://www.gob.mx/" target="_blank">
+            <img src="https://framework-gb.cdn.gob.mx/landing/img/logoheader.png" alt="logo gobierno de méxico">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#govNavMain"
+                style="border-color:rgba(255,255,255,.3);">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="govNavMain">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="https://www.gob.mx/tramites">Trámites</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://www.gob.mx/gobierno">Gobierno</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://www.gob.mx/busqueda">
+                        <img src="https://framework-gb.cdn.gob.mx/landing/img/lupa.png" alt="Buscar">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+{# ══ MENÚ (estructura idéntica al proyecto original) ════════════════════ #}
+<div class="container-fluid">
+    <div class="row">
+        <div class="submenu">
+            {% block submenu %}{% endblock %}
+        </div>
+        <div class="col-md-12 page-cut" style="position:relative;">
+            {% block menu_bar %}
+            <div class="menu">
+                {% block menu_avatar %}
+                <img class="img-responsive menu__image"
+                     src="https://image.shutterstock.com/image-vector/blank-avatar-photo-place-holder-260nw-1095249842.jpg"
+                     alt="">
+                {% endblock %}
+                <div class="menu__content">
+                    {% block userbar_content %}{% endblock %}
+                </div>
+                <div class="delegacion">
+                    {% block userbar_aside %}{% endblock %}
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+    <div class="row">
+        {% for label, messages in app.flashes(['success', 'danger', 'error', 'warning']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} text-center alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+{# ══ CONTENIDO ══════════════════════════════════════════════════════════ #}
+<div class="gov-content">
+    {% block body %}{% endblock %}
+</div>
+
+{# ══ FOOTER GOB.MX ══════════════════════════════════════════════════════ #}
+<footer class="gov-footer section-md" style="background-image: url('/images/footer-background.jpg');">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3 mb-3">
+                <img src="https://framework-gb.cdn.gob.mx/landing/img/logofooter.png"
+                     style="width:229px;height:76px;" alt="logo gobierno de méxico">
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 mb-3">
+                <p class="list__title">Enlaces</p>
+                <ul class="list">
+                    <li><a href="https://www.gob.mx/participa">Participa</a></li>
+                    <li><a href="https://www.gob.mx/publicaciones">Publicaciones Oficiales</a></li>
+                    <li><a href="http://www.ordenjuridico.gob.mx/">Marco Jurídico</a></li>
+                    <li><a href="https://consultapublicamx.inai.org.mx/vut-web/">Plataforma Nacional de Transparencia</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 mb-3">
+                <p class="list__title">¿Qué es gob.mx?</p>
+                <ul class="list">
+                    <li><a href="https://www.gob.mx/que-es-gobmx">Portal único de trámites, información y participación ciudadana.</a></li>
+                    <li><a href="https://datos.gob.mx/">Portal de datos abiertos</a></li>
+                    <li><a href="https://www.gob.mx/accesibilidad">Declaración de accesibilidad</a></li>
+                    <li><a href="https://www.gob.mx/privacidadintegral">Aviso de privacidad integral</a></li>
+                    <li><a href="https://www.gob.mx/terminos">Términos y condiciones</a></li>
+                    <li><a href="https://www.gob.mx/sitemap">Mapa del sitio</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 mb-3">
+                <p class="list__title">Otros trámites</p>
+                <ul class="list">
+                    <li>Mesa de ayuda: dudas e información</li>
+                    <li><a href="mailto:gobmx@funcionpublica.gob.mx">gobmx@funcionpublica.gob.mx</a></li>
+                    <li>Denuncia contra servidores públicos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.SCHEMA_AND_HTTP_HOST = {{ app.request.schemeAndHttpHost | json_encode | raw }};
+    </script>
+{% endblock %}
+
+</body>
+</html>

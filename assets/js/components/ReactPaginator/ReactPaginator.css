@@ -1,0 +1,8 @@
+.pagination li {
+    padding: 8px;
+}
+
+.pagination li.active {
+    font-weight: bold;
+    text-decoration: underline;
+}

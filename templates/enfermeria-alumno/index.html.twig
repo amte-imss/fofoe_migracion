@@ -1,0 +1,55 @@
+{% extends 'layouts/ie.html.twig' %}
+
+{% block title %}Bienvenido — {{ alumno.nombre }}{% endblock %}
+
+{% block submenu %}
+    <a href="{{ path('enfermeria_alumno.index') }}">Inicio</a>
+    <a href="{{ path('enfermeria_alumno.logout') }}">Cerrar sesión</a>
+{% endblock %}
+
+{% block userbar_content %}
+    <p class="text-bold" style="margin-bottom:0;">{{ alumno.nombre }}</p>
+    <p style="margin-bottom:0;">{{ alumno.email }}</p>
+{% endblock %}
+
+{% block body %}
+    <div class="section-md">
+        <div class="container-fluid">
+            <div class="container">
+                <h1 class="text-bold text-center mb-20">Bienvenido {{ alumno.nombre }}</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.Usuario = {
+            nombre: {{ alumno.nombre | json_encode | raw }},
+            curp: {{ alumno.curp | json_encode | raw }},
+            email: {{ alumno.email | json_encode | raw }},
+            status: {{ alumno.status | json_encode | raw }},
+            statusFormatted: {{ alumno.statusFormatted | json_encode | raw }},
+            monto: {{ alumno.monto | json_encode | raw }},
+            hasDiferencia: {{ alumno.hasDiferencia ? 'true' : 'false' }},
+            montoDiferencia: {{ alumno.montoDiferencia | json_encode | raw }},
+            lastPago: {% if alumno.lastPago %}{ observaciones: {{ alumno.lastPago.observaciones | json_encode | raw }}, factura: {% if alumno.lastPago.factura %}{ id: {{ alumno.lastPago.factura.id }} }{% else %}null{% endif %} }{% else %}null{% endif %},
+            solicitud: {
+                periodo: {{ alumno.solicitud.periodo | json_encode | raw }},
+                fechaInicioFormatted: {{ alumno.solicitud.fechaInicioFormatted | json_encode | raw }},
+                fechaFinFormatted: {{ alumno.solicitud.fechaFinFormatted | json_encode | raw }},
+                unidad: {
+                    nombreEnfermeria: {{ alumno.solicitud.unidad.nombreEnfermeria | json_encode | raw }}
+                }
+            }
+        };
+    </script>
+    <script src="{{ asset('build/runtime.js') }}"></script>
+    <script src="{{ asset('build/enfermeria-alumno.index.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        h1 { color: #006847; text-align: center; }
+        .status-ok  { color: #198754; font-weight: bold; }
+        .status-err { color: #dc3545; font-weight: bold; }
+        .footer { text-align: center; color: #006847; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Sistema de Administración del FOFOE</h1>
+
+    <p>Estimado/a, <strong>{{ alumno.nombre }}</strong></p>
+
+    <p>
+        El Instituto Mexicano del Seguro Social le informa que el pago registrado para el curso de
+        Escuela de Enfermería "<strong>{{ alumno.solicitud.unidad.nombre }}</strong>" ha sido:
+    </p>
+
+    {% if status %}
+        <p class="status-ok">✔ Aceptado</p>
+    {% else %}
+        <p class="status-err">✘ Rechazado</p>
+        <p>Si su pago fue rechazado, por favor descargue nuevamente la referencia de pago e ingrese un comprobante correcto.</p>
+    {% endif %}
+
+    <p>Reciba un cordial saludo y quedamos a sus órdenes para cualquier aclaración o duda;
+    comuníquese con nosotros a través del correo electrónico
+    <a href="mailto:factura.fofoe@imss.gob.mx">factura.fofoe@imss.gob.mx</a>.</p>
+
+    <div class="footer">
+        <p>Atentamente,</p>
+        <p><strong>Sistema de Administración del FOFOE</strong></p>
+    </div>
+</body>
+</html>

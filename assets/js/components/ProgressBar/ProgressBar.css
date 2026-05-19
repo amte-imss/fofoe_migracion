@@ -1,0 +1,9 @@
+.progress {
+    width: 100%;
+    background-color: grey;
+}
+
+.progress__bar {
+    height: 30px;
+    background-color: green;
+}

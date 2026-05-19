@@ -1,0 +1,84 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Carga de comprobante — Enfermería{% endblock %}
+
+{% block body %}
+{% include 'enfermeria-alumno/_menu.html.twig' %}
+
+<div class="container-xl py-4">
+    <h2 class="fw-bold mb-4">Carga de comprobante de pago</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+
+                    <form id="form-comprobante" method="post"
+                          action="{{ path('enfermeria_alumno.cargar_comprobante') }}"
+                          enctype="multipart/form-data">
+
+                        <div class="mb-3">
+                            <label class="form-label">Monto registrado</label>
+                            <input type="number" step="0.01" name="comprobante_pago[montoRegistrado]"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Fecha de pago</label>
+                            <input type="date" name="comprobante_pago[fechaPagoRegistrada]"
+                                   class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Comprobante de pago (PDF)</label>
+                            <input type="file" name="comprobante_pago[comprobantePagoFile]"
+                                   accept="application/pdf" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">¿Requiere factura?</label>
+                            <select name="comprobante_pago[requiereFactura]" class="form-select" id="requiereFactura">
+                                <option value="0">No</option>
+                                <option value="1">Sí</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3 d-none" id="cedulaSection">
+                            <label class="form-label">Cédula de Identificación Fiscal (PDF, máx 2 MB)</label>
+                            <input type="file" name="comprobante_pago[cedulaFile]"
+                                   accept="application/pdf" class="form-control">
+                        </div>
+
+                        <div class="alert alert-info d-none" id="previewAlert">
+                            Vista previa del archivo seleccionado disponible a continuación.
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="ti ti-device-floppy"></i> Guardar
+                            </button>
+                            <a href="{{ path('enfermeria_alumno.index') }}" class="btn btn-secondary">
+                                Cancelar
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.getElementById('requiereFactura').addEventListener('change', function () {
+    document.getElementById('cedulaSection').classList.toggle('d-none', this.value !== '1');
+});
+
+document.querySelector('[name="comprobante_pago[comprobantePagoFile]"]').addEventListener('change', function () {
+    document.getElementById('previewAlert').classList.toggle('d-none', !this.files.length);
+});
+</script>
+{% endblock %}
+{% endblock %}

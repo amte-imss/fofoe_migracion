@@ -1,0 +1,53 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}{{ accion }}{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col"><h2 class="page-title">{{ accion }}</h2></div>
+        <div class="col-auto">
+            <a href="{{ path('admin.permisos.index') }}" class="btn btn-secondary spa-link">← Regresar</a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label required">Nombre</label>
+                    <input type="text" name="nombre" class="form-control"
+                           value="{{ permiso.nombre }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label required">Clave (sin prefijo ROLE_)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">ROLE_</span>
+                        <input type="text" name="clave" class="form-control"
+                               value="{{ permiso.clave }}" required
+                               oninput="this.value=this.value.toUpperCase()">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Rol al que pertenece</label>
+                    <select name="rolId" class="form-select">
+                        <option value="">— Sin rol —</option>
+                        {% for rol in roles %}
+                            <option value="{{ rol.id }}"
+                                {{ (permiso.rol is not null and permiso.rol.id == rol.id) ? 'selected' : '' }}>
+                                {{ rol.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{{ path('admin.permisos.index') }}" class="btn btn-secondary spa-link">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

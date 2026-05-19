@@ -1,0 +1,78 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Permisos{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col"><h2 class="page-title">Permisos</h2></div>
+        <div class="col-auto ms-auto">
+            <a href="{{ path('admin.permisos.new') }}" class="btn btn-primary spa-link">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                     stroke-width="2" stroke="currentColor" fill="none">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Nuevo permiso
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Clave (ROLE_)</th>
+                    <th>Rol asociado</th>
+                    <th class="w-1">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% set currentRol = null %}
+            {% for permiso in permisos %}
+                {% if permiso.rol is not null and permiso.rol != currentRol %}
+                    {% set currentRol = permiso.rol %}
+                    <tr class="table-light">
+                        <td colspan="5" class="fw-bold text-muted">
+                            {{ permiso.rol.nombre }} ({{ permiso.rol.clave }})
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="text-muted">{{ permiso.id }}</td>
+                    <td>{{ permiso.nombre }}</td>
+                    <td><code>ROLE_{{ permiso.clave }}</code></td>
+                    <td>
+                        {% if permiso.rol %}
+                            <span class="badge bg-blue-lt">{{ permiso.rol.nombre }}</span>
+                        {% else %}
+                            <span class="text-muted">Sin rol</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{{ path('admin.permisos.edit', {id: permiso.id}) }}"
+                               class="btn btn-sm btn-secondary spa-link">Editar</a>
+                            <form method="POST"
+                                  action="{{ path('admin.permisos.delete', {id: permiso.id}) }}"
+                                  onsubmit="return confirm('¿Eliminar este permiso?')">
+                                <button type="submit" class="btn btn-sm btn-ghost-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">No hay permisos registrados.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

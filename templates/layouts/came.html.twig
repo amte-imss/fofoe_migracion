@@ -1,0 +1,61 @@
+{% extends 'layouts/gov_base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('build/enfermeria.base.css') }}">
+<style>
+    .wrapper-came { margin-top: 40px; margin-bottom: 80px; }
+</style>
+{% endblock %}
+
+{% block submenu %}
+    <a href="{{ path('came.solicitud.index') }}">Ciclos Educativos</a>
+    {% if is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') %}
+        <a href="{{ path('enfermeria.index') }}">Escuelas de Enfermería</a>
+    {% endif %}
+    <a href="{{ path('app_logout') }}">Cerrar sesión</a>
+{% endblock %}
+
+{% block userbar_content %}
+    <p class="text-bold" style ="margin-bottom: 0px; font-weight: bold;">{{ app.user.nombre }} {{ app.user.apellidoPaterno }}</p>
+    {% if app.user.matricula %}
+        <p style ="margin-bottom: 0px;">Matrícula: {{ app.user.matricula }}</p>
+    {% endif %}
+{% endblock %}
+
+{% block userbar_aside %}
+    {# ── Etiqueta de rol (h3 bold, igual que el original) ── #}
+    {% if is_granted('ROLE_CAME') %}
+        <h3>CPEI</h3>
+    {% elseif is_granted('ROLE_JDES') %}
+        <h3>DEIS</h3>
+    {% elseif is_granted('ROLE_CAME_MINUS') %}
+        <h3>CAME</h3>
+    {% elseif is_granted('ROLE_JDES_MINUS') %}
+        <h3>JDES</h3>
+    {% endif %}
+
+    {# ── Selector de OOAD / Unidad ── #}
+    {% set delSesion  = app.session.get('user_delegacion') %}
+    {% set unidSesion = app.session.get('user_unidad') %}
+    {% set isDelActiva = delSesion is not empty or unidSesion is empty %}
+
+    {% if app.user.delegaciones is not empty or app.user.unidades is not empty %}
+    <form action="{{ path('came.usuario.delegacion_unidad') }}" method="post">
+        <label for="delegacion_unidad_came">OOAD:</label>
+        <select name="delegacion_unidad_came" id="delegacion_came" onchange="this.form.submit()">
+            {% for delegacion in app.user.delegaciones %}
+                <option value="D_{{ delegacion.id }}"
+                    {% if delSesion == (delegacion.id ~ '') or (delSesion is empty and loop.first) %} selected{% endif %}>
+                    {{ delegacion.nombre }}
+                </option>
+            {% endfor %}
+            {% for unidad in app.user.unidades %}
+                <option value="U_{{ unidad.id }}"
+                    {% if unidSesion == (unidad.id ~ '') %} selected{% endif %}>
+                    {{ unidad.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% macro statusBadge(status, label) %}
+    {{ label }}
+{% endmacro %}
+{% import _self as m %}
+
+{% block title %}Editar Solicitud #{{ solicitud.id }} — Enfermería{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ path('admin.enfermeria.solicitudes.index') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="ti ti-arrow-left"></i> Regresar
+        </a>
+        <h2 class="fw-bold mb-0">Editar Solicitud #{{ solicitud.id }}</h2>
+    </div>
+
+    {% for msg in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible mb-4">
+            {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <div class="card">
+        <div class="card-header"><strong>Datos de la solicitud</strong></div>
+        <div class="card-body">
+            <form method="POST" action="{{ path('admin.enfermeria.solicitud.update', {id: solicitud.id}) }}">
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="periodo">Tipo de periodo</label>
+                        <select name="periodo" id="periodo" class="form-select" required>
+                            <option value="cuatri"    {% if solicitud.periodo == 'cuatri'    %}selected{% endif %}>Cuatrimestre</option>
+                            <option value="semestre"  {% if solicitud.periodo == 'semestre'  %}selected{% endif %}>Semestral</option>
+                            <option value="semestral" {% if solicitud.periodo == 'semestral' %}selected{% endif %}>Semestral (alt.)</option>
+                            <option value="anual"     {% if solicitud.periodo == 'anual'     %}selected{% endif %}>Anual</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="fechaInicio">Fecha inicio</label>
+                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" required
+                               value="{{ solicitud.fechaInicio ? solicitud.fechaInicio|date('Y-m-d') : '' }}">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label" for="fechaFin">Fecha fin</label>
+                        <input type="date" name="fechaFin" id="fechaFin" class="form-control" required
+                               value="{{ solicitud.fechaFin ? solicitud.fechaFin|date('Y-m-d') : '' }}">
+                    </div>
+
+                    <div class="col-md-8">
+                        <label class="form-label" for="unidad">Escuela / Unidad de enfermería</label>
+                        <select name="unidad" id="unidad" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            {% for u in unidades %}
+                                <option value="{{ u.id }}"
+                                    {% if solicitud.unidad and solicitud.unidad.id == u.id %}selected{% endif %}>
+                                    {{ u.nombreEnfermeria ?? u.nombre }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check mb-2">
+                            <input type="hidden" name="isTest" value="0">
+                            <input type="checkbox" name="isTest" id="isTest" class="form-check-input" value="1"
+                                   {% if solicitud.isTest %}checked{% endif %}>
+                            <label class="form-check-label" for="isTest">Es prueba (isTest)</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <hr class="mt-4">
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{{ path('admin.enfermeria.solicitudes.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-device-floppy"></i> Guardar cambios
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    {# Info adicional #}
+    <div class="card mt-4">
+        <div class="card-header"><strong>Información adicional</strong></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label text-muted small">Creada</label>
+                    <p class="mb-0">{{ solicitud.createdAtFormatted }}</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small">Link de registro alumnos</label>
+                    <p class="mb-0">
+                        <a href="/enfermeria-alumno/login/{{ solicitud.id }}" target="_blank">
+                            /enfermeria-alumno/login/{{ solicitud.id }}
+                        </a>
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small">Exportar</label>
+                    <p class="mb-0">
+                        <a href="{{ path('enfermeria.solicitud.export', {id: solicitud.id}) }}" target="_blank" class="btn btn-sm btn-outline-success">
+                            <i class="ti ti-download"></i> CSV
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Tabla de alumnos #}
+    <div class="card mt-4" id="card-alumnos">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Alumnos (<span id="total-alumnos">{{ solicitud.alumnos|length }}</span>)</strong>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarAlumno">
+                <i class="ti ti-plus"></i> Agregar alumno
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-vcenter table-striped mb-0" id="tabla-alumnos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>CURP</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Tipo</th>
+                            <th class="text-end">Monto</th>
+                            <th>Estado</th>
+                            <th class="text-center">Quitar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-alumnos">
+                    {% for alumno in solicitud.alumnos %}
+                        <tr id="tr-alumno-{{ alumno.id }}">
+                            <td class="text-muted small">{{ alumno.idFormatted }}</td>
+                            <td><code>{{ alumno.curp }}</code></td>
+                            <td>{{ alumno.nombre }}</td>
+                            <td>{{ alumno.email }}</td>
+                            <td>{{ alumno.tipo }}</td>
+                            <td class="text-end">${{ alumno.monto ?? '0.00' }}</td>
+                            <td>{{ m.statusBadge(alumno.status, alumno.statusFormatted) }}</td>
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger btn-quitar-alumno"
+                                        data-alumno-id="{{ alumno.id }}"
+                                        data-solicitud-id="{{ solicitud.id }}"
+                                        title="Quitar alumno">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr id="tr-empty"><td colspan="8" class="text-center text-muted py-3">Sin alumnos registrados</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{# Modal agregar alumno #}
+<div class="modal fade" id="modalAgregarAlumno" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar alumno</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Nombre completo <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="add-nombre" placeholder="Nombre del alumno">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">CURP <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="add-curp" placeholder="CURP (18 caracteres)" maxlength="18">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="add-email" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Tipo <span class="text-danger">*</span></label>
+                        <select class="form-select" id="add-tipo">
+                            <option value="nuevo">Nuevo</option>
+                            <option value="reingreso">Reingreso</option>
+                            <option value="titulacion">Titulación</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Monto ($)</label>
+                        <input type="number" step="0.01" class="form-control" id="add-monto" placeholder="0.00">
+                    </div>
+                </div>
+                <div id="add-error" class="alert alert-danger mt-3 d-none"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-agregar-alumno">
+                    <span id="add-spinner" class="spinner-border spinner-border-sm d-none"></span>
+                    Agregar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+function statusBadge(status, label) {
+    return label || 'Inicio';
+}
+document.addEventListener('DOMContentLoaded', function () {
+    const solicitudId = {{ solicitud.id }};
+
+    // ── Quitar alumno ──────────────────────────────────────────
+    document.getElementById('tbody-alumnos').addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-quitar-alumno');
+        if (!btn) return;
+
+        if (!confirm('¿Quitar este alumno de la solicitud?')) return;
+
+        const alumnoId = btn.dataset.alumnoId;
+        btn.disabled = true;
+
+        fetch(`/admin/enfermeria/solicitudes/${solicitudId}/alumno/${alumnoId}`, {
+            method: 'DELETE',
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                const row = document.getElementById('tr-alumno-' + alumnoId);
+                if (row) row.remove();
+                const total = document.getElementById('total-alumnos');
+                total.textContent = parseInt(total.textContent) - 1;
+                if (document.querySelectorAll('#tbody-alumnos tr').length === 0) {
+                    document.getElementById('tbody-alumnos').innerHTML =
+                        '<tr id="tr-empty"><td colspan="8" class="text-center text-muted py-3">Sin alumnos registrados</td></tr>';
+                }
+            } else {
+                alert('Error al quitar el alumno.');
+                btn.disabled = false;
+            }
+        })
+        .catch(() => { alert('Error de conexión.'); btn.disabled = false; });
+    });
+
+    // ── Agregar alumno ─────────────────────────────────────────
+    document.getElementById('btn-agregar-alumno').addEventListener('click', function () {
+        const nombre = document.getElementById('add-nombre').value.trim();
+        const curp   = document.getElementById('add-curp').value.trim();
+        const email  = document.getElementById('add-email').value.trim();
+        const tipo   = document.getElementById('add-tipo').value;
+        const monto  = document.getElementById('add-monto').value;
+        const errDiv = document.getElementById('add-error');
+        const spinner = document.getElementById('add-spinner');
+
+        errDiv.classList.add('d-none');
+
+        if (!nombre || !curp || !email || !tipo) {
+            errDiv.textContent = 'Nombre, CURP, email y tipo son obligatorios.';
+            errDiv.classList.remove('d-none');
+            return;
+        }
+
+        this.disabled = true;
+        spinner.classList.remove('d-none');
+
+        fetch(`/admin/enfermeria/solicitudes/${solicitudId}/alumno`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nombre, curp, email, tipo, monto }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                errDiv.textContent = data.error;
+                errDiv.classList.remove('d-none');
+                return;
+            }
+            // Quitar fila vacía si existe
+            const empty = document.getElementById('tr-empty');
+            if (empty) empty.remove();
+
+            // Agregar fila
+            const tbody = document.getElementById('tbody-alumnos');
+            const tr = document.createElement('tr');
+            tr.id = 'tr-alumno-' + data.id;
+            tr.innerHTML = `
+                <td class="text-muted small">${data.idFormatted}</td>
+                <td><code>${data.curp}</code></td>
+                <td>${data.nombre}</td>
+                <td>${data.email}</td>
+                <td>${data.tipo}</td>
+                <td class="text-end">$${parseFloat(data.monto || 0).toFixed(2)}</td>
+                <td>${statusBadge('', data.statusFormatted)}</td>
+                <td class="text-center">
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger btn-quitar-alumno"
+                            data-alumno-id="${data.id}"
+                            data-solicitud-id="${solicitudId}"
+                            title="Quitar alumno">
+                        <i class="ti ti-trash"></i>
+                    </button>
+                </td>`;
+            tbody.appendChild(tr);
+
+            const total = document.getElementById('total-alumnos');
+            total.textContent = parseInt(total.textContent) + 1;
+
+            // Limpiar modal
+            ['add-nombre','add-curp','add-email','add-monto'].forEach(id => document.getElementById(id).value = '');
+            bootstrap.Modal.getInstance(document.getElementById('modalAgregarAlumno')).hide();
+        })
+        .catch(() => {
+            errDiv.textContent = 'Error de conexión.';
+            errDiv.classList.remove('d-none');
+        })
+        .finally(() => {
+            this.disabled = false;
+            spinner.classList.add('d-none');
+        });
+    });
+});
+</script>
+{% endblock %}

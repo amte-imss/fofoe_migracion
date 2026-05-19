@@ -1,0 +1,194 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Dashboard — Sistema FOFOE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .kpi-card { border: none; border-radius: 12px; box-shadow: 0 1px 8px rgba(0,0,0,.06); transition: box-shadow .2s, transform .2s; }
+    .kpi-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); transform: translateY(-2px); }
+    .kpi-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .welcome-banner { background: linear-gradient(135deg, var(--imss-green) 0%, #009b6a 100%); border-radius: 16px; color: #fff; padding: 1.75rem 2rem; position: relative; overflow: hidden; }
+    .welcome-banner::after { content: '\eb04'; font-family: 'tabler-icons'; position: absolute; right: 2rem; top: 50%; transform: translateY(-50%); font-size: 6rem; color: rgba(255,255,255,.08); pointer-events: none; }
+    .welcome-banner h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .25rem; }
+    .welcome-banner p { font-size: .9rem; color: rgba(255,255,255,.8); margin: 0; }
+    .role-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--imss-green-light); color: var(--imss-green); border-radius: 20px; padding: 3px 12px; font-size: .75rem; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-body">
+    <div class="container-xl py-4">
+
+        {# Welcome #}
+        <div class="welcome-banner mb-4">
+            <h3>Bienvenido{% if app.user %}, {{ app.user.getUserIdentifier() }}{% endif %} 👋</h3>
+            <p>Sistema de Gestión FOFOE — Instituto Mexicano del Seguro Social</p>
+        </div>
+
+        {# KPIs #}
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="card kpi-card p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="kpi-icon" style="background:#e6f4ee;"><i class="ti ti-file-text" style="color:var(--imss-green);"></i></div>
+                        <div>
+                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Solicitudes</div>
+                            <div class="fw-bold fs-4" style="color:var(--imss-green);">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card kpi-card p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="kpi-icon" style="background:#e8f0fe;"><i class="ti ti-users" style="color:#1a73e8;"></i></div>
+                        <div>
+                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Residentes</div>
+                            <div class="fw-bold fs-4" style="color:#1a73e8;">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card kpi-card p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="kpi-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div>
+                        <div>
+                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Convenios</div>
+                            <div class="fw-bold fs-4" style="color:#f59e0b;">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="card kpi-card p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="kpi-icon" style="background:#fce8e6;"><i class="ti ti-cash" style="color:#d93025;"></i></div>
+                        <div>
+                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Pagos pendientes</div>
+                            <div class="fw-bold fs-4" style="color:#d93025;">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# ── Gestión Convenios ── #}
+        {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><span class="section-label">Gestión Convenios</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Convenios CAME</div><div class="mod-sub">Acuerdos institucionales</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-file-star" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Convenios Especiales</div><div class="mod-sub">Acuerdos específicos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-users" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Coord. Firmante</div><div class="mod-sub">Catálogo de coordinadores</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-book" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Disciplinas</div><div class="mod-sub">Catálogo de disciplinas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            {% endif %}
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-building" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Instituciones Educativas</div><div class="mod-sub">Directorio educativo</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Gestión FOFOE ── #}
+        {% if is_granted('ROLE_FOFOE_INICIO') or is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#e6f4ee;"><i class="ti ti-cash" style="color:var(--imss-green);"></i></div><span class="section-label">Gestión FOFOE</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-cash" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Pagos</div><div class="mod-sub">Control de cobros</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-building-hospital" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Residencias</div><div class="mod-sub">Gestión de plazas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-nurse" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Enfermería</div><div class="mod-sub">Solicitudes de enfermería</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-text" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes CC</div><div class="mod-sub">Campos clínicos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="{{ path('enfermeria.alumno.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-users-group" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Alumnos Enfermería</div><div class="mod-sub">Registro de alumnos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Posgrado ── #}
+        {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#e8f0fe;"><i class="ti ti-stethoscope" style="color:#1a73e8;"></i></div><span class="section-label">Posgrado</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-user-plus" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Alumnos extr. ciclo anual</div><div class="mod-sub">Ciclo académico anual</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-user-check" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Alumnos extr. rot. parcial</div><div class="mod-sub">Rotación parcial</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-upload" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Carga Masiva Residentes</div><div class="mod-sub">Importar residentes</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Campos Clínicos ── #}
+        {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#fce8e6;"><i class="ti ti-first-aid-kit" style="color:#d93025;"></i></div><span class="section-label">Campos Clínicos</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-calendar-event" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Ciclos Educativos</div><div class="mod-sub">Periodos activos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Convenios</div><div class="mod-sub">Acuerdos de campo clínico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-nurse" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Escuelas de Enfermería</div><div class="mod-sub">Centros formativos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# ── Simulación ── #}
+        {% if is_granted('ROLE_SIMULACION') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#e8f0fe;"><i class="ti ti-device-desktop" style="color:#1a73e8;"></i></div><span class="section-label">Simulación</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-device-desktop" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Simulación</div><div class="mod-sub">Gestión de solicitudes</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Enfermería ── #}
+        {% if is_granted('ROLE_ENFERMERIA') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#fce8e6;"><i class="ti ti-stethoscope" style="color:#d93025;"></i></div><span class="section-label">Enfermería</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-school" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Escuelas de Enfermería</div><div class="mod-sub">Centros formativos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Educación Permanente ── #}
+        {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#e6f4ee;"><i class="ti ti-school" style="color:var(--imss-green);"></i></div><span class="section-label">Educación Permanente</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-notebook" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Edu. Per.</div><div class="mod-sub">Educación permanente</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Catálogos Generales ── #}
+        {% if is_granted('ROLE_SUPER') %}
+        <div class="section-header"><div class="section-icon" style="background:#f3e8ff;"><i class="ti ti-database" style="color:#7c3aed;"></i></div><span class="section-label">Catálogos Generales</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-map" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Regiones</div><div class="mod-sub">Catálogo de regiones</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-map-pin" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Delegaciones</div><div class="mod-sub">Cobertura regional</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-building-hospital" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Unidades</div><div class="mod-sub">Unidades médicas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-category" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Carreras</div><div class="mod-sub">Catálogo académico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-list" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Departamentos</div><div class="mod-sub">Estructura organizacional</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-tag" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Categorías</div><div class="mod-sub">Tipos y clasificaciones</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-certificate" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Especialidades</div><div class="mod-sub">Catálogo médico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+        </div>
+        {% endif %}
+
+        {# ── Administración ── #}
+        {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADM_FOFOE') %}
+        <div class="section-header"><div class="section-icon" style="background:#f3e8ff;"><i class="ti ti-settings" style="color:#7c3aed;"></i></div><span class="section-label">Administración</span><div class="section-divider"></div></div>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-users" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Usuarios</div><div class="mod-sub">Alta, edición y baja</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-list-details" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Bitácora</div><div class="mod-sub">Log del sistema</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            {% if is_granted('ROLE_SUPER') %}
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-shield-lock" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Permisos</div><div class="mod-sub">Control de acceso</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-user-shield" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Roles</div><div class="mod-sub">Gestión de roles</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-adjustments-horizontal" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Configuración Global</div><div class="mod-sub">Parámetros del sistema</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# Permisos activos #}
+        {% if app.user %}
+        <div class="card mt-2" style="border-radius:12px;border:1px solid #f0f0f0;background:#fafafa;">
+            <div class="card-body py-3 px-4">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="text-muted me-1" style="font-size:.78rem;"><i class="ti ti-shield-check me-1"></i>Permisos activos:</span>
+                    {% for role in app.user.roles %}
+                        {% if role != 'ROLE_USER' %}
+                        <span class="role-chip"><i class="ti ti-check" style="font-size:.6rem;"></i>{{ role|replace({'ROLE_': ''})|lower|capitalize }}</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

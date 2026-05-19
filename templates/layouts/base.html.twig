@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IMSS — Sistema FOFOE{% endblock %}</title>
+
+    {# Tabler CSS via AssetMapper #}
+    <link rel="stylesheet" href="{{ importmap('app') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="antialiased">
+<div class="wrapper">
+
+    {# ===================== SIDEBAR ===================== #}
+    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+        <div class="container-fluid">
+
+            {# Toggle móvil #}
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#sidebar-menu">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            {# Logo IMSS #}
+            <h1 class="navbar-brand navbar-brand-autodark">
+                <a href="{{ path('app_dashboard') }}" class="text-white text-decoration-none">
+                    <span class="fw-bold fs-4">FOFOE</span>
+                    <span class="fs-6 d-block opacity-75">IMSS Educación</span>
+                </a>
+            </h1>
+
+            {# Usuario activo #}
+            {% if app.user %}
+            <div class="navbar-nav flex-row d-lg-none">
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link d-flex lh-1 text-reset p-0"
+                       data-bs-toggle="dropdown" aria-label="Perfil">
+                        <span class="avatar avatar-sm">
+                            {{ app.user.getUserIdentifier()|first|upper }}
+                        </span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                        <a href="{{ path('app_profile') }}" class="dropdown-item">Mi perfil</a>
+                        <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {# Menú principal #}
+            <div class="collapse navbar-collapse" id="sidebar-menu">
+                <ul class="navbar-nav pt-lg-3">
+
+                    {# Dashboard #}
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') starts with 'app_dashboard' ? 'active' }}"
+                           href="{{ path('app_dashboard') }}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-home-2"></i>
+                            </span>
+                            <span class="nav-link-title">Dashboard</span>
+                        </a>
+                    </li>
+
+                    {# ===== FOFOE ===== #}
+                    {% if is_granted('ROLE_FOFOE_INICIO') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'fofoe' ? 'active' }}"
+                           href="#fofoe-menu" data-bs-toggle="dropdown" role="button">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-file-invoice"></i>
+                            </span>
+                            <span class="nav-link-title">FOFOE</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('fofoe_solicitudes') }}">
+                                <i class="ti ti-list me-2"></i>Solicitudes
+                            </a>
+                            <a class="dropdown-item" href="{{ path('fofoe_pagos') }}">
+                                <i class="ti ti-cash me-2"></i>Pagos
+                            </a>
+                            {% if is_granted('ROLE_FOFOE_VALIDAR_PAGO') %}
+                            <a class="dropdown-item" href="{{ path('fofoe_validar_pago') }}">
+                                <i class="ti ti-circle-check me-2"></i>Validar Pago
+                            </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_FOFOE_REPORTE_INGS') %}
+                            <a class="dropdown-item" href="{{ path('fofoe_reporte_ingresos') }}">
+                                <i class="ti ti-chart-bar me-2"></i>Reporte Ingresos
+                            </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_FOFOE_REPORTE_OP') %}
+                            <a class="dropdown-item" href="{{ path('fofoe_reporte_oportunidad') }}">
+                                <i class="ti ti-report-analytics me-2"></i>Oportunidad de Pago
+                            </a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {# ===== POSGRADO ===== #}
+                    {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'posgrado' ? 'active' }}"
+                           href="#posgrado-menu" data-bs-toggle="dropdown" role="button">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-school"></i>
+                            </span>
+                            <span class="nav-link-title">Posgrado</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('posgrado_residentes') }}">
+                                <i class="ti ti-users me-2"></i>Residentes
+                            </a>
+                            <a class="dropdown-item" href="{{ path('posgrado_residencias') }}">
+                                <i class="ti ti-building-hospital me-2"></i>Residencias
+                            </a>
+                            <a class="dropdown-item" href="{{ path('posgrado_documentos') }}">
+                                <i class="ti ti-file-text me-2"></i>Documentos
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {# ===== ENFERMERÍA ===== #}
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'enfermeria' ? 'active' }}"
+                           href="#enfermeria-menu" data-bs-toggle="dropdown" role="button">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-heartbeat"></i>
+                            </span>
+                            <span class="nav-link-title">Enfermería</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('enfermeria_solicitudes') }}">
+                                <i class="ti ti-list me-2"></i>Solicitudes
+                            </a>
+                            <a class="dropdown-item" href="{{ path('enfermeria_alumnos') }}">
+                                <i class="ti ti-user-check me-2"></i>Alumnos
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {# ===== CONVENIOS ===== #}
+                    {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'convenio' ? 'active' }}"
+                           href="#convenios-menu" data-bs-toggle="dropdown" role="button">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-clipboard-text"></i>
+                            </span>
+                            <span class="nav-link-title">Convenios</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('convenios_list') }}">
+                                <i class="ti ti-list me-2"></i>Listado
+                            </a>
+                            <a class="dropdown-item" href="{{ path('convenios_especiales') }}">
+                                <i class="ti ti-star me-2"></i>Especiales
+                            </a>
+                            <a class="dropdown-item" href="{{ path('instituciones_list') }}">
+                                <i class="ti ti-building me-2"></i>Instituciones
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                    {# ===== CAME ===== #}
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') starts with 'came' ? 'active' }}"
+                           href="{{ path('came_index') }}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-stethoscope"></i>
+                            </span>
+                            <span class="nav-link-title">CAME</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {# ===== EDU PER ===== #}
+                    {% if is_granted('ROLE_SUPER') %}
+                    <li class="nav-item">
+                        <a class="nav-link {{ app.request.attributes.get('_route') starts with 'edu_per' ? 'active' }}"
+                           href="{{ path('edu_per_index') }}">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-book"></i>
+                            </span>
+                            <span class="nav-link-title">Edu. Permanente</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {# ===== ADMIN ===== #}
+                    {% if is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'admin' ? 'active' }}"
+                           href="#admin-menu" data-bs-toggle="dropdown" role="button">
+                            <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                <i class="ti ti-settings"></i>
+                            </span>
+                            <span class="nav-link-title">Administración</span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('admin_usuarios') }}">
+                                <i class="ti ti-users me-2"></i>Usuarios
+                            </a>
+                            <a class="dropdown-item" href="{{ path('admin_delegaciones') }}">
+                                <i class="ti ti-map-pin me-2"></i>Delegaciones
+                            </a>
+                            <a class="dropdown-item" href="{{ path('admin_disciplinas') }}">
+                                <i class="ti ti-category me-2"></i>Disciplinas
+                            </a>
+                            <a class="dropdown-item" href="{{ path('admin_config') }}">
+                                <i class="ti ti-adjustments me-2"></i>Configuración
+                            </a>
+                        </div>
+                    </li>
+                    {% endif %}
+
+                </ul>
+
+                {# Usuario en sidebar desktop #}
+                {% if app.user %}
+                <div class="mt-auto pt-3 border-top border-top-1">
+                    <div class="d-flex align-items-center px-3 py-2">
+                        <span class="avatar me-2 bg-blue-lt text-blue">
+                            {{ app.user.getUserIdentifier()|first|upper }}
+                        </span>
+                        <div class="flex-fill">
+                            <div class="fw-semibold text-white small">
+                                {{ app.user.getUserIdentifier() }}
+                            </div>
+                        </div>
+                        <a href="{{ path('app_logout') }}" class="btn btn-sm btn-ghost-light ms-2"
+                           title="Cerrar sesión">
+                            <i class="ti ti-logout"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    {# ===================== CONTENIDO PRINCIPAL ===================== #}
+    <div class="page-wrapper">
+
+        {# Header / breadcrumb #}
+        <div class="page-header d-print-none">
+            <div class="container-xl">
+                <div class="row g-2 align-items-center">
+                    <div class="col">
+                        <div class="page-pretitle">{% block page_pretitle '' %}</div>
+                        <h2 class="page-title">{% block page_title '' %}</h2>
+                    </div>
+                    <div class="col-auto ms-auto d-print-none">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Contenido #}
+        <div class="page-body">
+            <div class="container-xl">
+
+                {# Flash messages #}
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% block body %}{% endblock %}
+
+            </div>
+        </div>
+
+        {# Footer #}
+        <footer class="footer footer-transparent d-print-none">
+            <div class="container-xl">
+                <div class="row text-center align-items-center flex-row-reverse">
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item">
+                                IMSS © {{ "now"|date("Y") }} — Sistema FOFOE
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+
+{% block javascripts %}
+    {{ importmap('app') }}
+{% endblock %}
+</body>
+</html>

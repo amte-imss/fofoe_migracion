@@ -1,0 +1,253 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Alumno {{ alumno.nombre }} — Enfermería{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('enfermeria.index') }}">Enfermería</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('enfermeria.alumno.index') }}">Alumnos</a></li>
+                    <li class="breadcrumb-item active">{{ alumno.nombre }}</li>
+                </ol>
+                <h2 class="page-title">
+                    <i class="ti ti-user me-2 text-danger"></i>{{ alumno.nombre }}
+                </h2>
+                <div class="text-muted mt-1">{{ alumno.curp }}</div>
+            </div>
+            <div class="col-auto d-flex gap-2">
+                {% if alumno.cedulaIdentificacion %}
+                <a href="{{ path('enfermeria.alumno.downloadCedula', {id: alumno.id}) }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-file-certificate me-1"></i>Cédula fiscal
+                </a>
+                {% endif %}
+                <a href="{{ path('enfermeria.alumno.index') }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left me-1"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <i class="ti ti-check me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <i class="ti ti-alert-circle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+    {% set statusMap = {
+        '':                {'label': 'Inicio',                        'color': 'secondary'},
+        'wait_payment':    {'label': 'En espera de pago',             'color': 'warning'},
+        'wait_validation': {'label': 'En espera de validación',       'color': 'blue'},
+        'validated':       {'label': 'Validado por FOFOE',            'color': 'success'},
+        'rejected':        {'label': 'No válido para FOFOE',          'color': 'danger'},
+        'rejected_doc':    {'label': 'Rechazado por documentación',   'color': 'danger'},
+        'invoice_pending': {'label': 'Por facturar',                  'color': 'purple'}
+    } %}
+    {% set currentStatus = statusMap[alumno.status] ?? {'label': alumno.status, 'color': 'secondary'} %}
+
+    <div class="row g-4">
+
+        {# ── Columna izquierda: datos del alumno ── #}
+        <div class="col-lg-5">
+
+            {# Datos personales #}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-id-badge me-2"></i>Datos del Alumno</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">Nombre</dt>
+                        <dd class="col-sm-8 fw-semibold">{{ alumno.nombre }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Email</dt>
+                        <dd class="col-sm-8"><a href="mailto:{{ alumno.email }}" class="text-decoration-none">{{ alumno.email }}</a></dd>
+
+                        <dt class="col-sm-4 text-muted">CURP</dt>
+                        <dd class="col-sm-8 font-monospace small">{{ alumno.curp }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Tipo</dt>
+                        <dd class="col-sm-8">{{ alumno.tipo }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Promedio</dt>
+                        <dd class="col-sm-8">{{ alumno.promedio ? alumno.promedio|number_format(2) : '—' }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Monto</dt>
+                        <dd class="col-sm-8 fw-semibold">{{ alumno.monto ? '$' ~ alumno.monto|number_format(2) : '—' }}</dd>
+
+                        {% if alumno.hasDiferencia %}
+                        <dt class="col-sm-4 text-muted">Diferencia</dt>
+                        <dd class="col-sm-8 text-warning fw-semibold">
+                            <i class="ti ti-alert-triangle me-1"></i>
+                            ${{ alumno.montoDiferencia|number_format(2) }}
+                        </dd>
+                        {% endif %}
+
+                        <dt class="col-sm-4 text-muted">Estado</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-{{ currentStatus.color }}-lt text-{{ currentStatus.color }}">
+                                {{ currentStatus.label }}
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Cédula fiscal</dt>
+                        <dd class="col-sm-8">
+                            {% if alumno.cedulaIdentificacion %}
+                            <a href="{{ path('enfermeria.alumno.downloadCedula', {id: alumno.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="ti ti-download me-1"></i>Descargar
+                            </a>
+                            {% else %}
+                            <span class="text-muted">No cargada</span>
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            {# Solicitud #}
+            {% if alumno.solicitud %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-clipboard-list me-2"></i>Solicitud</h3>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-muted">ID</dt>
+                        <dd class="col-sm-8">
+                            <a href="{{ path('enfermeria.solicitud.show', {id: alumno.solicitud.id}) }}" class="text-decoration-none">
+                                #{{ alumno.solicitud.id }}
+                            </a>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Escuela</dt>
+                        <dd class="col-sm-8">{{ alumno.solicitud.unidad ? (alumno.solicitud.unidad.nombreEnfermeria ?: alumno.solicitud.unidad.nombre) : '—' }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Periodo</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-blue-lt">{{ alumno.solicitud.periodoFormatted }}</span>
+                        </dd>
+
+                        <dt class="col-sm-4 text-muted">Fecha inicio</dt>
+                        <dd class="col-sm-8">{{ alumno.solicitud.fechaInicioFormatted }}</dd>
+
+                        <dt class="col-sm-4 text-muted">Fecha fin</dt>
+                        <dd class="col-sm-8">{{ alumno.solicitud.fechaFinFormatted }}</dd>
+                    </dl>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+
+        {# ── Columna derecha ── #}
+        <div class="col-lg-7">
+
+            {# Historial de pagos #}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-cash me-2"></i>Pagos</h3>
+                </div>
+                {% if alumno.pagos is empty %}
+                <div class="card-body text-muted text-center py-3">Sin pagos registrados</div>
+                {% else %}
+                <div class="table-responsive">
+                    <table class="table table-vcenter table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Referencia</th>
+                                <th>Monto</th>
+                                <th>Fecha pago</th>
+                                <th>Validado</th>
+                                <th>Factura</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pago in alumno.pagos %}
+                            <tr>
+                                <td class="text-muted small">{{ pago.id }}</td>
+                                <td class="font-monospace small">{{ pago.referenciaBancaria ?: '—' }}</td>
+                                <td>${{ pago.monto ? pago.monto|number_format(2) : '—' }}</td>
+                                <td class="small text-muted">
+                                    {{ pago.fechaPago ? pago.fechaPago|date('d/m/Y') : '—' }}
+                                </td>
+                                <td>
+                                    {% if pago.validado is same as(true) %}
+                                        <span class="badge bg-success-lt text-success">Sí</span>
+                                    {% elseif pago.validado is same as(false) %}
+                                        <span class="badge bg-danger-lt text-danger">No</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary-lt text-muted">Pendiente</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if pago.factura %}
+                                    <span class="badge bg-purple-lt text-purple">
+                                        <i class="ti ti-file-invoice me-1"></i>{{ pago.factura.folio ?: '#' ~ pago.factura.id }}
+                                    </span>
+                                    {% else %}
+                                    <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+            </div>
+
+            {# Cambiar estado #}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-refresh me-2"></i>Cambiar Estado</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ path('enfermeria.alumno.updateStatus', {id: alumno.id}) }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nuevo estado</label>
+                                <select name="status" class="form-select" required>
+                                    {% for statusKey, info in statusMap %}
+                                    <option value="{{ statusKey }}" {{ alumno.status == statusKey ? 'selected' : '' }}>
+                                        {{ info.label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Observaciones <span class="text-muted small">(opcional)</span></label>
+                                <input type="text" name="observaciones" class="form-control"
+                                       value="{{ alumno.lastPago ? (alumno.lastPago.observaciones ?: '') : '' }}"
+                                       placeholder="Motivo del cambio…">
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex gap-2 align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-check me-1"></i>Aplicar cambio
+                            </button>
+                            <span class="text-muted small">
+                                Estado actual:
+                                <span class="badge bg-{{ currentStatus.color }}-lt text-{{ currentStatus.color }}">{{ currentStatus.label }}</span>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>{# /row #}
+
+</div>
+{% endblock %}

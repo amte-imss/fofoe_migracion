@@ -1,0 +1,220 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}{{ accion }}{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="page-title">{{ accion }}</h2>
+        </div>
+        <div class="col-auto">
+            <a href="{{ path('admin.usuarios.index') }}" class="btn btn-secondary spa-link">
+                ← Regresar
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+
+            <h4 class="mb-3">Datos personales</h4>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label required">Nombre(s)</label>
+                    <input type="text" name="nombre" class="form-control"
+                           value="{{ usuario.nombre }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label required">Apellido paterno</label>
+                    <input type="text" name="apellidoPaterno" class="form-control"
+                           value="{{ usuario.apellidoPaterno }}" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Apellido materno</label>
+                    <input type="text" name="apellidoMaterno" class="form-control"
+                           value="{{ usuario.apellidoMaterno }}">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">CURP</label>
+                    <input type="text" name="curp" class="form-control" maxlength="18"
+                           value="{{ usuario.curp }}" placeholder="18 caracteres">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">RFC</label>
+                    <input type="text" name="rfc" class="form-control" maxlength="13"
+                           value="{{ usuario.rfc }}" placeholder="12-13 caracteres">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Sexo</label>
+                    <select name="sexo" class="form-select">
+                        <option value="">— —</option>
+                        <option value="M" {{ usuario.sexo == 'M' ? 'selected' : '' }}>Masculino</option>
+                        <option value="F" {{ usuario.sexo == 'F' ? 'selected' : '' }}>Femenino</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Fecha de ingreso</label>
+                    <input type="date" name="fechaIngreso" class="form-control"
+                           value="{{ usuario.fechaIngreso ? usuario.fechaIngreso|date('Y-m-d') : '' }}">
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h4 class="mb-3">Datos de acceso</h4>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label required">Matrícula</label>
+                    <input type="text" name="matricula" class="form-control"
+                           value="{{ usuario.matricula }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label required">Correo electrónico</label>
+                    <input type="email" name="correo" class="form-control"
+                           value="{{ usuario.correo }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Teléfono</label>
+                    <input type="text" name="telefono" class="form-control"
+                           value="{{ usuario.telefono }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">REGIMS</label>
+                    <input type="number" name="regims" class="form-control"
+                           value="{{ usuario.regims }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label {{ usuario.id ? '' : 'required' }}">
+                        Contraseña {{ usuario.id ? '(dejar en blanco para no cambiar)' : '' }}
+                    </label>
+                    <input type="password" name="plainPassword" class="form-control"
+                           {{ usuario.id ? '' : 'required' }} autocomplete="new-password">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label required">Rol</label>
+                    <select name="rolId" class="form-select" required>
+                        <option value="">— Seleccionar rol —</option>
+                        {% for rol in roles %}
+                            <option value="{{ rol.id }}"
+                                {{ (rolActual is defined and rolActual == rol.id) ? 'selected' : '' }}>
+                                {{ rol.nombre }} ({{ rol.clave }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small class="form-hint">Al cambiar el rol se reasignarán todos los permisos del usuario.</small>
+                </div>
+            </div>
+
+            <hr class="my-4">
+            <h4 class="mb-3">Asignación</h4>
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">Delegaciones OOAD</label>
+                    <select name="delegacionIds[]" id="sel-delegaciones" multiple>
+                        {% for d in delegaciones %}
+                            <option value="{{ d.id }}"
+                                {% if usuario.delegaciones is defined %}
+                                    {% for ud in usuario.delegaciones %}
+                                        {% if ud.id == d.id %}selected{% endif %}
+                                    {% endfor %}
+                                {% endif %}>
+                                {{ d.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">OOAD Institución</label>
+                    <select name="delegacionInstitucionId" class="form-select">
+                        <option value="">— Sin OOAD institución —</option>
+                        {% for d in delegaciones %}
+                            <option value="{{ d.id }}"
+                                {% if usuario.delegacionInstitucion and usuario.delegacionInstitucion.id == d.id %}selected{% endif %}>
+                                {{ d.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Institución</label>
+                    <select name="institucionId" id="sel-institucion" class="form-select">
+                        <option value="">— Sin institución —</option>
+                        {% for inst in instituciones %}
+                            <option value="{{ inst.id }}"
+                                {% if usuario.institucion and usuario.institucion.id == inst.id %}selected{% endif %}>
+                                {{ inst.nombre }}{% if inst.rfc %} ({{ inst.rfc }}){% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Unidades UMAE / Enfermería</label>
+                    <select name="unidadIds[]" id="sel-unidades" multiple>
+                        {% for u in unidades %}
+                            <option value="{{ u.id }}"
+                                {% if usuario.unidades is defined %}
+                                    {% for uu in usuario.unidades %}
+                                        {% if uu.id == u.id %}selected{% endif %}
+                                    {% endfor %}
+                                {% endif %}>
+                                {{ u.nombre }}{% if u.esUmae %} [UMAE]{% endif %}{% if u.esEnfermeria %} [ENF]{% endif %}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" name="activo" value="1"
+                               {{ usuario.activo ? 'checked' : '' }}>
+                        <label class="form-check-label">Activo</label>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{{ path('admin.usuarios.index') }}" class="btn btn-secondary spa-link">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new TomSelect('#sel-delegaciones', {
+        plugins: ['remove_button'],
+        placeholder: 'Buscar delegación…',
+        create: false,
+    });
+    new TomSelect('#sel-unidades', {
+        plugins: ['remove_button'],
+        placeholder: 'Buscar unidad…',
+        create: false,
+    });
+    new TomSelect('#sel-institucion', {
+        placeholder: 'Buscar institución…',
+        create: false,
+    });
+});
+</script>
+{% endblock %}

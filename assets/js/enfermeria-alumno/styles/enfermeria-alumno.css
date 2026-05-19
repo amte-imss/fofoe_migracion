@@ -1,0 +1,14 @@
+.actions {
+    display: flex;
+    gap: 24px;
+}
+
+.die_container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.die_container p {
+    width: 300px;
+}

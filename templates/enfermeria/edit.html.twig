@@ -1,0 +1,233 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Editar Solicitud #{{ solicitud.id }} — Enfermería{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alumno-row.marked-delete { opacity: .45; background: #fff5f5 !important; }
+    .alumno-row.marked-delete td { text-decoration: line-through; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('enfermeria.index') }}">Enfermería</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('enfermeria.solicitud.show', {id: solicitud.id}) }}">Solicitud #{{ solicitud.id }}</a></li>
+                    <li class="breadcrumb-item active">Editar</li>
+                </ol>
+                <h2 class="page-title">
+                    <i class="ti ti-pencil me-2 text-warning"></i>Editar Solicitud #{{ solicitud.id }}
+                </h2>
+                <div class="text-muted mt-1">
+                    {{ solicitud.unidad ? solicitud.unidad.nombre : '—' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% for message in app.flashes('success') %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <i class="ti ti-check me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <i class="ti ti-alert-circle me-2"></i>{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+    <form method="post" action="{{ path('enfermeria.solicitud.edit', {id: solicitud.id}) }}" id="form-edit">
+
+    <div class="row g-4">
+
+        {# ── Columna izquierda: datos generales ── #}
+        <div class="col-lg-5">
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-info-circle me-2"></i>Datos generales</h3>
+                </div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="form-label required">Escuela (Unidad)</label>
+                        <select name="unidadId" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            {% for unidad in unidades %}
+                            <option value="{{ unidad.id }}"
+                                {% if solicitud.unidad and solicitud.unidad.id == unidad.id %}selected{% endif %}>
+                                {{ unidad.nombreEnfermeria ?: unidad.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if unidades is empty %}
+                        <div class="form-hint text-warning">No hay unidades de enfermería registradas.</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required">Periodo</label>
+                        <select name="periodo" class="form-select" required>
+                            <option value="">— Seleccionar —</option>
+                            <option value="cuatri"   {% if solicitud.periodo == 'cuatri' %}selected{% endif %}>Cuatrimestre</option>
+                            <option value="semestre" {% if solicitud.periodo in ['semestre','semestral'] %}selected{% endif %}>Semestral</option>
+                            <option value="anual"    {% if solicitud.periodo == 'anual' %}selected{% endif %}>Anual</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required">Fecha Inicio</label>
+                        <input type="date" name="fechaInicio" class="form-control"
+                               value="{{ solicitud.fechaInicio|date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label required">Fecha Fin</label>
+                        <input type="date" name="fechaFin" class="form-control"
+                               value="{{ solicitud.fechaFin|date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" name="isTest" value="1"
+                                   {% if solicitud.isTest %}checked{% endif %}>
+                            <span class="form-check-label">
+                                <strong>Solicitud de prueba (Test)</strong>
+                            </span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+
+            {# Resumen informativo #}
+            <div class="card bg-light">
+                <div class="card-body py-2 px-3">
+                    <div class="small text-muted mb-1"><i class="ti ti-info-circle me-1"></i>Información de solo lectura</div>
+                    <div class="row g-1 small">
+                        <div class="col-6"><strong>ID:</strong> #{{ solicitud.id }}</div>
+                        <div class="col-6"><strong>Alumnos:</strong> {{ solicitud.alumnos|length }}</div>
+                        <div class="col-12"><strong>Creado:</strong> {{ solicitud.createdAtFormatted }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        {# ── Columna derecha: alumnos ── #}
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="ti ti-users me-2"></i>Alumnos de la solicitud</h3>
+                    <div class="card-options">
+                        <input type="text" id="buscar-alumno-edit" class="form-control form-control-sm"
+                               placeholder="Buscar…" style="width:180px;">
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if solicitud.alumnos is empty %}
+                    <div class="text-center text-muted py-4">Sin alumnos registrados</div>
+                    {% else %}
+                    <div class="table-responsive" style="max-height:520px;overflow-y:auto;">
+                        <table class="table table-vcenter table-sm mb-0" id="tabla-alumnos-edit">
+                            <thead class="sticky-top bg-white">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>CURP</th>
+                                    <th>Estado</th>
+                                    <th class="text-center" style="width:60px;">
+                                        <span title="Marcar para eliminar"><i class="ti ti-trash text-danger"></i></span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set statusClass = {
+                                    '': 'secondary',
+                                    'wait_payment': 'warning',
+                                    'wait_validation': 'blue',
+                                    'validated': 'success',
+                                    'rejected': 'danger',
+                                    'rejected_doc': 'danger',
+                                    'invoice_pending': 'purple'
+                                } %}
+                                {% for alumno in solicitud.alumnos %}
+                                <tr class="alumno-row" data-id="{{ alumno.id }}">
+                                    <td>
+                                        <div class="fw-semibold small">{{ alumno.nombre }}</div>
+                                        <div class="text-muted" style="font-size:.72rem;">{{ alumno.email }}</div>
+                                    </td>
+                                    <td class="text-muted small font-monospace">{{ alumno.curp }}</td>
+                                    <td>
+                                        <span class="badge bg-{{ statusClass[alumno.status] ?? 'secondary' }}-lt" style="font-size:.68rem;">
+                                            {{ alumno.statusFormatted }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox" name="alumnosEliminar[]" value="{{ alumno.id }}"
+                                               class="form-check-input chk-eliminar" title="Marcar para eliminar">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer py-2 px-3 d-flex align-items-center gap-2">
+                        <span id="contador-eliminar" class="text-danger small"></span>
+                        <span class="text-muted small ms-auto">Selecciona alumnos y guarda para eliminarlos de la solicitud.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>{# /row #}
+
+    {# Botones #}
+    <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-warning">
+            <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+        </button>
+        <a href="{{ path('enfermeria.solicitud.show', {id: solicitud.id}) }}" class="btn btn-outline-secondary">
+            <i class="ti ti-x me-1"></i>Cancelar
+        </a>
+    </div>
+
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Highlight alumnos marcados para eliminar
+document.querySelectorAll('.chk-eliminar').forEach(function(chk) {
+    chk.addEventListener('change', function() {
+        const row = this.closest('tr');
+        row.classList.toggle('marked-delete', this.checked);
+        actualizarContador();
+    });
+});
+
+function actualizarContador() {
+    const n = document.querySelectorAll('.chk-eliminar:checked').length;
+    const el = document.getElementById('contador-eliminar');
+    if (el) el.textContent = n > 0 ? n + ' alumno(s) marcado(s) para eliminar' : '';
+}
+
+// Buscador en tabla de alumnos
+document.getElementById('buscar-alumno-edit')?.addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#tabla-alumnos-edit tbody tr').forEach(function(tr) {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}

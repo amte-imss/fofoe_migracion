@@ -1,0 +1,30 @@
+{% extends app.user is not null and (is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_JDES_MINUS')) ? 'layouts/came.html.twig' : 'layouts/ie.html.twig' %}
+
+{% block title %}Historial — Enfermería{% endblock %}
+
+{% block body %}
+    <div class="section-md">
+        <div class="container-fluid">
+            <div class="container">
+                <h1 class="text-bold text-center mb-20">Historial</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.EscuelaID = '{{ escuelaId }}';
+        window.asCame = {{ asCame ? 'true' : 'false' }};
+        window.OOAD = '{{ ooad }}';
+    </script>
+    <script src="{{ asset('build/runtime.js') }}"></script>
+    <script src="{{ asset('build/enfermeria.index.js') }}"></script>
+{% endblock %}
+

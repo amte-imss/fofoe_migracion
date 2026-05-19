@@ -1,0 +1,137 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Catálogo de Usuarios{% endblock %}
+
+{% block body %}
+<div class="page-header">
+    <div class="row align-items-center">
+        <div class="col">
+            <h2 class="page-title">Catálogo de Usuarios</h2>
+        </div>
+        <div class="col-auto ms-auto">
+            <a href="{{ path('admin.usuarios.new') }}" class="btn btn-primary spa-link">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
+                     stroke-width="2" stroke="currentColor" fill="none">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Nuevo usuario
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <form method="GET" class="d-flex gap-2">
+            <input type="text" name="q" class="form-control" placeholder="Buscar por nombre, correo o matrícula…"
+                   value="{{ q }}">
+            <button type="submit" class="btn btn-secondary">Buscar</button>
+            {% if q %}
+                <a href="{{ path('admin.usuarios.index') }}" class="btn btn-ghost-secondary spa-link">Limpiar</a>
+            {% endif %}
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-vcenter card-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Matrícula</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Activo</th>
+                    <th class="w-1">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in usuarios %}
+                <tr>
+                    <td class="text-muted">{{ u.id }}</td>
+                    <td>{{ u.nombre }} {{ u.apellidoPaterno }} {{ u.apellidoMaterno }}</td>
+                    <td>{{ u.matricula }}</td>
+                    <td>{{ u.correo }}</td>
+                    <td>
+                        {% set rolNombre = '' %}
+                        {% for p in u.permisos %}
+                            {% if p.rol and rolNombre == '' %}
+                                {% set rolNombre = p.rol.nombre %}
+                            {% endif %}
+                        {% endfor %}
+                        {% if rolNombre %}
+                            <span class="badge bg-blue-lt">{{ rolNombre }}</span>
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-ghost-{{ u.activo ? 'success' : 'danger' }} js-toggle-activo"
+                                data-id="{{ u.id }}" data-url="{{ path('admin.usuarios.toggle', {id: u.id}) }}">
+                            {{ u.activo ? 'Activo' : 'Inactivo' }}
+                        </button>
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{{ path('admin.usuarios.edit', {id: u.id}) }}"
+                               class="btn btn-sm btn-secondary spa-link">Editar</a>
+                            <form method="POST"
+                                  action="{{ path('admin.usuarios.delete', {id: u.id}) }}"
+                                  onsubmit="return confirm('¿Eliminar usuario?')">
+                                <button type="submit" class="btn btn-sm btn-ghost-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No hay usuarios registrados.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if totalPages > 1 %}
+    <div class="card-footer d-flex align-items-center">
+        <p class="m-0 text-muted">
+            Mostrando {{ ((page - 1) * perPage) + 1 }}–{{ min(page * perPage, total) }} de {{ total }}
+        </p>
+        <ul class="pagination m-0 ms-auto">
+            {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link spa-link" href="{{ path('admin.usuarios.index', {page: page - 1, q: q}) }}">
+                        anterior
+                    </a>
+                </li>
+            {% endif %}
+            {% for p in 1..totalPages %}
+                <li class="page-item {{ p == page ? 'active' : '' }}">
+                    <a class="page-link spa-link"
+                       href="{{ path('admin.usuarios.index', {page: p, q: q}) }}">{{ p }}</a>
+                </li>
+            {% endfor %}
+            {% if page < totalPages %}
+                <li class="page-item">
+                    <a class="page-link spa-link"
+                       href="{{ path('admin.usuarios.index', {page: page + 1, q: q}) }}">siguiente</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.querySelectorAll('.js-toggle-activo').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const res  = await fetch(btn.dataset.url, {method: 'POST'});
+        const json = await res.json();
+        if (json.ok) {
+            btn.textContent = json.activo ? 'Activo' : 'Inactivo';
+            btn.className = `btn btn-sm btn-ghost-${json.activo ? 'success' : 'danger'} js-toggle-activo`;
+        }
+    });
+});
+</script>
+{% endblock body %}

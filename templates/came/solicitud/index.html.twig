@@ -1,0 +1,36 @@
+{% extends 'layouts/came.html.twig' %}
+
+{% block title %}Solicitudes de Campos Clínicos{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .wrapper-came {
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid wrapper-came">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 style="text-align: center; padding-bottom: 40px">Solicitudes de Campos Clínicos</h1>
+                </div>
+            </div>
+            <div id="solicitudes-table"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.DELEGACION_ID = {{ delegacionId ?? 'null' }};
+        window.UNIDAD_ID     = {{ unidadId ?? 'null' }};
+        window.IS_DEL_ACTIVA = {{ isDelActiva ? 'true' : 'false' }};
+    </script>
+    <script src="{{ asset('build/came_solicitud_index.js') }}"></script>
+{% endblock %}

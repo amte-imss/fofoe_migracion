@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Form\EnfermeriaAlumno;
+
+use App\Entity\Pago;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
+
+class ComprobantePagoType extends AbstractType
+{
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder
+            ->add('montoRegistrado')
+            ->add('fechaPagoRegistrada', DateType::class, [
+                'widget' => 'single_text',
+                'format' => 'yyyy-MM-dd',
+            ])
+            ->add('comprobantePagoFile', FileType::class)
+            ->add('requiereFactura', TextType::class)
+            ->add('cedulaFile', FileType::class, [
+                'mapped'      => false,
+                'required'    => false,
+                'constraints' => [
+                    new File([
+                        'mimeTypes'           => ['application/pdf', 'application/x-pdf'],
+                        'maxSize'             => '2M',
+                        'mimeTypesMessage'    => 'Solo se admiten archivos PDF de máx 2 MB.',
+                        'maxSizeMessage'      => 'Solo se admiten archivos PDF de máx 2 MB.',
+                    ]),
+                ],
+            ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class'      => Pago::class,
+            'csrf_protection' => false,
+        ]);
+    }
+}

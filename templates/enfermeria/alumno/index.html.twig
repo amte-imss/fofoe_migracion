@@ -1,0 +1,254 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Alumnos de Enfermería{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: .5rem;
+        padding: .45rem 1rem;
+        border-radius: 12px;
+        font-size: .78rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none !important;
+        border: 1.5px solid transparent;
+        background: #f8f9fa;
+        color: #495057;
+        transition: all .15s ease;
+        white-space: nowrap;
+    }
+    .status-chip:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 3px 10px rgba(0,0,0,.1);
+        color: #212529;
+    }
+    .status-chip .chip-count {
+        font-size: .82rem;
+        font-weight: 700;
+        background: rgba(0,0,0,.07);
+        border-radius: 6px;
+        padding: 1px 7px;
+        line-height: 1.6;
+    }
+    .status-chip.active {
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,.1);
+    }
+    /* colores por estado */
+    .status-chip.chip-all        { border-color: #adb5bd; }
+    .status-chip.chip-all.active { border-color: #6c757d; color: #495057; }
+    .status-chip.chip-all.active .chip-count { background: #6c757d; color: #fff; }
+
+    .status-chip.chip-warning        { border-color: #ffc10766; color: #856404; }
+    .status-chip.chip-warning.active { border-color: #ffc107; }
+    .status-chip.chip-warning.active .chip-count { background: #ffc107; color: #212529; }
+
+    .status-chip.chip-blue        { border-color: #4299e166; color: #1a6496; }
+    .status-chip.chip-blue.active { border-color: #4299e1; }
+    .status-chip.chip-blue.active .chip-count { background: #4299e1; color: #fff; }
+
+    .status-chip.chip-success        { border-color: #28a74566; color: #155724; }
+    .status-chip.chip-success.active { border-color: #28a745; }
+    .status-chip.chip-success.active .chip-count { background: #28a745; color: #fff; }
+
+    .status-chip.chip-danger        { border-color: #dc354566; color: #721c24; }
+    .status-chip.chip-danger.active { border-color: #dc3545; }
+    .status-chip.chip-danger.active .chip-count { background: #dc3545; color: #fff; }
+
+    .status-chip.chip-purple        { border-color: #6f42c166; color: #4a1880; }
+    .status-chip.chip-purple.active { border-color: #6f42c1; }
+    .status-chip.chip-purple.active .chip-count { background: #6f42c1; color: #fff; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+
+    <div class="page-header mb-3">
+        <div class="row align-items-center">
+            <div class="col">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('enfermeria.index') }}">Enfermería</a></li>
+                    <li class="breadcrumb-item active">Alumnos</li>
+                </ol>
+                <h2 class="page-title">
+                    <i class="ti ti-users me-2 text-danger"></i>Alumnos de Enfermería
+                </h2>
+                <div class="text-muted mt-1">Gestión de alumnos por escuela y solicitud</div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Chips de estado rápido ── #}
+    {% set statusLabels = {
+        '':              {'label': 'Todos',            'icon': 'ti-users',          'chip': 'all'},
+        'wait_payment':  {'label': 'Esp. de pago',    'icon': 'ti-clock',          'chip': 'warning'},
+        'wait_validation':{'label': 'En validación',  'icon': 'ti-hourglass',      'chip': 'blue'},
+        'validated':     {'label': 'Validados',        'icon': 'ti-circle-check',   'chip': 'success'},
+        'rejected':      {'label': 'Rechazados',       'icon': 'ti-circle-x',       'chip': 'danger'},
+        'rejected_doc':  {'label': 'Rechaz. doc.',     'icon': 'ti-file-x',         'chip': 'danger'},
+        'invoice_pending':{'label': 'Por facturar',   'icon': 'ti-receipt',        'chip': 'purple'}
+    } %}
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <a href="{{ path('enfermeria.alumno.index', filters|merge({status: '', page: 1})) }}"
+           class="status-chip chip-all {{ filters.status == '' ? 'active' : '' }}">
+            <i class="ti ti-users"></i>
+            Todos
+            <span class="chip-count">{{ total }}</span>
+        </a>
+        {% for statusKey, info in statusLabels %}
+            {% if statusKey != '' %}
+            <a href="{{ path('enfermeria.alumno.index', filters|merge({status: statusKey, page: 1})) }}"
+               class="status-chip chip-{{ info.chip }} {{ filters.status == statusKey ? 'active' : '' }}">
+                <i class="ti {{ info.icon }}"></i>
+                {{ info.label }}
+                <span class="chip-count">{{ conteos[statusKey] ?? 0 }}</span>
+            </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {# ── Filtros ── #}
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form method="get" class="row g-2 align-items-end">
+                <input type="hidden" name="status" value="{{ filters.status }}">
+                <div class="col-sm-3">
+                    <label class="form-label mb-1">Año</label>
+                    <select name="year" class="form-select form-select-sm" onchange="this.form.submit()">
+                        {% for y in range("now"|date('Y'), 2020, -1) %}
+                        <option value="{{ y }}" {{ filters.year == y ? 'selected' : '' }}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-5">
+                    <label class="form-label mb-1">Escuela</label>
+                    <select name="unidadId" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">— Todas las escuelas —</option>
+                        {% for u in unidades %}
+                        <option value="{{ u.id }}" {{ filters.unidadId == u.id ? 'selected' : '' }}>
+                            {{ u.nombreEnfermeria ?: u.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <a href="{{ path('enfermeria.alumno.index') }}" class="btn btn-outline-secondary btn-sm w-100">
+                        <i class="ti ti-x me-1"></i>Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# ── Tabla ── #}
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">
+                Alumnos
+                <span class="badge bg-secondary-lt text-secondary ms-2">{{ total }}</span>
+            </h3>
+            <div class="card-options">
+                <input type="text" id="buscar-alumno" class="form-control form-control-sm" placeholder="Buscar en página…" style="width:200px;">
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table" id="tabla-alumnos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>CURP</th>
+                        <th>Escuela</th>
+                        <th>Solicitud</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alumno in alumnos %}
+                    {% set statusInfo = statusLabels[alumno.status] ?? {'label': alumno.statusFormatted, 'icon': 'ti-circle', 'chip': 'secondary'} %}
+                    {% set chipColor = {'all': 'secondary', 'warning': 'warning', 'blue': 'azure', 'success': 'success', 'danger': 'danger', 'purple': 'purple', 'secondary': 'secondary'} %}
+                    {% set badgeColor = chipColor[statusInfo.chip] ?? 'secondary' %}
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">{{ alumno.nombre }}</div>
+                            <div class="text-muted small">{{ alumno.email }}</div>
+                        </td>
+                        <td class="text-muted small font-monospace">{{ alumno.curp }}</td>
+                        <td class="small">
+                            {{ alumno.solicitud ? (alumno.solicitud.unidad ? alumno.solicitud.unidad.nombreEnfermeria ?: alumno.solicitud.unidad.nombre : '—') : '—' }}
+                        </td>
+                        <td>
+                            {% if alumno.solicitud %}
+                            <a href="{{ path('enfermeria.solicitud.show', {id: alumno.solicitud.id}) }}" class="text-decoration-none small">
+                                <span class="badge bg-blue-lt">#{{ alumno.solicitud.id }} — {{ alumno.solicitud.periodoFormatted }}</span>
+                            </a>
+                            {% else %}—{% endif %}
+                        </td>
+                        <td class="small text-muted">{{ alumno.tipo }}</td>
+                        <td class="small">{{ alumno.monto ? '$' ~ alumno.monto|number_format(2) : '—' }}</td>
+                        <td>
+                            <span class="badge bg-{{ badgeColor }}-lt text-{{ badgeColor }}" style="font-size:.72rem;">
+                                {{ statusInfo.label }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ path('enfermeria.alumno.show', {id: alumno.id}) }}" class="btn btn-sm btn-outline-primary" title="Ver detalle">
+                                <i class="ti ti-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="8" class="text-center text-muted py-4">No hay alumnos con los filtros seleccionados</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {# Paginación #}
+        {% if totalPages > 1 %}
+        <div class="card-footer d-flex align-items-center">
+                <p class="m-0 text-muted small">Mostrando {{ (page - 1) * perPage + 1 }}–{{ page * perPage < total ? page * perPage : total }} de {{ total }}</p>
+            <ul class="pagination m-0 ms-auto">
+                {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('enfermeria.alumno.index', filters|merge({page: page - 1})) }}">«</a>
+                </li>
+                {% endif %}
+                    {% set pStart = page - 2 > 1 ? page - 2 : 1 %}
+                    {% set pEnd = page + 2 < totalPages ? page + 2 : totalPages %}
+                    {% for p in range(pStart, pEnd) %}
+                <li class="page-item {{ p == page ? 'active' : '' }}">
+                    <a class="page-link" href="{{ path('enfermeria.alumno.index', filters|merge({page: p})) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                {% if page < totalPages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('enfermeria.alumno.index', filters|merge({page: page + 1})) }}">»</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+{% block extra_js %}
+<script>
+document.getElementById('buscar-alumno').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#tabla-alumnos tbody tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}
