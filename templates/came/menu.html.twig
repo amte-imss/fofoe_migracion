@@ -1,0 +1,173 @@
+<style>
+    .menu {
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .menu__image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .menu__content {
+        margin-left: 20px;
+        height: 60px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+    }
+
+    .submenu {
+        background-color: whitesmoke;
+        text-align: right;
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .submenu > * {
+        margin-right: 15px;
+    }
+
+    .delegacion {
+        position: absolute;
+        right: 16px;
+        text-align: center;
+    }
+
+    .delegacion h3 {
+        font-weight: bold;
+    }
+
+    @media only screen and (max-width: 600px){
+        .delegacion {
+            position: inherit;
+        }
+    }
+
+    .fade-out {
+        animation: fadeOut ease 4s;
+        -webkit-animation: fadeOut ease 4s;
+        -moz-animation: fadeOut ease 4s;
+        -o-animation: fadeOut ease 4s;
+        -ms-animation: fadeOut ease 4s;
+    }
+
+    @keyframes fadeOut {
+         0% {
+             opacity:1;
+         }
+         100% {
+             opacity:0;
+         }
+     }
+
+    @-moz-keyframes fadeOut {
+        0% {
+            opacity:1;
+        }
+        100% {
+            opacity:0;
+        }
+    }
+
+    @-webkit-keyframes fadeOut {
+        0% {
+            opacity:1;
+        }
+        100% {
+            opacity:0;
+        }
+    }
+
+    @-o-keyframes fadeOut {
+        0% {
+            opacity:1;
+        }
+        100% {
+            opacity:0;
+        }
+    }
+
+    @-ms-keyframes fadeOut {
+        0% {
+            opacity:1;
+        }
+        100% {
+            opacity:0;
+        }
+    }
+</style>
+
+<script type="application/javascript">
+    const alert_close_event = (target) => {
+        target.parentNode.classList.add('fade-out');
+        setTimeout(()=>{
+            target.parentNode.remove();
+        }, 4000)
+    }
+</script>
+
+<div class='container-fluid'>
+    <div class='row'>
+        <div class="submenu">
+            <a href="{{ path('came.solicitud.index') }}">Ciclos Educativos</a>
+            <a href="{{ path('admin.convenioscame.convenioscame.index') }}">Convenios</a>
+            {% if posgrado_came %}
+                <a href="{{ path('posgrado.residentes-imss.index', {tipo: 'imss'}) }}">Alumnos extranjeros en Ciclo académico anual</a>
+                <a href="{{ path('posgrado.residentes-imss.index', {tipo: 'no_imss'}) }}">Alumnos extranjeros rotación parcial de especialidad</a>
+                {% if is_granted(['ROLE_CAME', 'ROLE_CAME_MINUS']) %}
+                    <a href="{{ path('enfermeria.index') }}">Escuelas de Enfermería</a>
+                {% endif %}
+            {% endif %}
+            <a href="{{ path('app_logout') }}">Cerrar sesión</a>
+        </div>
+        <div class="col-md-12 page-cut">
+            <div class="menu">
+                <img class='img-responsive menu__image'
+                     src='https://image.shutterstock.com/image-vector/blank-avatar-photo-place-holder-260nw-1095249842.jpg'
+                     alt=""
+                />
+                <div class="menu__content">
+                    <p class="text-bold">{{ usuario.fullname }}</p>
+                    {% if usuario.matricula %}
+                        <p>Matricula: {{ usuario.matricula }}</p>
+                    {% endif %}
+                </div>
+                <div class="delegacion">
+                    <h3>
+                        {{ rol }}
+                    </h3>
+                    <form action="{{ absolute_url(path('came.usuario.delegacion_unidad')) }}" method="post">
+                        <label for="delegacion_unidad_came">
+                            {% if isUserDelegacionActivated or not unidad_came %} OOAD {% endif %}{%
+                                if isUserDelegacionActivated and unidad_came %} / {% endif %}{%
+                                if unidad_came %}Unidad{% endif %}:
+                        </label>
+                        <select name="delegacion_unidad_came" id="delegacion_came" onchange="this.form.submit()">
+                            {% for delegacion in usuario.delegaciones %}
+                                <option value="D_{{ delegacion.id }}" {% if delegacion_came and delegacion_came == delegacion.id %} selected {% endif %}>{{ delegacion.nombre }}</option>
+                            {% endfor %}
+                            {% for unidad in usuario.unidades %}
+                                <option value="U_{{ unidad.id }}" {% if (not isUserDelegacionActivated) and unidad_came and unidad_came == unidad.id %} selected {% endif %}>{{ unidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        {% for label, messages in app.flashes(['success', 'danger']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} text-center alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"
+                            onclick="alert_close_event(this)"><span aria-hidden="true">&times;</span></button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>

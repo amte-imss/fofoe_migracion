@@ -20,5 +20,26 @@ services:
     App\:
         resource: '../src/'
 
+    App\EventListener\LogoutListener:
+        tags:
+            -   name: kernel.event_listener
+                event: Symfony\Component\Security\Http\Event\LogoutEvent
+
+    vich_uploader.download_handler:
+        class: Vich\UploaderBundle\Handler\DownloadHandler
+        public: true
+        autowire: true
+        autoconfigure: true
+
+    App\Service\Posgrado\ResidenciaExNoImssManagerInterface:
+        alias: App\Service\Posgrado\ResidenciaExNoImssManager
+
+    App\Service\Posgrado\ResidenciaExNoImssManager:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+
+    App\Calculator\Posgrado\ResidenteExtranjeroNoImssCalculatorInterface:
+        alias: App\Calculator\Posgrado\ResidenteExtranjeroNoImssCalculator
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -25,7 +25,6 @@ security:
                 password_parameter: _password
             logout:
                 path: app_logout
-                target: app_login
 
     role_hierarchy:
         ROLE_SUPER: [ROLE_USER, ROLE_ADM_FOFOE, ROLE_POSGRADO, ROLE_CONVENIOS, ROLE_CAME,
