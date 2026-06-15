@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import SolicitudCreate from './create';
 import SolicitudEdit from './edit';
 import SolicitudAccion from "./components/SolicitudAccion";
@@ -9,9 +9,6 @@ import Loader from "../../components/Loader/Loader";
 import ReactPaginate from 'react-paginate';
 import './styles/tables.scss';
 import {getSchemeAndHttpHost} from "../../utils";
-
-console.log('hola mundo', getSchemeAndHttpHost('hola'))
-console.log('hola mundo', getSchemeAndHttpHost())
 
 const SolicitudIndex = (props) => {
 
@@ -144,42 +141,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const validaMontosDom = document.getElementById('solicitud-valida-montos-wrapper');
 
     if (indexDom) {
-        ReactDOM.render(
+        createRoot(indexDom).render(
             <SolicitudIndex
                 solicitudes={window.SOLICITUDES}
                 meta={window.META}
-            />, indexDom
+            />
         )
     }
     if (createDom) {
-        ReactDOM.render(
+        createRoot(createDom).render(
             <SolicitudCreate
                 instituciones={window.INSTITUCIONES}
                 unidades={window.UNIDADES}
-            />, createDom
+            />
         )
     }
     if (editDom) {
-        ReactDOM.render(
+        createRoot(editDom).render(
             <SolicitudEdit
                 solicitud={window.SOLICITUD}
                 unidades={window.UNIDADES}
                 instituciones={window.INSTITUCIONES}
-            />, editDom
+            />
         )
     }
     if (showDom) {
-        ReactDOM.render(
+        createRoot(showDom).render(
             <SolicitudShow
                 solicitud={window.SOLICITUD}
                 convenios={window.CONVENIOS}
-            />, showDom
+            />
         )
     }
     if (validaMontosDom) {
-        ReactDOM.render(
+        createRoot(validaMontosDom).render(
             <SolicitudValidaMontos
                 solicitud={window.SOLICITUD}
-            />, validaMontosDom);
+            />
+        );
     }
 })
