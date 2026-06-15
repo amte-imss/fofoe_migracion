@@ -10,7 +10,8 @@ import ReactPaginate from 'react-paginate';
 import './styles/tables.scss';
 import {getSchemeAndHttpHost} from "../../utils";
 
-console.log('hola mundo')
+console.log('hola mundo', getSchemeAndHttpHost('hola'))
+console.log('hola mundo', getSchemeAndHttpHost())
 
 const SolicitudIndex = (props) => {
 
