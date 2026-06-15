@@ -12,6 +12,17 @@ export const moneyFormat = (monto) => {
     return formatter.format(monto);
 }
 
+export const formatNumeroDinero = (valPrev) => {
+    let result;
+    if (valPrev !== '' && !isNaN(valPrev)) {
+        result = parseFloat(valPrev).toFixed(2);
+        result = result.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    } else {
+        result = '';
+    }
+    return result;
+};
+
 export const dateFormat = (date) => {
     const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
     return new Date(date).toLocaleDateString('es-MX', options);

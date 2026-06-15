@@ -7,6 +7,13 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 Encore
     .setOutputPath('public/build/')
     .setPublicPath('/build')
+    .addStyleEntry('layout', './assets/css/layout.scss')
+
+    // CAME
+    .addEntry('came_solicitud_index', './assets/js/came/solicitud/index.js')
+//    .addEntry('came_solicitud_validar', './assets/js/came/solicitud/ValidarSolicitud/index.js')
+//    .addEntry('pregrado_reporte', './assets/js/pregrado/reporte/index.js')
+//    .addEntry('enfermeria_reporte-ciclos', './assets/js/enfermeria/reporte_ciclos/index.js')
 
     // ── Enfermería (escuela) ──────────────────────────────────────────────────
     .addEntry('enfermeria.index',  './assets/js/enfermeria/pages/index.js')
