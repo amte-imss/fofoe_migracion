@@ -54,5 +54,10 @@ services:
         arguments:
             $mailerSender: '%mailer_sender%'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Controller\Fofoe\CampoClinicoController:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+
+    App\Controller\Fofoe\DocumentController:
+        arguments:
+            $formatoFofoeDir: '%formato_fofoe_dir%'

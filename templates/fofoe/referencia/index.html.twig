@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe_referencia') }}
+    <style>
+        .wrapper-fofoe {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+    <div class='container-fluid wrapper-fofoe'>
+        <div class="container">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 10px">Comprobantes de Pago Recibidos</h1>
+                    <h2 style="text-align: center; padding-bottom: 10px">
+                        {{ proceso }}
+                        {% if meta['estado'] != '' and meta['estado'] in estados|keys %}
+                            / {{ estados[meta['estado']] }}
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+            <div id="fofoe-wrapper-index"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe_referencia') }}
+    <script>
+        window.CATEGORIA_PAGO = {{ categoria_pago | json_encode | raw }};
+        window.PAGOS          = {{ referencias    | json_encode | raw }};
+        window.META           = {{ meta           | json_encode | raw }};
+        window.YEARS          = {{ years          | json_encode | raw }};
+    </script>
+{% endblock %}

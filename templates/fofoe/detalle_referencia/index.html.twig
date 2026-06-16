@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe_detalle_referencia') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center">Detalle de la Referencia de Pago</h1>
+                <div style="display: flex;">
+                    <div id="noReferencia"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="detalle-referencia-component"></div>
+                    </div>
+                </div>
+                <div class='row'>
+                    <div class="col-md-4">
+                        <a class="btn btn-default btn-block" href="{{ categoria_pago == 'CC' ? path('fofoe/inicio') : path('fofoe.posgrado.inicio', { tipo: tipo }) }}">
+                            Regresar a la lista de pagos recibidos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe_detalle_referencia') }}
+    <script>
+        window.CATEGORIA_PAGO = {{ categoria_pago | json_encode | raw }};
+        window.PAGOS          = {{ pagos          | json_encode | raw }};
+        {% if solicitud is defined %}
+        window.SOLICITUD = {{ solicitud | json_encode | raw }};
+        window.CAMPOS    = {{ campos    | json_encode | raw }};
+        {% endif %}
+        {% if residencia is defined %}
+        window.RESIDENCIA = {{ residencia | json_encode | raw }};
+        {% endif %}
+    </script>
+{% endblock %}

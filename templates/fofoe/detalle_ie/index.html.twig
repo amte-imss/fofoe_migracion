@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.detalle.ie') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+
+    <div class="section-md">
+        <div class='container'>
+            <h1 class="text-bold text-center">Detalle Institución Educativa</h1>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-10">
+                        <p class="text-bold">Nombre:</p>
+                        <p>{{ institucion.nombre }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="lista-convenio-component"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="perfil-component"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.detalle.ie') }}
+    <script>
+        window.INSTITUCION_PROP = {{ institucion | json_encode | raw }};
+        window.CONVENIOS_PROP   = {{ convenios   | json_encode | raw }};
+        window.ERRORS           = {{ errores     | json_encode | raw }};
+        window.ACTION           = {{ path('ie#perfil') | json_encode | raw }};
+        window.PAGOS_PROP       = {{ pagos       | json_encode | raw }};
+    </script>
+{% endblock %}

@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .wrapper-fofoe {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+    <div class='container-fluid wrapper-fofoe'>
+        <div class="container">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 10px">Instituciones Educativas Pendientes de Validar</h1>
+                </div>
+            </div>
+            <div id="wrapper-page">
+                <div class="section-md">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-10">
+                                    <p class="text-bold">Nombre:</p>
+                                    <p>Ateneo Universitario en Humanidades y Ciencias de la Salud, Campus Tehuacán</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div id="perfil-component">
+                                    <form action="http://fofoe.site/ie/perfil" method="post" enctype="multipart/form-data">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="institucion_razonSocial">Razón Social</label>
+                                                    <input class="form-control" type="text" readonly name="institucion[razonSocial]" id="institucion_razonSocial" value="ATENERO">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="institucion_rfc">RFC</label>
+                                                    <input class="form-control" type="text" name="institucion[rfc]" readonly id="institucion_rfc" required value="GAGC880502G44">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="institucion_representante">Representante</label>
+                                                    <input class="form-control" type="text" name="institucion[representante]" readonly id="institucion_representante" required value="ATENEO">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label for="institucion_direccion">Domicilio</label>
+                                                    <input class="form-control" type="text" readonly name="institucion[direccion]" id="institucion_direccion" required value="cerrada de la viga #18">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="institucion_correo">Correo</label>
+                                                    <input readonly class="form-control" type="email" name="institucion[correo]" id="institucion_correo" required value="ateneo@itzelcom.com">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="institucion_telefono">Teléfono</label>
+                                                    <input class="form-control" type="text" readonly name="institucion[telefono]" id="institucion_telefono" required value="5532028739">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <label for="institucion_extension">Extensión</label>
+                                                    <input class="form-control" type="text" readonly name="institucion[extension]" id="institucion_extension" value="">
+                                                    <span class="help-block"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group">
+                                                    <label for="institucion_fax">Fax (opcional)</label>
+                                                    <input class="form-control" type="text" name="institucion[fax]" readonly id="institucion_fax" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="institucion_sitioWeb">Página web (opcional)</label>
+                                                    <input class="form-control" type="text" name="institucion[sitioWeb]" readonly id="institucion_sitioWeb" value="">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <label for="institucion_cedulaFile">Constancia de Situación Fiscal</label>
+                                                <input class="btn btn-block btn-primary" value="Descargar Constancia" type="button" name="institucion[cedulaFile]" id="institucion_cedulaFile">
+                                                <span class="help-block"></span>
+                                            </div>
+                                            <div class="col-md-12 mt-15 text-right">
+                                                <div class="form-group">
+                                                    <div class="hidden">
+                                                        <input type="checkbox" name="institucion[isConfirmacionInformacion]" id="institucion_isConfirmacionInformacion" value="checked">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6"></div>
+                                            <div class="col-md-3">
+                                                <button type="submit" class="btn btn-danger btn-block">Rechazar</button>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <button type="submit" class="btn btn-success btn-block">Validar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
