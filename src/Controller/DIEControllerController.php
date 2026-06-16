@@ -264,26 +264,26 @@ abstract class DIEControllerController extends AbstractController
             || $this->validarSolicitudUnidad($solicitud);
     }
 
-    protected function createNotFindUserRelationWithInstitucionException(): never
+    protected function createNotFindUserRelationWithInstitucionException(): CouldFindUserRelationWithInstitucion
     {
         /** @var Usuario $usuario */
         $usuario = $this->getUser();
         throw CouldFindUserRelationWithInstitucion::withId($usuario->getId());
     }
 
-    protected function createNotFindUserRelationWithResidenteException(): never
+    protected function createNotFindUserRelationWithResidenteException(): CouldFindUserRelationWithResidente
     {
         /** @var Usuario $usuario */
         $usuario = $this->getUser();
         throw CouldFindUserRelationWithResidente::withId($usuario->getId());
     }
 
-    protected function createNotFindSolicitudException(mixed $id): never
+    protected function createNotFindSolicitudException(mixed $id): CouldNotFindSolicitud
     {
         throw CouldNotFindSolicitud::withId($id);
     }
 
-    protected function createNotFindPagoException(mixed $id): never
+    protected function createNotFindPagoException(mixed $id): CouldNotFindPago
     {
         throw CouldNotFindPago::withId($id);
     }

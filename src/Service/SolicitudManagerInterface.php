@@ -13,7 +13,7 @@ interface SolicitudManagerInterface
 
     public function finalizar(Solicitud $solicitud, ?Usuario $came_usuario = null): void;
 
-    public function validarRegistroSolicitud(Solicitud $solicitud, ?Usuario $came_usuario = null): void;
+    public function validarRegistroSolicitud(Solicitud $solicitud, ?Usuario $came_usuario = null): array;
 
     public function registrarMontos(Solicitud $solicitud, array $originalDescuentos = []): void;
 

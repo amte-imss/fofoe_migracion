@@ -41,5 +41,14 @@ services:
     App\Calculator\Posgrado\ResidenteExtranjeroNoImssCalculatorInterface:
         alias: App\Calculator\Posgrado\ResidenteExtranjeroNoImssCalculator
 
+    App\Controller\Came\CampoClinicoController:
+        arguments:
+            $formatoFofoeDir: '%formato_fofoe_dir%'
+            $credencialesDir: '%credenciales_dir%'
+
+    App\Service\SIEDManager:
+        arguments:
+            $siedURL: '%sied_url%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
