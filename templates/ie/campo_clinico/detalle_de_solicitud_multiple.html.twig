@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.detalle.solicitud.multiple') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Detalle de solicitud</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="detalle-solicitud-multiple-component"></div>
+                    </div>
+                    <div class="col-md-12">
+                        <p class="text-bold mb-20">Expediente</p>
+                        <div id="expediente-solicitud-multiple-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.detalle.solicitud.multiple') }}
+    <script>
+        window.SOLICITUD_PROP = {{ solicitud | json_encode | raw }};
+    </script>
+{% endblock %}

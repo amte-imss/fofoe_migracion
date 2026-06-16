@@ -1,0 +1,111 @@
+{% extends 'formatos/base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout-formato-fofoe.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout.css')) }}">
+    <style>
+        .center       { text-align: center; }
+        .mt-10        { margin-top: 10px; }
+        .mt-20        { margin-top: 20px; }
+        .mb-10        { margin-bottom: 10px; }
+        .mb-20        { margin-bottom: 20px; }
+        .row          { margin-right: -15px; margin-left: -15px; }
+        .container    { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; }
+    </style>
+    {{ parent() }}
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block body %}
+    <div class="container" style="border-bottom: 1px solid #a3a3a3">
+        <div class="row">
+            <img src="{{ absolute_url(asset('build/images/logo_IMSS.png')) }}" alt="IMSS" style="float: left; width: 80px"/>
+            <h1 class="mt-20 mb-20" style="text-align: center; font-weight: bold; color: black;">Instituto Mexicano del Seguro Social</h1>
+        </div>
+        <p style="text-align: right; margin-top: 50px" class="mb-20"><strong>Número de solicitud: {{ solicitud.noSolicitud | default("") }}</strong></p>
+    </div>
+
+    {% if solicitud is not null %}
+        <div class="container">
+            <div class="mt-20" style="border-bottom: 1px solid #a3a3a3">
+                <h3 style="font-weight: bold; color: black;">Formato para pago de Cuota de Recuperación para Solicitudes de Campo(s) Clínico(s)</h3>
+                <p class="mt-10 mb-10">{{ institucion.nombre | default("") }}</p>
+                <p class="mt-10 mb-20">RFC: {{ institucion.rfc | default("") }}</p>
+            </div>
+
+            <div style="border-bottom: 1px solid #a3a3a3">
+                <h3 style="text-align: center; font-weight: bold; color: black;" class="mt-20 mb-10">
+                    Modalidad de Pago: {{ esPagoUnico ? "por Solicitud de Campos Clínicos" : "por campo clínico" }}
+                </h3>
+                <p class="mt-10 mb-10">Detalle de campos clínicos que cubre el pago por solicitud</p>
+
+                {% if esPagoUnico %}
+                    <p class="mt-10 mb-10">No. de Campos autorizados:
+                        {{ campos | map(c =>
+                            attribute(c, 'lugaresAutorizados') is defined ?
+                            (attribute(c, 'lugaresAutorizados') > 0 ? 1 : 0) : 0
+                        ) | reduce((elem, acc) => elem + acc, 0) }}
+                    </p>
+                {% endif %}
+
+                <table class="table table-bordered" style="text-align: center;">
+                    <thead style="background-color: lightgrey;">
+                    <th class="center">Campo Clínico</th>
+                    <th class="center">Carrera</th>
+                    <th class="center">Sede</th>
+                    <th class="center">Período</th>
+                    <th class="center">No. de lugares autorizados</th>
+                    <th class="center">Número de Semanas</th>
+                    </thead>
+                    <tbody>
+                    {% for campo in campos %}
+                        {% if campo.lugaresAutorizados > 0 %}
+                            <tr>
+                                <td>{{ campo.nombreCicloAcademico | default("") }}</td>
+                                <td>
+                                    {{ campo.displayCarrera | default("") }}
+                                    {% if campo.asignatura is not empty %}
+                                        <br/>
+                                        Asignatura: {{ campo.asignatura | default("") }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ campo.unidad.nombre | default("") }}</td>
+                                <td>
+                                    {{ campo.fechaInicialFormatted | default("") }}
+                                    - {{ campo.fechaFinalFormatted | default("") }}
+                                    {% if campo.horario is not empty %}
+                                        <br/>
+                                        Horario: {{ campo.horario | default("") }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ campo.lugaresAutorizados | default("") }}</td>
+                                <td>{{ campo.weeks | default("") }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-20">
+                <h3 class="mb-10" style="text-align: center; font-weight: bold; color: black;">Datos para realizar el pago</h3>
+                <p class="mb-10">Banco: Scotiabank Inverlat, S.A. de C.V.</p>
+                <p class="mb-10">No de cuenta: 00104080092</p>
+                <p class="mb-10">CLABE: 044180001040800925</p>
+                <p class="mb-10">Nombre de la Cuenta: R19 GYR IMSS DMF Fondo de Fomento a la Educación Ing. 2</p>
+                <p class="mb-10" style="font-weight: bold;">No. de Referencia: {{ referencia | default("") }}</p>
+                <p class="mb-10" style="font-weight: bold;">Importe: $
+                    {% if campos is iterable %}
+                        {{ campos | map(c =>
+                            attribute(c, 'monto') is defined ?
+                            attribute(c, 'monto') : 0
+                        ) | reduce((elem, acc) => elem + acc, 0) | number_format(2, '.', ',') }}
+                    {% else %}
+                        {{ solicitud.monto }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

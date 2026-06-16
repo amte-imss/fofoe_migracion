@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.correccion.pago.fofoe') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center">Corrección de pago</h1>
+                <div style="display: flex;">
+                    <p class="text-bold mt-10">Solicitud {{ solicitud.noSolicitud }}</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="registrar-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.correccion.pago.fofoe') }}
+    <script>
+        window.RFC_PROP       = {{ institucion | json_encode | raw }};
+        window.SOLICITUD_PROP = {{ solicitud   | json_encode | raw }};
+    </script>
+{% endblock %}

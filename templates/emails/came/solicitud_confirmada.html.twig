@@ -1,0 +1,29 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader"> </span>
+{% endblock %}
+{% block body %}
+    <main>
+        <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+
+        <p>{{ solicitud.institucion.nombre }}</p>
+        <p>{{ solicitud.institucion.representante }}</p>
+        <p>Presente</p>
+        <p>En seguimiento a la solicitud <strong>{{ solicitud.noSolicitud }}</strong> que ha registrado en el sistema,
+            se le notifica que se ha actualizado el estado de la solicitud.</p>
+        <p>Por favor ingrese al sistema para dar seguimiento, y en su caso pueda continuar con el registro de montos, inscripción, colegiatura y listado de alumnos</p>
+
+        <p class="text-center"><a href="{{ app.request.getSchemeAndHttpHost() ~ path('homepage')  }}">{{ app.request.getSchemeAndHttpHost() ~ path('homepage') }}</a></p>
+
+        <p>Sin otro particular, reciba un cordial saludo.</p>
+
+        <div class="text-center text-green">
+            <p>Atentamente</p>
+            <br />
+            <br />
+            Sistema de Administración del FOFOE
+        </div>
+
+    </main>
+
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.seleccionar.forma.pago') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <div class="row mb-20">
+                    <div class="col-md-12">
+                        <h1 class="text-bold text-center mb-20">Seleccionar modalidad de pago para la solicitud</h1>
+                        <p class="text-bold mt-10">Solicitud {{ solicitud.noSolicitud }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="mb-10"><strong>Consulta el formato de cálculo de cuotas de recuperación para los campos clínicos solicitados</strong></h3>
+                        {% if solicitud.formatosFofoeCargados == false %}
+                            <div style="display: flex; align-items: flex-start; background-color: #ffeeba; border: 1px solid #ffc107; border-radius: 5px; padding: 10px;">
+                                <span style="font-size: 20px; margin-right: 10px;">📌</span>
+                                <p style="margin: 0; font-weight: bold; color: darkred">
+                                    El formato de cálculo de cuotas debe ser firmado y entregado en original a su autoridad educativa en OOAD/UMAE antes de poder seleccionar una modalidad de pago.
+                                </p>
+                            </div>
+                        {% endif %}
+                        <div id="detalle_campos_clinicos-component"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="referencia_pago-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.seleccionar.forma.pago') }}
+    <script>
+        window.CAMPOS_CLINICOS_PROPS = {{ camposClinicos | json_encode | raw }};
+        window.SOLICITUD_PROPS       = {{ solicitud      | json_encode | raw }};
+        window.INSTITUCION_PROPS     = {{ institucion    | json_encode | raw }};
+        window.ACTION                = {{ absolute_url(path('ie#seleccionar_forma_de_pago', { id: solicitud.id })) | json_encode | raw }};
+    </script>
+{% endblock %}

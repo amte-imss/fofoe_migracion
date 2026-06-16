@@ -1,0 +1,33 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+<span class="preheader">Nueva Solicitud de Campos Clínicos registrada.</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>{{ solicitud.institucion.nombre }}</p>
+            <p>{{ solicitud.institucion.representante }}</p>
+            <p>Por medio del presente, tengo el agrado de notificar que se ha registrado su solicitud de campos clínicos <strong>{{ solicitud.noSolicitud }}</strong>
+                en el  <strong>Sistema de Administración del FOFOE</strong>.</p>
+            <p>Puede consultar el estado y autorización de los campos clínicos asociados a la solicitud accediendo mediante la siguiente liga:</p>
+
+            <p class="text-center"><a href="{{ app.request.getSchemeAndHttpHost() ~ path('homepage')  }}">{{ app.request.getSchemeAndHttpHost() ~ path('homepage') }}</a></p>
+
+            {% if password %}
+            <p>Sus credenciales de acceso son:</p>
+            <p><strong>Usuario: </strong>{{ solicitud.institucion.correo }}</p>
+            <p><strong>Contraseña: </strong> {{ password }}</p>
+            {% endif %}
+            <p>Sin otro particular, le envío un cordial saludo.</p>
+
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                <p>{{ came.fullname }}</p>
+                <p>{{ solicitud.delegacion.nombre }}</p>
+            </div>
+        </main>
+    </td>
+{% endblock %}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Credenciales{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    {% block stylesheets %}
+        <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.css" media="all">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,600,700">
+        <script src="http://educacionensalud.imss.gob.mx/sites/all/modules/jquery_update/replace/jquery/1.10/jquery.min.js?v=1.10.2"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.js"></script>
+        <style>
+            .credencial{
+                margin-left: 20%;
+                margin-right: 20%;
+                margin-bottom: 500px;
+            }
+
+            .credencial-frente{
+                border: solid 1px black;
+                margin: 16px;
+                height: 350px;
+            }
+
+            .credencial-detras{
+                border: solid 1px black;
+                margin: 16px;
+                height: 350px;
+            }
+
+            .credencial-frente .main {
+                display: flex;
+                display: -webkit-box; /* wkhtmltopdf uses this one */
+            }
+
+            .main .main-left {
+                margin: 24px 10%;
+                width: 20%;
+            }
+
+            .main .main-right {
+                margin: 24px;
+                width: 60%;
+            }
+
+            .credencial-detras .main-back{
+                display: flex;
+                display: -webkit-box; /* wkhtmltopdf uses this one */
+            }
+
+            .credencial-detras{
+                text-align: center;
+            }
+
+            .credencial-detras .area-logos {
+                height: 56px;
+            }
+
+            .main-back div {
+                width: 50%;
+            }
+
+            .area-logos{
+                text-align: center;
+                background: rgb(55,123,112);
+                background: linear-gradient(90deg, rgba(55,123,112,1) 0%, rgba(55,123,112,1) 16%, rgba(0,49,39,1) 100%);
+            }
+
+            .text-green{
+                color: #265c4f;
+            }
+
+            .logo-imss {
+                height: 30px;
+            }
+            .vl {
+                border-left: 1px solid white;
+                margin: 15px;
+            }
+            .golden{
+                background: rgb(255,255,255);
+                background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(212,175,55,0.43879558659401263) 87%, rgba(212,175,55,1) 100%);
+                height: 10px;
+            }
+
+            .main-left img {
+                width: 150px;
+            }
+
+            body{
+                font-size: 8px;
+            }
+
+            .qr-folio{
+                width: 150px;
+                border: solid 1px black;
+            }
+            .unidad {
+                margin-top: 80px;
+            }
+
+            .qr {
+                margin-top: 56px;
+            }
+            h2 {
+                font-size: 16px;
+            }
+            h3 {
+                font-size: 14px;
+            }
+
+            .logos img {
+                width: 200px;
+            }
+        </style>
+    {% endblock %}
+</head>
+<body onafterprint="self.close()">
+{% for i in 1..total %}
+    <div class="credencial">
+        <div class="credencial-frente">
+            <div class="header">
+                <div class="area-logos">
+                    <a class="logos" href="https://www.gob.mx/" target="_blank">
+                        <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('build/images/logo_gobierno_imss.png')  }}" alt="Gobierno de México">
+                    </a>
+                </div>
+                <div class="golden"></div>
+            </div>
+            <div class="main">
+                <div class="main-left">
+                    <img src="{{ app.request.getSchemeAndHttpHost() ~ asset('build/images/logo_IMSS_verde.png') }}" alt="IMSS">
+                </div>
+                <div class="main-right">
+                    <h2>Acreditación al portador</h2>
+                    <p>{{ campo_clinico.convenio.institucion.nombre }}</p>
+                    <p>Campo clínico: {{ campo_clinico.convenio.cicloAcademico.nombre }}</p>
+                    <p>Carrera: {{ campo_clinico.convenio.carrera.nombre }}</p>
+                    <p>Periodo: {{ campo_clinico.fechaInicialFormatted }} al {{ campo_clinico.fechaFinalFormatted }}</p>
+                    {%  if (campo_clinico.horario) %}
+                        Horario: {{ campo_clinico.horario }}
+                    {% endif%}
+                </div>
+            </div>
+        </div>
+        <div class="credencial-detras">
+            <div class="header">
+                <div class="area-logos">
+                </div>
+            </div>
+            <div class="main-back">
+                <div class="qr">
+                    <h2>Folio</h2>
+                    <img class="qr-folio" src="{{ app.request.getSchemeAndHttpHost() ~ qrcode_url(campo_clinico.solicitud.noSolicitud ~ '-' ~ campo_clinico.id ~ '-' ~ i, { extension: 'png' }) }}" alt="Folio"/>
+                </div>
+                <div class="unidad">
+                    <h2>{{ campo_clinico.unidad.nombre }}</h2>
+                    <h3>DELEGACIÓN: {{ campo_clinico.unidad.delegacion.nombre | upper }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<script type="text/javascript">
+    (() => {
+        window.print();
+    })();
+</script>
+
+</body>
+</html>

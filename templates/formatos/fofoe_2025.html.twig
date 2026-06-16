@@ -1,0 +1,245 @@
+{% extends'formatos/base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        td {
+            font-size: 16px;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <img class="" style="position: absolute; top: 0; left: 0" width="200px"
+         src="{{ app.request.getSchemeAndHttpHost() ~ asset('build/images/logo_gobierno.png') }}" alt="IMSS">
+    <div style="text-align: center">
+        <img class="" style="margin-top: 20px" width="50px"
+             src="{{ app.request.getSchemeAndHttpHost() ~ asset('build/images/logo_imss_verde_sin_texto.png') }}"
+             alt="IMSS">
+        <h1 style="font-size: 16px; font-weight: normal; line-height: 20px;">INSTITUTO MEXICANO DEL SEGURO SOCIAL</h1>
+        <h2 style="font-size: 16px; font-weight: normal; line-height: 20px;">DIRECCIÓN DE PRESTACIONES MÉDICAS</h2>
+        <p style="font-size: 16px; line-height: 20px;">UNIDAD DE EDUCACIÓN E INVESTIGACIÓN</p>
+        <p style="font-size: 16px; line-height: 20px;">COORDINACIÓN DE EDUCACIÓN EN SALUD</p>
+    </div>
+
+{% endblock %}
+
+{% block body %}
+    <div style="width: 90%; margin: 10px auto 0 auto;">
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="text-align: center">FORMATO DE CÁLCULO DE CUOTAS DE RECUPERACIÓN DE CICLOS CLÍNICOS PARA
+                CARRERAS DEL ÁREA DE LA SALUD</p>
+        {% else %}
+            <p style="text-align: center">FORMATO DE CÁLCULO DE CUOTAS DE RECUPERACIÓN PARA INTERNADO MÉDICO</p>
+        {% endif %}
+    </div>
+    <div>
+        <table style="width: 100%; margin-top: 20px">
+            <tr>
+                <td style="width: 25%">OOAD IMSS:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.unidad.delegacion.nombre | upper }}</td>
+            </tr>
+            <tr>
+                <td style="width: 25%">SEDE:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.unidad.nombre | upper }}</td>
+            </tr>
+            <tr>
+                <td style="width: 25%">ESCUELA O FACULTAD:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.convenio.institucion.nombre | upper }}</td>
+            </tr>
+            <tr>
+                <td style="width: 25%">NOMBRE DE LA CARRERA:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.convenio.carrera.nombre | upper }}</td>
+            </tr>
+            <tr>
+                <td style="width: 25%">NÚMERO DEL CONVENIO:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.convenio.numero | upper }}</td>
+            </tr>
+            <tr>
+                <td style="width: 25%">VIGENCIA DEL CONVENIO:</td>
+                <td>
+                    <span style="margin-left: 50px">DEL: </span>
+                    <span style="border-bottom: 1px solid black; width: 100px; display: inline-block">{{ campo_clinico.convenio.fechaFirmaFormatted | upper }}</span>
+                    <span style="margin-left: 340px;">AL: </span>
+                    <span style="border-bottom: 1px solid black; width: 100px; display: inline-block">{{ campo_clinico.convenio.vigenciaFormatted | upper }}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 25%">CICLO ACADÉMICO:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.cicloAcademico.nombre | upper }}</td>
+            </tr>
+        </table>
+        <table style="margin: 0 auto; text-align: center; width: 70%">
+            <tr>
+                <td style="width: 100px;">FECHA DE INICIO:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.displayFechaInicial }}</td>
+                <td style="width: 100px;">FECHA DE TÉRMINO:</td>
+                <td style="border-bottom: 1px solid black;">{{ campo_clinico.displayFechaFinal }}</td>
+            </tr>
+        </table>
+    </div>
+    <div style="margin-top: 20px">
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">INSCRIPCIÓN</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                    $ {{ campo_clinico.montoInscripcion | number_format(2) }}</td>
+            </tr>
+        </table>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="color: grey; font-size: 12px">(SUMA DE LOS IMPORTES QUE EL ALUMNO PAGA A LA INSTITUCIÓN DURATE UN
+                AÑO POR CONCEPTO DE INSCRIPCIÓN)</p>
+        {% else %}
+            <p style="color: grey; font-size: 12px">(APORTE DEL ALUMNO A LA INSTITUCIÓN, POR CONCEPTO DE INSCRIPCIÓN DE
+                INTERNADO MÉDICO (SEMESTRAL Y ANUAL))</p>
+        {% endif %}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">COLEGIATURA</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                    $ {{ campo_clinico.montoColegiatura | number_format(2) }}</td>
+            </tr>
+        </table>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="color: grey; font-size: 12px">(SUMAR EL TOTAL DE APORTACIONES QUE HACE EL ALUMNO A LA INSTITUCIÓN
+                DURANTE UN AÑO POR CUALQUIER CONCEPTO, EJEMPLO COLEGIATURA, GASTOS ADMINISTRATIVOS, SEGUROS, COUTAS
+                ADICIONALES, ETC.)</p>
+        {% else %}
+            <p style="color: grey; font-size: 12px">(SUMAR LOS APORTES MENSUALES DEL ALUMNO A LA INSTITUCIÓN POR
+                CONCEPTO DE COLEGIATURA (DEL SEMESTRE O AÑO))</p>
+        {% endif %}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">IMPORTE COLEGIATURA ANUAL INTEGRADA (CAI)</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px; background: lightgray">
+                    $ {{ campo_clinico.importeColegiaturaAnualIntegrada | number_format(2) }}
+                </td>
+            </tr>
+        </table>
+        <p style="color: grey; font-size: 12px">(RESULTADO DE LA SUMA DE LOS IMPORTES TOTALES DE INSCRIPCIÓN Y
+            COLEGIATURA)</p>
+        {% set importeAlumno = campo_clinico.importeColegiaturaAnualIntegrada %}
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            {% set importeAlumno = importeAlumno*campo_clinico.factorSemanalAutorizado %}
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 60%">FACTOR SEMANAL AUTORIZADO</td>
+                    <td style="border: 1px solid black; text-align: right; padding-right: 10px;background: lightgray">
+                        {{ campo_clinico.factorSemanalAutorizado }}
+                    </td>
+                </tr>
+            </table>
+            <p style="color: grey; font-size: 12px">(MULTIPLICAR LA CAI POR EL FACTOR (0.005))</p>
+        {% else %}
+            {% set importeAlumno = importeAlumno*0.5 %}
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 60%">PORCENTAJE AUTORIZADO</td>
+                    <td style="border: 1px solid black; text-align: right; padding-right: 10px; background: lightgray">
+                        50%
+                    </td>
+                </tr>
+            </table>
+            <p style="color: grey; font-size: 12px">(MULTIPLICAR LA CAI POR EL PORCENTAJE (50%))</p>
+        {% endif %}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">IMPORTE POR ALUMNO</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px; background: lightgray">
+                    $ {{ campo_clinico.importeAlumno | number_format(2) }}</td>
+            </tr>
+        </table>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="color: grey; font-size: 12px">(RESULTADO DE LA CAI POR EL FACTOR SEMANAL)</p>
+        {% else %}
+            <p style="color: grey; font-size: 12px">(RESULTADO DE LA CAI POR EL PORCENTAJE)</p>
+        {% endif %}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">NÚMERO DE ALUMNOS</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                    {{ campo_clinico.lugaresAutorizados }}</td>
+            </tr>
+        </table>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="color: grey; font-size: 12px">(NÚMERO DE ALUMNOS QUE HACEN USO DE CICLOS CLINICOS)</p>
+        {% else %}
+            <p style="color: grey; font-size: 12px">(NÚMERO DE ALUMNOS QUE HACEN USO DE INTERNADO MÉDICO)</p>
+        {% endif %}
+        {% set subtotalGeneral = importeAlumno*campo_clinico.lugaresAutorizados %}
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 60%">SUBTOTAL 1:</td>
+                    <td style="border: 1px solid black; text-align: right; padding-right: 10px; background: lightgray">
+                        $ {{ subtotalGeneral | number_format(2) }}
+                    </td>
+                </tr>
+            </table>
+            <p style="color: grey; font-size: 12px">(MULTIPLICAR EL IMPORTE POR ALUMNO POR EL NÚMERO DE ALUMNOS)</p>
+            {% set subtotalGeneral = subtotalGeneral*campo_clinico.weeks %}
+            {% set importeAlumno = importeAlumno*campo_clinico.weeks %}
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 60%">NÚMERO DE SEMANAS:</td>
+                    <td style="border: 1px solid black; text-align: right; padding-right: 10px;">
+                        {{ campo_clinico.weeks }}</td>
+                </tr>
+            </table>
+            <p style="color: grey; font-size: 12px">(SEMANAS QUE DURARÁ EL CICLO CLINICO)</p>
+        {% endif %}
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 60%">TOTAL DE LA APORTACIÓN A FOFOE:</td>
+                <td style="border: 1px solid black; text-align: right; padding-right: 10px; background: lightgray">
+                    {% if campo_clinico.cicloAcademico.id == 1 %}
+                        $ {{ campo_clinico.subTotal | number_format(2) }}
+                    {% else %}
+                        $ {{ campo_clinico.subTotal | number_format(2) }}
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            <p style="color: grey; font-size: 12px">(SUBTOTAL 1 POR EL NÚMERO DE SEMANAS DEL CICLO CLINICO)</p>
+        {% else %}
+            <p style="color: grey; font-size: 12px">(RESULTADO DEL IMPORTE POR ALUMNO POR EL NÚMERO DE ALUMNOS)</p>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 100px">
+        <table style="width: 100%; text-align: center;">
+            <tr>
+                <td style="width: 40%; text-align: center">
+                    <p>ELABORÓ</p>
+                    <p style="border-top: 1px solid black; width: 100%; margin-top: 100px">
+                        NOMBRE Y CARGO <br> IMSS
+                    </p>
+                </td>
+                <td style="width: 20%; text-align: center; color: white">
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td style="width: 40%; text-align: center">
+                    <p>ACEPTÓ</p>
+                    <p style="border-top: 1px solid black; width: 100%; margin-top: 100px">
+                        NOMBRE Y CARGO <br> INSTITUCIÓN EDUCATIVA
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.detalle.solicitud') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center">Detalle de Solicitud</h1>
+                <div style="display: flex;">
+                    {% if solicitudObject.formatosFofoeCargados == false and (solicitudObject.estatus == 'Montos validados CAME' or solicitudObject.estatus == 'Montos validados') %}
+                        <div style="display: flex; align-items: flex-start; background-color: #ffeeba; border: 1px solid #ffc107; border-radius: 5px; padding: 10px;">
+                            <span style="font-size: 20px; margin-right: 10px;">📌</span>
+                            <p style="margin: 0; font-weight: bold; color: darkred">
+                                El formato de cálculo de cuotas debe ser firmado y entregado en original a su autoridad educativa en OOAD/UMAE antes de poder seleccionar una modalidad de pago.
+                            </p>
+                        </div>
+                    {% endif %}
+                    <div id="noSolicitud"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="detalle-solicitud-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.detalle.solicitud') }}
+    <script>
+        window.SOLICITUD_PROP = {{ solicitud | json_encode | raw }};
+    </script>
+{% endblock %}

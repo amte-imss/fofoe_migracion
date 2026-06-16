@@ -1,0 +1,34 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader">Bienvenido.</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>Estimado, {{ie.nombre}}</p>
+
+            <p>El Instituto Mexicano del Seguro Social, te damos la bienvenida a la plataforma FOFOE .</p>
+
+            <p>A continuación, te compartimos tus credenciales y la liga de acceso.</p>
+
+            <p>Usuario: <strong>{{ie.usuario.correo}}</strong></p>
+            <p>Contraseña: <strong>12345678</strong></p>
+            <p>Liga: <strong><a href="{{ app.request.getSchemeAndHttpHost() }}">{{ app.request.getSchemeAndHttpHost() }}/</a></strong></p>
+
+            <p>Correo registrado: <strong>{{ie.usuario.correo}}</strong></p>
+
+
+
+            <p>La plataforma está abierta las 24 horas los 365 días del año.</p>
+
+            <p>Recibe un cordial saludo y quedamos a tus órdenes para cualquier aclaración o duda; comunícate con nosotros por medio del correo electrónico factura.fofoe@imss.gob.mx.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

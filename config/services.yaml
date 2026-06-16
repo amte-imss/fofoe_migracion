@@ -50,5 +50,9 @@ services:
         arguments:
             $siedURL: '%sied_url%'
 
+    App\Controller\IE\InstitucionController:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

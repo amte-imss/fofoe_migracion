@@ -1,0 +1,91 @@
+{%extends'formatos/base.html.twig'%}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout-formato-fofoe.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout.css')) }}">
+    <style>
+        .center{
+            text-align: center;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .mt-20 {
+            margin-top: 20px;
+        }
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        .center{
+            text-align: center;
+        }
+        .row {
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+    </style>
+    {{ parent() }}
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{%block body%}
+
+    <div class="container" style="border-bottom: 1px solid #a3a3a3">
+        <div class="row">
+            <img src="{{absolute_url(asset('build/images/logo_IMSS.png'))}}" alt="IMSS" style="float: left; width: 80px" />
+            <h1 class="mt-20 mb-20" style="text-align: center; font-weight: bold; color: black;">Instituto Mexicano del Seguro Social</h1>
+        </div>
+        <p style="text-align: right; margin-top: 50px" class="mb-20" ><strong>Número de solicitud: {{ user.idFormatted|default("") }}</strong></p>
+    </div>
+
+    {% if solicitud is not null %}
+        <div class="container">
+            <div class="mt-20" style="border-bottom: 1px solid #a3a3a3">
+                <h3 style="font-weight: bold; color: black;">Formato para pago de Cuota de Recuperación para Cursos de Educación Permanente del Instituto Mexicano del Seguro Social</h3>
+                <p class="mt-10 mb-10">Tipo de solicitud: {{ solicitud.tipoSolicitud.name | upper | default("")  }}</p>
+                <p class="mt-10 mb-10">Modalidad / Categoría: {{ solicitud.duracion.modalidad.name | upper | default("")  }}</p>
+                <p class="mt-10 mb-10">Duración / Unidad de Medida: {{ solicitud.duracion.name | upper | default("")  }}</p>
+                <p class="mt-10 mb-10">Cantidad de Horas / Participantes: {{ solicitud.quantity  }}</p>
+                <p class="mt-10 mb-10">Aplica descuento de 50% : {{solicitud.hasDiscount ? 'SI' : 'NO' }}</p>
+                <p class="mt-10 mb-10">Curso solicitado : {{solicitud.curso.name }}</p>
+                <p class="mt-10 mb-20">Participante :{{ user.participant | upper | default("")}}</p>
+            </div>
+
+            <div style="border-bottom: 1px solid #a3a3a3">
+                <h3 style="text-align: center; font-weight: bold; color: black;" class="mt-20 mb-10" >Modalidad de Pago: Pago único</h3>
+            </div>
+
+            <div class="mt-20">
+                <h3 class="mb-10" style="text-align: center; font-weight: bold; color: black;" >Datos para realizar el pago</h3>
+                <p class="mb-10">Banco: Scotiabank Inverlat, S.A. de C.V.</p>
+                <p class="mb-10">No de cuenta: 00104080092</p>
+                <p class="mb-10">CLABE: 044180001040800925</p>
+
+                <p class="mb-10">Nombre de la Cuenta:
+                    R19 GYR IMSS DMF Fondo de Fomento a la Educación Ing. 2</p>
+
+                <p class="mb-10" style="font-weight: bold;">No. de Referencia: {{ referencia | upper | default("")}} </p>
+
+                <p class="mb-10" style="font-weight: bold;">Importe: $
+                    {{ (user.hasDiferencia ? user.montoDiferencia : user.amount) | default("") }}
+                </p>
+            </div>
+
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+

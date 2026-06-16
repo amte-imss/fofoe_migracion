@@ -1,0 +1,89 @@
+<style>
+    .institucion-educativa-menu {
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .institucion-educativa-menu__image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .institucion-educativa-menu__content {
+        margin-left: 20px;
+        height: 60px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+    }
+
+    .institucion-educativa__submenu {
+        padding: 20px 0;
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .institucion-educativa__submenu > * {
+        margin-right: 15px;
+    }
+
+    .institucion-educativa__submenu > *:last-child {
+        margin-left: auto;
+        text-align: right;
+    }
+</style>
+
+<div class='container-fluid' style="background-color: whitesmoke;">
+    <div class="container">
+        <div class='row'>
+            <div class="col-md-12">
+                <div class="institucion-educativa__submenu">
+                    <a href="{{ path('ie#perfil') }}">Perfil</a>
+
+                    <a href="{{ path('ie#inicio') }}">Ciclos Educativos</a>
+
+                    <div>
+                        <a href="{{ path('app_logout') }}">Cerrar sesión</a>
+                        <div style="max-width: 300px; display: flex; align-items: flex-start; background-color: #e9f7ef; border: 1px solid #28a745; border-radius: 5px; padding: 10px;">
+                            <span style="font-size: 20px; margin-right: 10px;">📌</span>
+                            <p style="margin: 0; font-weight: bold;">Para cualquier inconveniente con el sistema, contacta a tu Autoridad educativa en OOAD/UMAE.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid page-cut">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="institucion-educativa-menu">
+                    <img class='img-responsive institucion-educativa-menu__image'
+                         src='https://image.shutterstock.com/image-vector/blank-avatar-photo-place-holder-260nw-1095249842.jpg'
+                         alt=""
+                    />
+                    <div class="institucion-educativa-menu__content">
+                        <p class="text-bold">Institución educativa</p>
+                        <p>{{ institucion.nombre }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        {% for label, messages in app.flashes(['success', 'danger']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>

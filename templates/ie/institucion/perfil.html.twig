@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.perfil') }}
+    <style>
+        .color-red { color: red; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container'>
+            <h1 class="text-bold text-center">Valide su Información de Contacto</h1>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="mb-10">
+                        <p class="text-bold">Nombre:</p>
+                        <p>{{ institucion.nombre }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="lista-convenio-component"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="help-block color-red">
+                        Si algún dato es incorrecto favor de comunicarse al Área de Vinculación Educativa
+                        <a href="mailto:{{ asesorInstitucion }}">{{ asesorInstitucion }}</a>
+                    </h2>
+                    <div id="perfil-component"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.perfil') }}
+    <script>
+        window.INSTITUCION_PROP = {{ institucion | json_encode | raw }};
+        window.CONVENIOS_PROP   = {{ convenios   | json_encode | raw }};
+        window.ERRORS           = {{ errores     | json_encode | raw }};
+        window.ACTION           = {{ absolute_url(path('ie#perfil')) | json_encode | raw }};
+    </script>
+{% endblock %}
