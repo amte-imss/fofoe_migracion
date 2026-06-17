@@ -27,7 +27,7 @@ class DashboardController extends AbstractController
         ];
         foreach ($fofoeRoles as $fofoeRole) {
             if (in_array($fofoeRole, $roles, true)) {
-                return $this->redirectToRoute('fofoe.enfermeria.index');
+                return $this->redirectToRoute('fofoe.resumen_pagos');
             }
         }
 
@@ -60,4 +60,3 @@ class DashboardController extends AbstractController
         return $this->render('dashboard/index.html.twig');
     }
 }
-

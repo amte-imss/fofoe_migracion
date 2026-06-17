@@ -1,0 +1,22 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}FOFOE — Institución pendiente #{{ id }}{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="{{ path('fofoe.instituciones.pendientes') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="ti ti-arrow-left"></i> Regresar
+        </a>
+        <h2 class="page-title mb-0">Institución pendiente #{{ id }}</h2>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-info mb-0">
+                Detalle base creado. La consulta funcional queda pendiente de migrar.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

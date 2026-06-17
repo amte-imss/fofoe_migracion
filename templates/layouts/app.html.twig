@@ -157,36 +157,38 @@
                 {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Gestión Convenios</div>
                 {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios CAME</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coord. Firmante</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios CAME</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="{{ path('admin.convenios-especiales.index') }}"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coord. Firmante</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="{{ path('disciplina_index') }}"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="{{ path('admin.institucion.index') }}"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
                 {% endif %}
 
                 {# ── Gestión FOFOE ── #}
                 {% if is_granted('ROLE_FOFOE_INICIO') or is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Gestión FOFOE</div>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-cash"></i></span><span class="nav-link-title">Pagos</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-building-hospital"></i></span><span class="nav-link-title">Residencias</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="{{ path('enfermeria.index') }}"><span class="nav-link-icon"><i class="ti ti-nurse"></i></span><span class="nav-link-title">Enfermería</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-file-text"></i></span><span class="nav-link-title">Solicitudes CC</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/enfermeria/alumnos' ? 'active' : '' }}" href="{{ path('enfermeria.alumno.index') }}"><span class="nav-link-icon"><i class="ti ti-users-group"></i></span><span class="nav-link-title">Alumnos Enfermería</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/resumen' ? 'active' : '' }}" href="{{ path('fofoe.resumen_pagos') }}"><span class="nav-link-icon"><i class="ti ti-report-money"></i></span><span class="nav-link-title">Resumen Pagos Recibidos</span></a></li>
+                {% if is_granted('ROLE_FOFOE_REPORTE_INGS') or is_granted('ROLE_FOFOE_REPORTE_OP') or is_granted('ROLE_SUPER') %}
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo == '/fofoe/reportes/' ? 'active' : '' }}" href="{{ path('fofoe.reportes') }}"><span class="nav-link-icon"><i class="ti ti-chart-bar"></i></span><span class="nav-link-title">Reportes</span></a></li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/reportes/pagos' ? 'active' : '' }}" href="{{ path('fofoe.reportes.pagos') }}"><span class="nav-link-icon"><i class="ti ti-file-dollar"></i></span><span class="nav-link-title">Reporte de pagos</span></a></li>
+                {% if is_granted('ROLE_FOFOE_DETALLE_INSTITUCION_EDUCATIVA') or is_granted('ROLE_SUPER') %}
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/instituciones/pendientes' ? 'active' : '' }}" href="{{ path('fofoe.instituciones.pendientes') }}"><span class="nav-link-icon"><i class="ti ti-building-check"></i></span><span class="nav-link-title">Instituciones por validar</span></a></li>
+                {% endif %}
                 {% endif %}
 
                 {# ── Posgrado ── #}
                 {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Posgrado</div>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-user-plus"></i></span><span class="nav-link-title">Alumnos extr. ciclo anual</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-user-check"></i></span><span class="nav-link-title">Alumnos extr. rot. parcial</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-upload"></i></span><span class="nav-link-title">Carga Masiva Residentes</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo == '/posgrado/residentes/imss' ? 'active' : '' }}" href="{{ path('posgrado.residentes-imss.index', {tipo: 'imss'}) }}"><span class="nav-link-icon"><i class="ti ti-user-plus"></i></span><span class="nav-link-title">Alumnos extranjeros en Ciclo académico anual</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo == '/posgrado/residentes/no_imss' ? 'active' : '' }}" href="{{ path('posgrado.residentes-imss.index', {tipo: 'no_imss'}) }}"><span class="nav-link-icon"><i class="ti ti-user-check"></i></span><span class="nav-link-title">Alumnos extranjeros rotación parcial de especialidad</span></a></li>
                 {% endif %}
 
                 {# ── Campos Clínicos ── #}
                 {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Campos Clínicos</div>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-calendar-event"></i></span><span class="nav-link-title">Ciclos Educativos</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/came' ? 'active' : '' }}" href="{{ path('came.solicitud.index') }}"><span class="nav-link-icon"><i class="ti ti-calendar-event"></i></span><span class="nav-link-title">Ciclos Educativos</span></a></li>
                 <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
                 {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
                 <li class="nav-item"><a class="nav-link spa-link" href="{{ path('enfermeria.index') }}"><span class="nav-link-icon"><i class="ti ti-nurse"></i></span><span class="nav-link-title">Escuelas de Enfermería</span></a></li>

@@ -172,8 +172,7 @@
 </div>
 {% endblock %}
 
-{% block javascripts %}
-{{ parent() }}
+{% block extra_js %}
 <script>
 const pagoId = {{ pago.id }};
 const baseUrl = '';
