@@ -1,36 +1,88 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {{ encore_entry_link_tags('fofoe.inicio') }}
-    <style>
-        .wrapper-fofoe {
-            margin-top: 20px;
-            margin-bottom: 80px;
-        }
-    </style>
-{% endblock %}
+{% block title %}FOFOE — Resumen de Pagos Recibidos{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
-    <div class='container-fluid wrapper-fofoe'>
-        <div class="container">
-            <div class='row'>
-                <div class='col-md-12'>
-                    <h1 style="text-align: center; padding-bottom: 10px">Resumen de Pagos Recibidos</h1>
-                </div>
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title">Resumen de Pagos Recibidos</h2>
+                <div class="text-muted mt-1">Consulta general por área y estado de pago.</div>
             </div>
-            <div id="fofoe-wrapper-index"></div>
+            <div class="col-auto">
+                <form method="get" class="d-flex align-items-center gap-2">
+                    <label for="year" class="form-label mb-0">Año</label>
+                    <select id="year" name="year" class="form-select" onchange="this.form.submit()">
+                        {% for item in years %}
+                            <option value="{{ item.year }}" {{ item.year == meta.year ? 'selected' : '' }}>
+                                {{ item.year }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
         </div>
     </div>
-{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('fofoe.inicio') }}
-    <script>
-        window.DATA  = {{ data  | json_encode | raw }};
-        window.META  = {{ meta  | json_encode | raw }};
-        window.YEARS = {{ years | json_encode | raw }};
-    </script>
+    {% set areas = [
+        {tipo: 'CC', nombre: 'Pregrado / Enfermería', proceso: 'Ciclos Clínicos / Internado Médico'},
+        {tipo: 'POSGRADO', nombre: 'Posgrado', proceso: 'Alumnos extranjeros en Ciclo académico anual'},
+        {tipo: 'POSGRADO_RP', nombre: 'Posgrado', proceso: 'Alumnos extranjeros rotación parcial de especialidad'},
+        {tipo: 'PERMANENTE_PRESENCIAL', nombre: 'Educación permanente', proceso: 'Modalidad presencial'},
+        {tipo: 'PERMANENTE_DISTANCIA', nombre: 'Educación permanente', proceso: 'Modalidad a distancia'},
+        {tipo: 'PERMANENTE_SIMULACION', nombre: 'Educación permanente', proceso: 'Cursos basados en simulación'},
+        {tipo: 'ESCUELA_ENFERMERIA', nombre: 'Licenciatura en Escuelas de Enfermería del IMSS', proceso: 'Pagos alumnos'}
+    ] %}
+
+    {% set estados = {
+        pendientes_val: 'Pendientes de Validación',
+        no_validos: 'Pagos No Válidos',
+        pendientes_facturacion: 'Pendientes de Facturación',
+        validados_facturados: 'Validados / Facturados'
+    } %}
+
+    {% set enfermeriaEstados = {
+        pendientes_val: 'wait_validation',
+        no_validos: 'rejected',
+        pendientes_facturacion: 'invoice_pending',
+        validados_facturados: 'validated'
+    } %}
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table text-center">
+                <thead>
+                    <tr>
+                        <th class="text-start">Área</th>
+                        <th>Proceso</th>
+                        {% for label in estados %}
+                            <th>{{ label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for area in areas %}
+                        <tr>
+                            <td class="text-start fw-semibold">{{ area.nombre }}</td>
+                            <td class="text-muted">{{ area.proceso }}</td>
+                            {% for key, label in estados %}
+                                {% set total = data[area.tipo][key]|default(0) %}
+                                <td>
+                                    {% if area.tipo == 'ESCUELA_ENFERMERIA' %}
+                                        <a href="{{ path('fofoe.pago.enfermeria.index', {estado: enfermeriaEstados[key]}) }}" class="badge bg-primary-lt">
+                                            {{ total }}
+                                        </a>
+                                    {% else %}
+                                        <span class="badge bg-secondary-lt">{{ total }}</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,87 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .wrapper-fofoe {
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-        .panel {
-            overflow: auto;
-        }
-    </style>
-{% endblock %}
+{% block title %}FOFOE — Reporte de pagos{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <h2 class="page-title">Reporte de pagos</h2>
+        <div class="text-muted mt-1">Pantalla base migrada para conservar el acceso del menú FOFOE.</div>
+    </div>
 
-    <div class='container-fluid wrapper-fofoe'>
-        <div class="container">
-            <div class='row'>
-                <div class='col-md-12'>
-                    <h1 style="text-align: center; padding-bottom: 40px">Reporte de pagos</h1>
-                </div>
-            </div>
-            <div id="reportes-container">
-                <div class="panel panel-default">
-                    <div class="mt-30">
-                        <div class="col-md-3">
-                            <label for="anio">Año de consulta:</label>
-                            <select name="anio">
-                                <option value="2025">2025</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 col-md-offset-7">
-                            <a href="#">Descargar CSV</a>
-                        </div>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th>Consecutivo</th>
-                                <th>Fecha Depósito</th>
-                                <th>Proceso Educativo</th>
-                                <th>Referencia</th>
-                                <th>Banco Emisor</th>
-                                <th>Concepto de pago</th>
-                                <th>Importe Pagado</th>
-                                <th>OOAD / UMAE</th>
-                                <th>RFC</th>
-                                <th>Nombre de la Institución Educativa</th>
-                                <th>Razón Social</th>
-                                <th>Nombre del Alumno</th>
-                                <th>Núm Alumnos</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>2024-10-01</td>
-                                <td>Ciclos Educativos</td>
-                                <td>456789876545</td>
-                                <td>BBVA</td>
-                                <td>Pago de ciclos clínicos</td>
-                                <td>$800,000</td>
-                                <td>Aguascalientes</td>
-                                <td>INSTITUTO TÉCNICO BOULEVARES</td>
-                                <td>EPT1904127V3</td>
-                                <td></td>
-                                <td></td>
-                                <td>20</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-info mb-0">
+                La estructura de esta pantalla ya existe en el proyecto nuevo. El reporte funcional queda pendiente de migrar.
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
+</div>
 {% endblock %}

@@ -1,32 +1,35 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {{ encore_entry_link_tags('fofoe_reportes-inicio') }}
-    <style>
-        .wrapper-fofoe {
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-    </style>
-{% endblock %}
+{% block title %}FOFOE — Reportes{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <h2 class="page-title">Reportes</h2>
+        <div class="text-muted mt-1">Consulta de reportes FOFOE disponibles para tu usuario.</div>
+    </div>
 
-    <div class='container-fluid wrapper-fofoe'>
-        <div class="container">
-            <div class='row'>
-                <div class='col-md-12'>
-                    <h1 style="text-align: center; padding-bottom: 40px">Reportes</h1>
+    <div class="row g-3">
+        {% if is_granted('ROLE_FOFOE_REPORTE_INGS') %}
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Reporte de ingresos</h3>
+                        <p class="text-muted">Pendiente de migrar la pantalla funcional.</p>
+                    </div>
                 </div>
             </div>
-            <div id="reportes-container"></div>
-        </div>
+        {% endif %}
+        {% if is_granted('ROLE_FOFOE_REPORTE_OP') %}
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Reporte de oportunidad de pago</h3>
+                        <p class="text-muted">Pendiente de migrar la pantalla funcional.</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('fofoe_reportes-inicio') }}
+</div>
 {% endblock %}

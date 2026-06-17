@@ -1,74 +1,20 @@
-{% extends 'base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .wrapper-fofoe {
-            margin-top: 20px;
-            margin-bottom: 80px;
-        }
-    </style>
-{% endblock %}
+{% block title %}FOFOE — Instituciones por validar{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
-    <div class='container-fluid wrapper-fofoe'>
-        <div class="container">
-            <div class='row'>
-                <div class='col-md-12'>
-                    <h1 style="text-align: center; padding-bottom: 10px">Instituciones Educativas Pendientes de Validar</h1>
-                </div>
-            </div>
-            <div id="wrapper-page">
-                <div class="container">
-                    <div id="residentes-table">
-                        <div>
-                            <div class="row">
-                                <div class="panel panel-default col-md-12">
-                                    <div class="panel-body">
-                                        <table class="table">
-                                            <thead class="headers">
-                                            <tr>
-                                                <th>RFC</th>
-                                                <th>Nombre</th>
-                                                <th>Correo</th>
-                                                <th>Representante</th>
-                                                <th></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <tr>
-                                                <td>GAGCH880422</td>
-                                                <td>Ateneo de Coyoacan</td>
-                                                <td>contacto@ateneocoyoacan.com</td>
-                                                <td>Juan Lopez</td>
-                                                <td><a href="/fofoe/instituciones/pendientes/10">detalle</a></td>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12" style="display: block;"><br>
-                                    <p>Mostrando 1 al 1 de 1</p>
-                                </div>
-                                <div style="display: none; text-align: right;" class="col-md-12">
-                                    <ul class="pagination">
-                                        <li class="previous disabled"><a tabindex="0" role="button" aria-disabled="true">Anterior</a></li>
-                                        <li class="active"><a role="button" tabindex="0" aria-label="Page 1 is your current page" aria-current="page">1</a></li>
-                                        <li class="next"><a tabindex="0" role="button" aria-disabled="false">Siguiente</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <h2 class="page-title">Instituciones por validar</h2>
+        <div class="text-muted mt-1">Listado de instituciones educativas pendientes de validación.</div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="alert alert-info mb-0">
+                Acceso habilitado para el rol correspondiente. El listado funcional queda pendiente de migrar.
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
+</div>
 {% endblock %}
