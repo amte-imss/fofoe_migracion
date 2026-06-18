@@ -1,10 +1,10 @@
 import ReactDOM from "react-dom";
 import React from "react";
 import MisSolicitudes from "./MisSolicitudes";
+import {createRoot} from "react-dom/client";
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <MisSolicitudes/>,
-    document.getElementById('inicio-component')
-  )
+    createRoot(document.getElementById('inicio-component')).render(
+        <MisSolicitudes/>
+    )
 })

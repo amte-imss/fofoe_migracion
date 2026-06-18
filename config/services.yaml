@@ -6,8 +6,25 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+# config/services.yaml
 parameters:
-    mailer_sender: 'no_contestar@educacionensalud.imss.gob.mx'
+    locale: es
+    app.path.instituciones: /uploads/instituciones
+    app.path.instituciones_name: instituciones
+    app.path.residentes: /uploads/residentes
+    app.path.residentes_name: residentes
+    app.path.uploads: /uploads
+    app.path.alumno_enfermeria: /uploads/alumno_enfermeria
+    mailer_sender:                  'no_contestar@educacionensalud.imss.gob.mx'
+    referencias_bancarias_dir:      '%kernel.project_dir%/var/referencias_bancarias'
+    tmp_dir:                        '%kernel.project_dir%/var/tmp'
+    zip_referencias_bancarias_dir:  '%kernel.project_dir%/var/Referenciasbancarias.zip'
+    zip_formatos_fofoe_dir:         '%kernel.project_dir%/var/FormatosFOFOE.zip'
+    formato_fofoe_dir:              '%kernel.project_dir%/var/formato_fofoe'
+    credenciales_dir:               '%kernel.project_dir%/var/credenciales'
+    private_dir:                    '%kernel.project_dir%/public/uploads'
+    institucion_dir:                '%private_dir%/instituciones'
+    alumno_enfermeria_dir:          '%private_dir%/alumno_enfermeria'
 
 services:
     # default configuration for services in *this* file
@@ -30,6 +47,9 @@ services:
         public: true
         autowire: true
         autoconfigure: true
+
+    app.user_checker:
+        class: App\Security\UserCaptchaChecker
 
     App\Service\Posgrado\ResidenciaExNoImssManagerInterface:
         alias: App\Service\Posgrado\ResidenciaExNoImssManager
@@ -61,3 +81,51 @@ services:
     App\Controller\Fofoe\DocumentController:
         arguments:
             $formatoFofoeDir: '%formato_fofoe_dir%'
+
+    App\Normalizer\CedulaIdentificacionNormalizer:
+        autowire: false  # ← desactiva autowiring para este servicio
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $institucionDir: '%institucion_dir%'
+        tags: ['serializer.normalizer']
+
+    App\Normalizer\FormatoFOFOENormalizer:
+        autowire: false
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $router: '@router'
+        tags: ['serializer.normalizer']
+
+    App\Normalizer\OficioMontosNormalizer:
+        autowire: false
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $institucionDocumentsDir: '%app.path.instituciones%'
+            $tokenStorage: '@security.token_storage'
+        tags: ['serializer.normalizer']
+
+    App\Normalizer\ComprobantePagoNormalizer:
+        autowire: false
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $institucionDocumentsDir: '%app.path.instituciones%'
+            $tokenStorage: '@security.token_storage'
+        tags: ['serializer.normalizer']
+
+    App\Normalizer\FacturaNormalizer:
+        autowire: false
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $institucionDocumentsDir: '%app.path.instituciones%'
+            $tokenStorage: '@security.token_storage'
+        tags: ['serializer.normalizer']
+
+    App\Normalizer\MontoAPagarNormalizer:
+        autowire: false
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+            $calculator: '@App\Calculator\CampoClinicoCalculatorInterface'
+        tags: ['serializer.normalizer']
+
+    App\Calculator\CampoClinicoCalculatorInterface:
+        alias: App\Calculator\CampoClinicoCalculator

@@ -92,7 +92,7 @@ interface ConvenioRepositoryInterface extends ObjectRepository
         array $filters,
         ?int $page = null,
         ?int $perPage = null
-    ): array;
+    ): mixed;
 
     public function getAdminConvenios(
         array $filters,

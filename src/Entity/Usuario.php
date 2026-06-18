@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Posgrado\Residente;
+use Carbon\Carbon;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -12,561 +13,240 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: \App\Repository\UsuarioRepository::class)]
-#[UniqueEntity(fields: ['matricula', 'correo'], errorPath: 'correo', message: 'El correo y nombre de usuario (matricula) ya estan asignados a otro usuario.')]
 #[ORM\Table(name: 'usuario')]
 #[ORM\UniqueConstraint(columns: ['matricula', 'correo'])]
-class Usuario implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface, \Stringable
+#[ORM\Entity(repositoryClass: 'App\Repository\UserRepository')]
+#[ORM\HasLifecycleCallbacks]
+#[UniqueEntity(
+    fields: ['matricula', 'correo'],
+    errorPath: 'correo',
+    message: 'El correo y nombre de usuario (matricula) ya estan asignados a otro usuario.'
+)]
+class Usuario implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
-
-    /**
-     * @var int
-     */
     #[ORM\Column(type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    private ?int $id = null;
 
-    /**
-     * @var integer
-     */
     #[ORM\Column(type: 'string', length: 30, unique: true, nullable: true)]
-    #[Assert\Length(min: 6, max: 30, minMessage: 'Este valor es demasiado corto. Debería tener {{ limit }} caracteres o más.', maxMessage: 'Este valor es demasiado largo. Debería tener {{ limit }} caracteres o menos.')]
-    private $matricula;
+    #[Assert\Length(min: 6, max: 30)]
+    private ?string $matricula = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 250, nullable: true)]
-    private $nombre;
+    private ?string $nombre = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $apellidoPaterno;
+    private ?string $apellidoPaterno = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    private $apellidoMaterno;
+    private ?string $apellidoMaterno = null;
 
-    /**
-     * @var integer
-     */
     #[ORM\Column(type: 'bigint', nullable: true)]
-    private $regims;
+    private ?int $regims = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 64)]
-    private $contrasena;
+    private string $contrasena = '';
 
-    /**
-     * @var string
-     */
-    #[Assert\Email]
     #[ORM\Column(type: 'string', length: 254, nullable: true)]
-    private $correo;
+    #[Assert\Email]
+    private ?string $correo = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 30, nullable: true)]
-    private $telefono;
+    private ?string $telefono = null;
 
-    /**
-     * @var boolean
-     */
     #[ORM\Column(type: 'boolean')]
-    private $activo;
+    private bool $activo = false;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Departamento::class, inversedBy: 'usuarios')]
+    #[ORM\ManyToOne(targetEntity: Departamento::class, inversedBy: 'usuarios')]
     #[ORM\JoinColumn(name: 'departamento_id', referencedColumnName: 'id')]
-    private $departamento;
+    private ?Departamento $departamento = null;
 
-    #[ORM\ManyToMany(targetEntity: \App\Entity\Delegacion::class, inversedBy: 'usuarios')]
-    #[ORM\JoinTable(name: 'usuario_delegacion',
-        joinColumns: [new ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')],
-        inverseJoinColumns: [new ORM\JoinColumn(name: 'delegacion_id', referencedColumnName: 'id')]
-    )]
-    private $delegaciones;
+    #[ORM\ManyToMany(targetEntity: Delegacion::class, inversedBy: 'usuarios')]
+    #[ORM\JoinColumn(name: 'delegacion_id', referencedColumnName: 'id')]
+    private Collection $delegaciones;
 
-    #[ORM\ManyToMany(targetEntity: \App\Entity\Unidad::class)]
-    #[ORM\JoinTable(name: 'usuario_unidad',
-        joinColumns: [new ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')],
-        inverseJoinColumns: [new ORM\JoinColumn(name: 'unidad_id', referencedColumnName: 'id')]
-    )]
-    private $unidades;
+    #[ORM\ManyToMany(targetEntity: Unidad::class)]
+    #[ORM\JoinColumn(name: 'unidad_id', referencedColumnName: 'id')]
+    private Collection $unidades;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 18, nullable: true)]
-    #[Assert\Length(min: 18, max: 18, minMessage: 'Este valor es demasiado corto. Debería tener {{ limit }} caracteres o más.', maxMessage: 'Este valor es demasiado largo. Debería tener {{ limit }} caracteres o menos.')]
-    private $curp;
+    #[Assert\Length(min: 18, max: 18)]
+    private string $curp = '';
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 13, nullable: true)]
-    #[Assert\Length(min: 12, max: 13, minMessage: 'Este valor es demasiado corto. Debería tener {{ limit }} caracteres o más.', maxMessage: 'Este valor es demasiado largo. Debería tener {{ limit }} caracteres o menos.')]
-    private $rfc;
+    #[Assert\Length(min: 12, max: 13)]
+    private string $rfc = '';
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 10, nullable: true)]
-    private $sexo;
+    private ?string $sexo = null;
 
-    /**
-     * @var \DateTime
-     */
     #[ORM\Column(type: 'date', nullable: true)]
-    private $fechaIngreso;
+    private ?\DateTimeInterface $fechaIngreso = null;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Categoria::class)]
+    #[ORM\ManyToOne(targetEntity: Categoria::class)]
     #[ORM\JoinColumn(name: 'categoria_id', referencedColumnName: 'id')]
-    private $categoria;
+    private ?Categoria $categoria = null;
 
-    #[ORM\ManyToMany(targetEntity: \App\Entity\Permiso::class)]
-    #[ORM\JoinTable(name: 'usuario_permiso',
-        joinColumns: [new ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')],
-        inverseJoinColumns: [new ORM\JoinColumn(name: 'permiso_id', referencedColumnName: 'id')]
-    )]
-    private $permisos;
+    #[ORM\ManyToMany(targetEntity: Permiso::class, inversedBy: 'usuarios')]
+    #[ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')]
+    private Collection $permisos;
 
-    /**
-     * Muchos usuarios pertenecen a una institución
-     */
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Institucion::class, inversedBy: 'usuarios')]
+    #[ORM\ManyToOne(targetEntity: Institucion::class, inversedBy: 'usuarios')]
     #[ORM\JoinColumn(name: 'institucion_id', referencedColumnName: 'id', nullable: true)]
-    private $institucion;
+    private ?Institucion $institucion = null;
 
-    /**
-     * Muchos usuarios pertenecen a un campus
-     */
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Campus::class, inversedBy: 'usuarios')]
+    #[ORM\ManyToOne(targetEntity: Campus::class, inversedBy: 'usuarios')]
     #[ORM\JoinColumn(name: 'campus_id', referencedColumnName: 'id', nullable: true)]
-    private $campus;
+    private mixed $campus = null;
 
-    /**
-     * @var Residente
-     */
-    #[ORM\OneToOne(targetEntity: \App\Entity\Posgrado\Residente::class, cascade: ['persist'], mappedBy: 'usuario')]
-    private $residente;
+    #[ORM\OneToOne(targetEntity: Residente::class, cascade: ['persist'], mappedBy: 'usuario')]
+    private ?Residente $residente = null;
 
-    /** @var string */
-    private $plainPassword;
+    #[ORM\OneToMany(targetEntity: 'App\Entity\Posgrado\CargaMasiva', mappedBy: 'usuario')]
+    private Collection $cargaMasivas;
 
-    /** @var string */
-    private $rol;
-
-    #[ORM\OneToMany(targetEntity: \App\Entity\Posgrado\CargaMasiva::class, mappedBy: 'usuario')]
-    private $cargaMasivas;
-
-    /**
-     * Muchos usuarios pueden estar asociados a una delegación de institución
-     */
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Delegacion::class)]
+    #[ORM\ManyToOne(targetEntity: Delegacion::class)]
     #[ORM\JoinColumn(name: 'delegacion_institucion_id', referencedColumnName: 'id', nullable: true)]
-    private $delegacionInstitucion;
+    private ?Delegacion $delegacionInstitucion = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
+
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $updatedAt;
+
+    private ?string $plainPassword = null;
+    private ?string $rol           = null;
 
     public function __construct()
     {
         $this->delegaciones = new ArrayCollection();
-        $this->unidades = new ArrayCollection();
-        $this->permisos = new ArrayCollection();
-        $this->fechaIngreso = new \DateTime();
+        $this->unidades     = new ArrayCollection();
+        $this->permisos     = new ArrayCollection();
         $this->cargaMasivas = new ArrayCollection();
-        $this->curp = '';
-        $this->rfc = '';
+        $this->fechaIngreso = new \DateTime();
+        $this->createdAt    = Carbon::now();
+        $this->updatedAt    = Carbon::now();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getContrasena()
+    public function getContrasena(): string
     {
         return $this->contrasena;
     }
 
-    /**
-     * @param mixed $contrasena
-     */
-    public function setContrasena($contrasena)
+    public function setContrasena(string $contrasena): self
     {
         $this->contrasena = $contrasena;
+        return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCorreo()
-    {
-        return $this->correo;
-    }
-
-    /**
-     * @param mixed $correo
-     */
-    public function setCorreo($correo)
-    {
-        $this->correo = $correo;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTelefono()
-    {
-        return $this->telefono;
-    }
-
-    /**
-     * @param mixed $telefono
-     */
-    public function setTelefono($telefono)
-    {
-        $this->telefono = $telefono;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPlainPassword()
-    {
-        return $this->plainPassword;
-    }
-
-    /**
-     * @param mixed $plainPassword
-     */
-    public function setPlainPassword($plainPassword)
-    {
-        $this->plainPassword = $plainPassword;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRoles(): array
-    {
-        $roles = ['ROLE_USER'];
-
-        /** @var Permiso $permiso */
-        foreach ($this->getPermisos() as $permiso) {
-            $roles[] = sprintf('ROLE_%s', $permiso->getClave());
-        }
-
-        return array_unique($roles);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPassword(): ?string
+    // PasswordAuthenticatedUserInterface
+    public function getPassword(): string
     {
         return $this->contrasena;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
+    // UserInterface — replaces getUsername() in Sf 6
     public function getUserIdentifier(): string
     {
         return $this->correo ?: $this->matricula;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function eraseCredentials(): void
+    public function getRoles(): array
     {
-        // TODO: Implement eraseCredentials() method.
-    }
-
-    /**
-     * @param integer $matricula
-     * @return Usuario
-     */
-    public function setMatricula($matricula)
-    {
-        $this->matricula = $matricula;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMatricula()
-    {
-        return $this->matricula;
-    }
-
-    /**
-     * @param string $nombre
-     * @return Usuario
-     */
-    public function setNombre($nombre)
-    {
-        $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getNombre()
-    {
-        return $this->nombre;
-    }
-
-    /**
-     * @param string $apellidoPaterno
-     * @return Usuario
-     */
-    public function setApellidoPaterno($apellidoPaterno)
-    {
-        $this->apellidoPaterno = $apellidoPaterno;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApellidoPaterno()
-    {
-        return $this->apellidoPaterno;
-    }
-
-    /**
-     * @param string $apellidoMaterno
-     * @return Usuario
-     */
-    public function setApellidoMaterno($apellidoMaterno)
-    {
-        $this->apellidoMaterno = $apellidoMaterno;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getApellidoMaterno()
-    {
-        return $this->apellidoMaterno;
-    }
-
-    /**
-     * @param integer $regims
-     * @return Usuario
-     */
-    public function setRegims($regims)
-    {
-        $this->regims = $regims;
-
-        return $this;
-    }
-
-    /**
-     * @return integer
-     */
-    public function getRegims()
-    {
-        return $this->regims;
-    }
-
-    /**
-     * @param boolean $activo
-     * @return Usuario
-     */
-    public function setActivo($activo)
-    {
-        $this->activo = $activo;
-
-        return $this;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function getActivo()
-    {
-        return $this->activo;
-    }
-
-    /**
-     * @param string $curp
-     * @return Usuario
-     */
-    public function setCurp($curp)
-    {
-        $this->curp = $curp ?: '';
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurp()
-    {
-        return $this->curp;
-    }
-
-    /**
-     * @param string $rfc
-     * @return Usuario
-     */
-    public function setRfc($rfc)
-    {
-        $this->rfc = $rfc ?: '';
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRfc()
-    {
-        return $this->rfc;
-    }
-
-    /**
-     * @param string $sexo
-     * @return Usuario
-     */
-    public function setSexo($sexo)
-    {
-        $this->sexo = $sexo;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSexo()
-    {
-        return $this->sexo;
-    }
-
-    /**
-     * @param \DateTime $fechaIngreso
-     * @return Usuario
-     */
-    public function setFechaIngreso($fechaIngreso)
-    {
-        $this->fechaIngreso = $fechaIngreso;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getFechaIngreso()
-    {
-        return $this->fechaIngreso;
-    }
-
-    /**
-     * @param Departamento $departamento
-     * @return Usuario
-     */
-    public function setDepartamento(Departamento $departamento)
-    {
-        $this->departamento = $departamento;
-        return $this;
-    }
-
-    /**
-     * @return Departamento
-     */
-    public function getDepartamento()
-    {
-        return $this->departamento;
-    }
-
-    /**
-     * @param Categoria $categoria
-     * @return Usuario
-     */
-    public function setCategoria(?Categoria $categoria = null)
-    {
-        $this->categoria = $categoria;
-
-        return $this;
-    }
-
-    /**
-     * @return Categoria
-     */
-    public function getCategoria()
-    {
-        return $this->categoria;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFullName()
-    {
-        $fullName = $this->nombre;
-
-        if ($this->apellidoPaterno !== null) {
-            $fullName .= " {$this->apellidoPaterno}";
+        $roles = [];
+        foreach ($this->getPermisos() as $permiso) {
+            $roles[] = sprintf('ROLE_%s', $permiso->getClave());
         }
-
-        if ($this->apellidoMaterno !== null) {
-            $fullName .= " {$this->apellidoMaterno}";
-        }
-
-        return $fullName;
+        return $roles;
     }
 
-    /**
-     * @param Delegacion $delegacione
-     * @return Usuario
-     */
-    public function addDelegacione(Delegacion $delegacione)
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials(): void {}
+
+    public function getCorreo(): ?string { return $this->correo; }
+    public function setCorreo(?string $correo): self { $this->correo = $correo; return $this; }
+
+    public function getTelefono(): ?string { return $this->telefono; }
+    public function setTelefono(?string $telefono): self { $this->telefono = $telefono; return $this; }
+
+    public function getPlainPassword(): ?string { return $this->plainPassword; }
+    public function setPlainPassword(?string $plainPassword): self { $this->plainPassword = $plainPassword; return $this; }
+
+    public function setMatricula(?string $matricula): self { $this->matricula = $matricula; return $this; }
+    public function getMatricula(): ?string { return $this->matricula; }
+
+    public function setNombre(?string $nombre): self { $this->nombre = $nombre; return $this; }
+    public function getNombre(): ?string { return $this->nombre; }
+
+    public function setApellidoPaterno(?string $apellidoPaterno): self { $this->apellidoPaterno = $apellidoPaterno; return $this; }
+    public function getApellidoPaterno(): ?string { return $this->apellidoPaterno; }
+
+    public function setApellidoMaterno(?string $apellidoMaterno): self { $this->apellidoMaterno = $apellidoMaterno; return $this; }
+    public function getApellidoMaterno(): ?string { return $this->apellidoMaterno; }
+
+    public function setRegims(?int $regims): self { $this->regims = $regims; return $this; }
+    public function getRegims(): ?int { return $this->regims; }
+
+    public function setActivo(bool $activo): self { $this->activo = $activo; return $this; }
+    public function getActivo(): bool { return $this->activo; }
+
+    public function setCurp(?string $curp): self { $this->curp = $curp ?: ''; return $this; }
+    public function getCurp(): string { return $this->curp; }
+
+    public function setRfc(?string $rfc): self { $this->rfc = $rfc ?: ''; return $this; }
+    public function getRfc(): string { return $this->rfc; }
+
+    public function setSexo(?string $sexo): self { $this->sexo = $sexo; return $this; }
+    public function getSexo(): ?string { return $this->sexo; }
+
+    public function setFechaIngreso(?\DateTimeInterface $fechaIngreso): self { $this->fechaIngreso = $fechaIngreso; return $this; }
+    public function getFechaIngreso(): ?\DateTimeInterface { return $this->fechaIngreso; }
+
+    public function setDepartamento(?Departamento $departamento): self { $this->departamento = $departamento; return $this; }
+    public function getDepartamento(): ?Departamento { return $this->departamento; }
+
+    public function setCategoria(?Categoria $categoria): self { $this->categoria = $categoria; return $this; }
+    public function getCategoria(): ?Categoria { return $this->categoria; }
+
+    public function getInstitucion(): ?Institucion { return $this->institucion; }
+    public function setInstitucion(?Institucion $institucion): self { $this->institucion = $institucion; return $this; }
+
+    public function getResidente(): ?Residente { return $this->residente; }
+    public function setResidente(?Residente $residente): self { $this->residente = $residente; return $this; }
+
+    public function getCampus(): mixed { return $this->campus; }
+    public function setCampus(mixed $campus): self { $this->campus = $campus; return $this; }
+
+    public function getFullName(): string
+    {
+        return trim(implode(' ', array_filter([
+            $this->nombre,
+            $this->apellidoPaterno,
+            $this->apellidoMaterno,
+        ])));
+    }
+
+    public function addDelegacione(Delegacion $delegacione): self
     {
         if (!$this->delegaciones->contains($delegacione)) {
             $this->delegaciones[] = $delegacione;
             $delegacione->addUsuario($this);
         }
-
         return $this;
     }
 
-    /**
-     * @param Delegacion $delegacione
-     */
-    public function removeDelegacione(Delegacion $delegacione)
+    public function removeDelegacione(Delegacion $delegacione): void
     {
         if ($this->delegaciones->contains($delegacione)) {
             $this->delegaciones->removeElement($delegacione);
@@ -574,265 +254,99 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface, Equa
         }
     }
 
-    /**
-     * @return Collection
-     */
-    public function getDelegaciones()
+    public function getDelegaciones(): Collection { return $this->delegaciones; }
+
+    public function getDelegacionesUnidadesInstitucion(): array
     {
-        return $this->delegaciones;
+        return array_merge(
+            $this->delegaciones->toArray(),
+            $this->unidades->toArray(),
+            $this->institucion ? [$this->institucion] : []
+        );
     }
 
-    /**
-     * @return array
-     */
-    public function getDelegacionesUnidadesInstitucion()
-    {
-        return array_merge($this->delegaciones->toArray(), $this->unidades->toArray(), $this->getInstitucion() ? [$this->getInstitucion()] : []);
-    }
-
-    /**
-     * @param Unidad $unidad
-     * @return Usuario
-     */
-    public function addUnidad(Unidad $unidad)
+    public function addUnidad(Unidad $unidad): self
     {
         if (!$this->unidades->contains($unidad)) {
             $this->unidades[] = $unidad;
-            //$unidad->addUsuario($this);
         }
-
         return $this;
     }
 
-    /**
-     * @param Unidad $unidad
-     */
-    public function removeUnidad(Unidad $unidad)
+    public function removeUnidad(Unidad $unidad): void
     {
-        if ($this->unidades->contains($unidad)) {
-            $this->unidades->removeElement($unidad);
-            //$unidad->removeUsuario($this);
-        }
+        $this->unidades->removeElement($unidad);
     }
 
-    /**
-     * @return Collection
-     */
-    public function getUnidades()
-    {
-        return $this->unidades;
-    }
+    public function getUnidades(): Collection { return $this->unidades; }
 
-    /**
-     * @return Institucion
-     */
-    public function getInstitucion()
+    public function setPermisos(Collection $permisos): self
     {
-        return $this->institucion;
-    }
-
-    /**
-     * @return Residente
-     */
-    public function getResidente()
-    {
-        return $this->residente;
-    }
-
-    /**
-     * @param $permisos
-     * @return Usuario
-     */
-    public function setPermisos($permisos)
-    {
-        /** @var Permiso $permiso */
         foreach ($this->permisos as $permiso) {
             $permiso->removeUsuario($this);
         }
         $this->permisos = $permisos;
-        /** @var Permiso $permiso */
         foreach ($this->permisos as $permiso) {
             $permiso->addUsuario($this);
         }
-
         return $this;
     }
 
-    /**
-     * @param Permiso $permiso
-     * @return Usuario
-     */
-    public function addPermiso(Permiso $permiso)
+    public function addPermiso(Permiso $permiso): self
     {
         if (!$this->getPermisos()->contains($permiso)) {
             $this->permisos[] = $permiso;
-            //$permiso->addUsuario($this);
         }
-
         return $this;
     }
 
-    /**
-     * @param Permiso $permiso
-     */
-    public function removePermiso(Permiso $permiso)
+    public function removePermiso(Permiso $permiso): void
     {
         $this->permisos->removeElement($permiso);
     }
 
-    /**
-     * @return Collection
-     */
-    public function getPermisos()
+    public function getPermisos(): Collection { return $this->permisos; }
+
+    public function setRol(?string $rol): void { $this->rol = $rol; }
+
+    public function getRol(): ?string
     {
-        return $this->permisos;
-    }
-
-    /**
-     * @param Institucion $institucion
-     * @return Usuario
-     */
-    public function setInstitucion(?Institucion $institucion = null)
-    {
-        $this->institucion = $institucion;
-
-        return $this;
-    }
-
-    /**
-     * @param Residente $residente
-     * @return Usuario
-     */
-    public function setResidente(?Residente $residente = null)
-    {
-        $this->residente = $residente;
-
-        return $this;
-    }
-
-    /**
-     * @param string $rol
-     */
-    public function setRol($rol)
-    {
-        $this->rol = $rol;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRol()
-    {
-        if($this->rol === null && count($this->getRoles()) > 0) {
+        if ($this->rol === null && count($this->getRoles()) > 0) {
             return $this->getRoles()[0];
         }
         return $this->rol;
     }
 
-    public function __serialize(): array
-    {
-        return [
-            'id'         => $this->id,
-            'matricula'  => $this->matricula,
-            'correo'     => $this->correo,
-            'contrasena' => $this->contrasena,
-        ];
-    }
+    public function getCargaMasivas(): Collection { return $this->cargaMasivas; }
+    public function setCargaMasivas(Collection $cargaMasivas): self { $this->cargaMasivas = $cargaMasivas; return $this; }
 
-    public function __unserialize(array $data): void
-    {
-        $this->id         = $data['id'];
-        $this->matricula  = $data['matricula'];
-        $this->correo     = $data['correo'];
-        $this->contrasena = $data['contrasena'];
-    }
+    public function getDelegacionInstitucion(): ?Delegacion { return $this->delegacionInstitucion; }
+    public function setDelegacionInstitucion(?Delegacion $delegacion): self { $this->delegacionInstitucion = $delegacion; return $this; }
 
-    public function __toString(): string
+    public function getUnidadesEnfermeria(): Collection { return $this->unidades; }
+
+    public function addUnidadEnfermeria(Unidad $unidad): self { return $this->addUnidad($unidad); }
+    public function removeUnidadEnfermeria(Unidad $unidad): void { $this->removeUnidad($unidad); }
+
+    public function getCreatedAt(): \DateTimeInterface { return $this->createdAt; }
+    public function setCreatedAt(\DateTimeInterface $createdAt): self { $this->createdAt = $createdAt; return $this; }
+
+    public function getUpdatedAt(): \DateTimeInterface { return $this->updatedAt; }
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self { $this->updatedAt = $updatedAt; return $this; }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
     {
-        return "[" . $this->getUserIdentifier() . "] "
-            . $this->getFullName();
+        $this->updatedAt = new \DateTime();
     }
 
     public function isEqualTo(UserInterface $user): bool
     {
-        if ($user instanceof Usuario) {
-            return $user->getId() == $this->getId();
-        }
-        return false;
+        return $user instanceof Usuario && $user->getId() === $this->getId();
     }
 
-    /**
-     * @return \stdClass
-     */
-    public function getCargaMasivas()
+    public function __toString(): string
     {
-        return $this->cargaMasivas;
+        return '[' . $this->getUserIdentifier() . '] ' . $this->getFullName();
     }
-
-    /**
-     * @param \stdClass $cargaMasivas
-     * @return Usuario
-     */
-    public function setCargaMasivas($cargaMasivas)
-    {
-        $this->cargaMasivas = $cargaMasivas;
-        return $this;
-    }
-
-    public function getDelegacionInstitucion()
-    {
-        return $this->delegacionInstitucion;
-    }
-
-    public function setDelegacionInstitucion(?Delegacion $delegacion)
-    {
-        $this->delegacionInstitucion = $delegacion;
-    }
-
-    public function getUnidadesEnfermeria()
-    {
-        return $this->unidades;
-    }
-
-    /**
-     * @param Unidad $unidad
-     * @return Usuario
-     */
-    public function addUnidadEnfermeria(Unidad $unidad)
-    {
-        if (!$this->unidades->contains($unidad)) {
-            $this->unidades[] = $unidad;
-            //$unidad->addUsuario($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Unidad $unidad
-     */
-    public function removeUnidadEnfermeria(Unidad $unidad)
-    {
-        if ($this->unidades->contains($unidad)) {
-            $this->unidades->removeElement($unidad);
-            //$unidad->removeUsuario($this);
-        }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCampus()
-    {
-        return $this->campus;
-    }
-
-    /**
-     * @param mixed $campus
-     */
-    public function setCampus($campus)
-    {
-        $this->campus = $campus;
-    }
-
 }

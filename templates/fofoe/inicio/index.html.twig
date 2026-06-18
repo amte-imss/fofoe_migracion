@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe.inicio') }}
+    <style>
+        .wrapper-fofoe {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+    <div class='container-fluid wrapper-fofoe'>
+        <div class="container">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 10px">Resumen de Pagos Recibidos</h1>
+                </div>
+            </div>
+            <div id="fofoe-wrapper-index"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe.inicio') }}
+    <script>
+        window.DATA  = {{ data  | json_encode | raw }};
+        window.META  = {{ meta  | json_encode | raw }};
+        window.YEARS = {{ years | json_encode | raw }};
+    </script>
+{% endblock %}

@@ -80,7 +80,7 @@ class SolicitudController extends DIEControllerController
 
             return new JsonResponse([
                 'camposClinicos' => $this->normalizer->normalize(
-                    array_values(array_filter($paginatorData->getItems()->getArrayCopy())),
+                    array_values(array_filter($paginatorData->getItems())),
                     'json',
                     [
                         'attributes' => [

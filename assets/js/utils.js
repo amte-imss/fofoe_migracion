@@ -1,3 +1,8 @@
+import {
+    ESTATUS_PAGO,
+    SOLICITUD,
+    TIPO_PAGO
+} from "./constants";
 import Swal from "sweetalert2";
 
 export const getSchemeAndHttpHost = (uri = '') => {
@@ -116,4 +121,72 @@ export const checkInputFile = (input, validations = {}, callback) => {
     } else if (callback) {
         callback();
     }
+}
+
+export const getActionNameByInstitucionEducativa = (estatus, tipoPago, showDetalle = true) => {
+    switch (estatus) {
+        case SOLICITUD.CREADA:
+            return 'Editar'
+        case SOLICITUD.REGISTRADA:
+            return 'En validación'
+        case SOLICITUD.REVISADA:
+        case SOLICITUD.CONFIRMADA:
+            return (!showDetalle ? 'Consultar Detalle' : 'Registrar montos, inscripción, colegiatura y listado de alumnos')
+        case SOLICITUD.EN_VALIDACION_DE_MONTOS_CAME:
+        case SOLICITUD.EN_VALIDACION_DE_MONTOS:
+            return 'En validación'
+        case SOLICITUD.MONTOS_INCORRECTOS_CAME:
+            return 'Corregir montos'
+        case SOLICITUD.MONTOS_VALIDADOS:
+        case SOLICITUD.MONTOS_VALIDADOS_CAME:
+            return 'Consulte formato de pago'
+        case SOLICITUD.FORMATOS_DE_PAGO_GENERADOS:
+            return 'Generar formato de pago y referencia'
+        case SOLICITUD.CARGANDO_COMPROBANTES:
+            if (isMultipleTipoPago(tipoPago)) return 'Ver detalle'
+            return 'Cargar comprobante de pago'
+        case SOLICITUD.EN_VALIDACION_FOFOE:
+            if (isMultipleTipoPago(tipoPago)) return 'Ver detalle'
+            return 'En validación FOFOE'
+        case SOLICITUD.CREDENCIALES_GENERADAS: /* Solicitud Pagada */
+            return 'Consultar Detalle'
+        default:
+            console.error(`El action name del estatus ${estatus} no existe.`)
+            return 'Estatus no definido'
+    }
+}
+
+export const isActionDisabledByInstitucionEducativa = (estatus) => {
+    switch (estatus) {
+        case SOLICITUD.CREADA:
+        case SOLICITUD.CONFIRMADA:
+        case SOLICITUD.REVISADA:
+        case SOLICITUD.MONTOS_INCORRECTOS_CAME:
+        case SOLICITUD.MONTOS_VALIDADOS_CAME:
+        case SOLICITUD.MONTOS_VALIDADOS:
+        case SOLICITUD.FORMATOS_DE_PAGO_GENERADOS:
+        case SOLICITUD.CARGANDO_COMPROBANTES:
+        case SOLICITUD.CREDENCIALES_GENERADAS:
+            return false
+        case SOLICITUD.REGISTRADA:
+        case SOLICITUD.EN_VALIDACION_DE_MONTOS_CAME:
+        case SOLICITUD.EN_VALIDACION_DE_MONTOS:
+        case SOLICITUD.EN_VALIDACION_FOFOE:
+            return true
+        default:
+            console.error(`Is action disabled del estatus ${estatus} no existe.`)
+            return true
+    }
+}
+
+export const compareDates = (dateIni, dateFin) => {
+    if (dateFin.getFullYear() !== dateFin.getFullYear()) {
+        return dateFin.getFullYear() - dateFin.getFullYear();
+    }
+
+    if (dateFin.getMonth() !== dateFin.getMonth()) {
+        return dateFin.getMonth() - dateFin.getMonth();
+    }
+
+    return dateFin.getDay() - dateFin.getDay();
 }

@@ -27,6 +27,14 @@ class SecurityController extends AbstractController
             default     => 'security/login.html.twig',
         };
 
+        print_r([
+            'last_username' => $authenticationUtils->getLastUsername(),
+            'error'         => $authenticationUtils->getLastAuthenticationError(),
+            'tipo'          => $tipo,
+            'path_login'    => $this->generateUrl('app_login', ['tipo' => $tipo]),
+            'showImage'     => $this->showImages(),
+        ]);
+
         return $this->render($view, [
             'last_username' => $authenticationUtils->getLastUsername(),
             'error'         => $authenticationUtils->getLastAuthenticationError(),

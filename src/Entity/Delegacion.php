@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: \App\Repository\DelegacionRepository::class)]
+#[ORM\Entity(repositoryClass: \App\Repository\DelegationRepository::class)]
 #[ORM\Table(name: 'delegacion')]
 class Delegacion implements \Stringable
 {

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('validacion.de.pago') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold">Validación de pago</h1>
+                <div style="display: flex;">
+                    <div id="noSolicitud"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="validacion-de-pago-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('validacion.de.pago') }}
+    <script>
+        window.PAGOS          = {{ pagos        | json_encode | raw }};
+        {% if campos is defined %}
+        window.CAMPOS         = {{ campos       | json_encode | raw }};
+        {% endif %}
+        window.PAGO_PROPS     = {{ pago         | json_encode | raw }};
+        window.CATEGORIA_PAGO = {{ categoriaPago | json_encode | raw }};
+        {% if montoAPagar is defined %}
+        window.MONTO_A_PAGAR  = {{ montoAPagar  | json_encode | raw }};
+        {% endif %}
+    </script>
+{% endblock %}

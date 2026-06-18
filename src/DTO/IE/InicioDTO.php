@@ -30,7 +30,7 @@ final class InicioDTO extends Solicitud implements InicioDTOInterface
         return parent::getNoCamposAutorizados();
     }
 
-    public function getFecha(): ?\DateTimeInterface
+    public function getFecha(): ?string
     {
         return parent::getFecha();
     }

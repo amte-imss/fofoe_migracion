@@ -8,7 +8,7 @@ interface InicioDTOInterface
 
     public function getEstatus(): ?string;
 
-    public function getFecha(): ?\DateTimeInterface;
+    public function getFecha(): ?string;
 
     public function getNoCamposAutorizados(): int;
 
