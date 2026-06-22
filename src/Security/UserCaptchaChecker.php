@@ -25,7 +25,7 @@ class UserCaptchaChecker implements UserCheckerInterface
         $session = $this->requestStack->getSession();
         $captcha = $this->requestStack->getCurrentRequest()?->request->get('captcha');
 
-        /*
+
         if (empty($session->get('captcha_phrase'))) {
             throw new NotFoundHttpException();
         }
@@ -35,7 +35,7 @@ class UserCaptchaChecker implements UserCheckerInterface
                 'El código no coincide con el que ingresaste. Por favor vuelve a intentarlo o genere uno nuevo.'
             );
         }
-        */
+
     }
 
     public function checkPostAuth(UserInterface $user, ?TokenInterface $token = null): void

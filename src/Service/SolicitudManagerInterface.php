@@ -11,7 +11,7 @@ interface SolicitudManagerInterface
 
     public function create(Solicitud $solicitud): mixed;
 
-    public function finalizar(Solicitud $solicitud, ?Usuario $came_usuario = null): void;
+    public function finalizar(Solicitud $solicitud, ?Usuario $came_usuario = null): array;
 
     public function validarRegistroSolicitud(Solicitud $solicitud, ?Usuario $came_usuario = null): array;
 
@@ -25,5 +25,5 @@ interface SolicitudManagerInterface
         array $originalDescuentos = [],
     ): mixed;
 
-    public function generateUser(Solicitud $solicitud, ?Usuario $came_usuario = null): mixed;
+    public function generateUser(Solicitud $solicitud, ?Usuario $came_usuario = null): void;
 }

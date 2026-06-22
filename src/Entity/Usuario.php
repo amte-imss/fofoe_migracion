@@ -63,11 +63,11 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface, Equa
     private ?Departamento $departamento = null;
 
     #[ORM\ManyToMany(targetEntity: Delegacion::class, inversedBy: 'usuarios')]
-    #[ORM\JoinColumn(name: 'delegacion_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')]
     private Collection $delegaciones;
 
     #[ORM\ManyToMany(targetEntity: Unidad::class)]
-    #[ORM\JoinColumn(name: 'unidad_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'usuario_id', referencedColumnName: 'id')]
     private Collection $unidades;
 
     #[ORM\Column(type: 'string', length: 18, nullable: true)]

@@ -129,3 +129,11 @@ services:
 
     App\Calculator\CampoClinicoCalculatorInterface:
         alias: App\Calculator\CampoClinicoCalculator
+
+    App\Service\SolicitudManagerInterface:
+        alias: App\Service\SolicitudManager
+
+    App\Service\SolicitudManager:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+            $calculator:   '@App\Calculator\CampoClinicoCalculatorInterface'

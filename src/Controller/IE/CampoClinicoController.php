@@ -44,7 +44,7 @@ class CampoClinicoController extends DIEControllerController
         CampoClinicoManagerInterface $campoClinicoManager,
         SolicitudRepositoryInterface $solicitudRepository
     ): Response {
-        $solicitud_id = $request->request->get('campo_clinico')['solicitud'];
+        $solicitud_id = $request->request->all('campo_clinico')['solicitud'];
         $solicitud    = $this->checkPermissionSolicitud($solicitud_id, $solicitudRepository);
 
         if ($solicitud->getEstatus() != SolicitudInterface::CREADA) {

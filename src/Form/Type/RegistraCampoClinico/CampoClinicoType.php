@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class CampoClinicoType extends AbstractType
 {
@@ -15,8 +16,12 @@ class CampoClinicoType extends AbstractType
         $builder
             ->add('solicitud')
             ->add('convenio')
-            ->add('fechaInicial')
-            ->add('fechaFinal')
+            ->add('fechaInicial', DateType::class, [
+                'widget' => 'choice',
+            ])
+            ->add('fechaFinal', DateType::class, [
+                'widget' => 'choice',
+            ])
             ->add('lugaresSolicitados')
             ->add('lugaresAutorizados')
             ->add('unidad')

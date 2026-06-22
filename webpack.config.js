@@ -9,6 +9,8 @@ Encore
     .setPublicPath('/build')
     .addStyleEntry('layout', './assets/css/layout.scss')
 
+    .addEntry('login', './assets/js/login/index.js')
+
     // IE
     .addEntry('ie.perfil', './assets/js/ie/Perfil/index.js')
     .addEntry('ie.registrar.solicitud', './assets/js/ie/RegistrarSolicitud/index.js')
