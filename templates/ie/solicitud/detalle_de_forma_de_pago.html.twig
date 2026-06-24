@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.detalle.forma.pago') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <div class="row mb-20">
+                    <div class="col-md-12">
+                        <h1 class="text-bold text-center mb-20">Detalle de tipo de pago para solicitud</h1>
+                        <p class="text-bold mt-10">Solicitud {{ solicitud.noSolicitud }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="mb-20"><strong>El tipo pago seleccionado fue:</strong></h3>
+                        <div id="detalle-forma-pago-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.detalle.forma.pago') }}
+    <script>
+        window.TIPO_PAGO_SELECTED                   = {{ solicitud.tipoPago | json_encode | raw }};
+        window.DESCARGAR_REFERENCIAS_BANCARIAS_PATH = {{ absolute_url(path('ie#descargar_referencias_bancarias', { id: solicitud.id })) | json_encode | raw }};
+        window.SOLICITUD_ID                         = {{ solicitud.id | json_encode | raw }};
+    </script>
+{% endblock %}

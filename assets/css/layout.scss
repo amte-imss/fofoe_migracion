@@ -1,0 +1,104 @@
+@import "variables";
+@import "util";
+@import "components/navbar";
+@import "components/list";
+
+h1 {
+  font-size: 24px;
+  color: $green-color;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+h3 {
+  font-size: 16px;
+}
+
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+p,
+label,
+a {
+  font-size: 15px;
+}
+
+.section-md {
+  padding: 40px 0;
+}
+
+.error-message {
+  font-size: 11px;
+  color: red;
+}
+
+.link {
+  color: #2ea8ff;
+}
+
+.background{
+  background-color: lightgrey;
+}
+
+.swal2-popup {
+  font-size: 1.6rem !important;
+}
+
+.pagination {
+  background-color: #fff;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border: 1px solid #ddd;
+  margin: 0;
+}
+
+.pagination li a {
+  border-top: none;
+  border-bottom: none;
+  border-radius: 0;
+  outline: none;
+}
+
+.ReactModal__Overlay {
+  z-index: 10;
+}
+
+.table-nested > thead > tr > th,
+.table-nested > tbody > tr > th,
+.table-nested > tfoot > tr > th,
+.table-nested > thead > tr > td,
+.table-nested > tbody > tr > td,
+.table-nested > tfoot > tr > td {
+  border-top: none;
+}
+
+.table-nested {
+  tr {
+   & > *:first-child {
+     padding-left: 2px;
+   }
+  }
+}
+
+
+.btn-secondary {
+  background: #dff0d8;
+  color: #3c763d;
+}
+
+.btn-secondary:hover {
+  background: #c1e2b3;
+  color: #3c763d;
+}

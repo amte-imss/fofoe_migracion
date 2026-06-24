@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('came_solicitud_index') }}
+    <style>
+        .wrapper-came {
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Came\\CameController::menu')) }}
+    <div class='container-fluid wrapper-came'>
+        <div class="container">
+            <div class='row'>
+                <div class="col-md-12">
+                    <a href="{{ path('came.solicitud.index') }}">Regresar</a>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 40px">Nueva solicitud de campos clínicos</h1>
+                </div>
+            </div>
+            <div id="solicitud-wrapper"></div>
+            <div class='row'>
+                <div class="col-md-12">
+                    <a href="{{ path('came.solicitud.index') }}">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('came_solicitud_index') }}
+    <script>
+        window.INSTITUCIONES = {{ instituciones | json_encode | raw }};
+        window.UNIDADES = {{ unidades | json_encode | raw }};
+    </script>
+{% endblock %}

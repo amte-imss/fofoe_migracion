@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.registrar.montos') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center">
+                    {{ route == 'ie#registrar_montos' ? 'Registro de Importes y becas' : 'Corregir Importes y becas' }}
+                </h1>
+                <div style="display: flex;">
+                    <p class="text-bold mt-10">Solicitud {{ solicitud.noSolicitud }}</p>
+                    <div id="noSolicitud"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="registrar-montos-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.registrar.montos') }}
+    <script>
+        window.INSTITUCION_PROP  = {{ institucion.nombre | json_encode | raw }};
+        window.CARRERAS_PROP     = {{ carreras            | json_encode | raw }};
+        window.AUTORIZADOS_PROP  = {{ autorizados         | json_encode | raw }};
+        window.MONTOS_PROP       = {{ montos              | json_encode | raw }};
+        window.SOLICITUD_ID_PROP = {{ solicitud           | json_encode | raw }};
+        window.ROUTE_PROP        = {{ route               | json_encode | raw }};
+        window.ERRORS_PROP       = {{ errors              | json_encode | raw }};
+    </script>
+{% endblock %}

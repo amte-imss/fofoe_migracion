@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMSS — Iniciar Sesión</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        :root { --imss-green: #006847; --imss-green-dark: #004d34; }
+
+        body { display: flex; flex-direction: column; min-height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+
+        /* ── Header institucional gob.mx ── */
+        .gov-header { background: #003828; }
+        .gov-header .navbar { min-height: 48px; padding: 0; }
+        .gov-header .navbar-brand img { height: 55px; margin: 6px 0; }
+        .gov-header .nav-link { color: #fff !important; font-size: .82rem; padding: .75rem .9rem; }
+        .gov-header .nav-link:hover { color: #ccc !important; }
+        .gov-header .nav-link img { height: 16px; }
+
+        /* ── Contenido central ── */
+        .login-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            padding: 3rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Panel izquierdo: branding transparente sobre fondo del main */
+        .login-panel-image {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 2rem 3rem 1.5rem;
+            min-height: 420px;
+        }
+        .login-panel-image .panel-brand {
+            position: relative;
+            z-index: 1;
+            text-align: left;
+        }
+        .login-panel-image .panel-brand img {
+            height: 72px;
+            filter: none;
+            display: block;
+            flex-shrink: 0;
+        }
+        .login-panel-image .panel-brand .brand-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.6rem;
+        }
+        .login-panel-image .panel-brand h1 {
+            color: #003828;
+            font-size: 1.6rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: .6rem;
+            letter-spacing: -.01em;
+        }
+
+        .login-panel-image .panel-brand p {
+            color: #2d6a50;
+            font-size: .9rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .login-panel-image .panel-badge {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            background: rgba(0,104,71,.12);
+            border: 1px solid rgba(0,104,71,.25);
+            color: #004d34;
+            font-size: .72rem;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: .35rem 1rem;
+            margin-top: 1.8rem;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+        }
+
+        /* Panel derecho: formulario */
+        .login-panel-form {
+            width: 420px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0;
+        }
+        .login-form-card {
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 24px 64px rgba(0,0,0,.22);
+            padding: 3rem 3rem;
+        }
+        .login-title { font-size: 1.35rem; font-weight: 700; color: #1a2e1f; margin-bottom: .2rem; }
+        .login-sub   { font-size: .82rem; color: #6c757d; margin-bottom: 1.6rem; display: flex; align-items: center; flex-wrap: wrap; gap: .35rem; }
+        .sys-badge {
+            display: inline-block;
+            background: rgba(0,104,71,.10);
+            border: 1px solid rgba(0,104,71,.25);
+            color: #004d34;
+            font-size: .7rem;
+            font-weight: 700;
+            border-radius: 20px;
+            padding: .2rem .75rem;
+            letter-spacing: .04em;
+        }
+
+        .form-label   { font-weight: 600; font-size: .82rem; color: #495057; margin-bottom: .35rem; }
+        .input-group-text {
+            background: #fff; border: 1.5px solid #d1dbe6;
+            border-right: none; border-radius: 10px 0 0 10px; color: #8fa0b0;
+        }
+        .form-control {
+            border: 1.5px solid #d1dbe6; border-left: none;
+            border-radius: 0 10px 10px 0; background: #fff;
+            font-size: .9rem; padding: .58rem .85rem;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .form-control:focus {
+            border-color: var(--imss-green);
+            box-shadow: 0 0 0 3px rgba(0,104,71,.1);
+        }
+        .btn-login {
+            background: var(--imss-green); color: #fff; border: none;
+            border-radius: 10px; padding: .75rem; font-size: .95rem; font-weight: 600;
+            width: 100%; margin-top: 1.4rem;
+            transition: background .15s, box-shadow .15s;
+        }
+        .btn-login:hover { background: var(--imss-green-dark); box-shadow: 0 4px 16px rgba(0,104,71,.35); color: #fff; }
+        .show-pass-btn {
+            background: #fff; border: 1.5px solid #d1dbe6; border-left: none;
+            border-radius: 0 10px 10px 0; color: #8fa0b0; cursor: pointer;
+            padding: 0 .75rem;
+        }
+        .show-pass-btn:hover { color: var(--imss-green); }
+        .login-footer-note {
+            margin-top: 1.75rem;
+            text-align: center; font-size: .72rem; color: #adb5bd;
+        }
+
+        /* Wrapper centrado */
+        .login-split {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Responsive: apilar en móvil */
+        @media (max-width: 767px) {
+            .login-panel-image { display: none; }
+            .login-panel-form { width: 100%; }
+        }
+
+        /* ── Footer institucional gob.mx ── */
+        .gov-footer {
+            background-image: url('/images/footer-background.jpg');
+            background-color: #222;
+            background-size: cover;
+            padding: 2rem 0;
+            color: #fff;
+            font-size: .82rem;
+        }
+        .gov-footer .list__title { font-weight: 700; font-size: .85rem; color: #fff; margin-bottom: .5rem; }
+        .gov-footer ul.list { list-style: none; padding: 0; margin: 0; }
+        .gov-footer ul.list li { margin-bottom: .25rem; }
+        .gov-footer ul.list li a { color: rgba(255,255,255,.8); text-decoration: none; }
+        .gov-footer ul.list li a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+{# ══ HEADER INSTITUCIONAL GOB.MX ══ #}
+<header class="gov-header">
+    <nav class="navbar navbar-expand-md container">
+        <a class="navbar-brand" href="https://www.gob.mx/" target="_blank">
+            <img src="https://framework-gb.cdn.gob.mx/landing/img/logoheader.png" alt="logo gobierno de méxico">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#govNav" style="border-color:rgba(255,255,255,.3);">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="govNav">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="https://www.gob.mx/tramites">Trámites</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://www.gob.mx/gobierno">Gobierno</a></li>
+                <li class="nav-item"><a class="nav-link" href="https://www.gob.mx/busqueda"><img src="https://framework-gb.cdn.gob.mx/landing/img/lupa.png" alt="Buscar"></a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+
+{# ══ ZONA CENTRAL — SPLIT LAYOUT ══ #}
+<main class="login-main">
+<div class="login-split">
+
+    {# ── Panel izquierdo: branding ── #}
+    <div class="login-panel-image">
+        <div class="panel-brand">
+            <div class="brand-header">
+                <img src="/images/logo_IMSS_verde.png" alt="IMSS">
+                <h1>Instituto Mexicano del Seguro Social</h1>
+            </div>
+            <p>Coordinación de Educación en Salud</p>
+        </div>
+    </div>
+
+    {# ── Panel derecho: formulario ── #}
+    <div class="login-panel-form">
+    <div class="login-form-card">
+
+        <div class="login-title">Inicio de sesión</div>
+        <div class="login-sub">
+            <span class="sys-badge">FOFOE</span>
+            <span class="sys-badge">SICACES</span>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger py-2 px-3" style="border-radius:10px;font-size:.84rem;">
+            <i class="ti ti-alert-circle mr-1"></i>
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}" autocomplete="off">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="form-group mb-3">
+                <label class="form-label" for="_matricula">Matrícula</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ti ti-user"></i></span>
+                    </div>
+                    <input type="text" id="_matricula" name="_username"
+                           class="form-control" value="{{ last_username }}"
+                           placeholder="Ej. 12345678" autofocus required>
+                </div>
+            </div>
+
+            <div class="form-group mb-1">
+                <label class="form-label" for="_password">Contraseña</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="ti ti-lock"></i></span>
+                    </div>
+                    <input type="password" id="_password" name="_password"
+                           class="form-control" placeholder="••••••••" required>
+                    <div class="input-group-append">
+                        <button type="button" class="show-pass-btn" onclick="togglePass()" title="Mostrar">
+                            <i class="ti ti-eye" id="eye-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="ti ti-login mr-2"></i>Ingresar al Sistema
+            </button>
+        </form>
+
+        <div class="login-footer-note">
+            Uso exclusivo para personal autorizado del IMSS
+        </div>
+    </div>{# /login-form-card #}
+    </div>{# /login-panel-form #}
+
+</div>{# /login-split #}
+</main>
+
+{# ══ FOOTER INSTITUCIONAL GOB.MX ══ #}
+<footer class="gov-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-3 mb-3">
+                <img src="https://framework-gb.cdn.gob.mx/landing/img/logofooter.png"
+                     style="width:229px;height:76px;" alt="logo gobierno de méxico">
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-3 mb-3">
+                <p class="list__title">Enlaces</p>
+                <ul class="list">
+                    <li><a href="https://www.gob.mx/participa">Participa</a></li>
+                    <li><a href="https://www.gob.mx/publicaciones">Publicaciones Oficiales</a></li>
+                    <li><a href="http://www.ordenjuridico.gob.mx/">Marco Jurídico</a></li>
+                    <li><a href="https://consultapublicamx.inai.org.mx/vut-web/">Plataforma Nacional de Transparencia</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 mb-3">
+                <p class="list__title">¿Qué es gob.mx?</p>
+                <ul class="list">
+                    <li><a href="https://www.gob.mx/que-es-gobmx">Es el portal único de trámites, información y participación ciudadana.</a></li>
+                    <li><a href="https://datos.gob.mx/">Portal de datos abiertos</a></li>
+                    <li><a href="https://www.gob.mx/accesibilidad">Declaración de accesibilidad</a></li>
+                    <li><a href="https://www.gob.mx/privacidadintegral">Aviso de privacidad integral</a></li>
+                    <li><a href="https://www.gob.mx/terminos">Términos y condiciones</a></li>
+                    <li><a href="https://www.gob.mx/sitemap">Mapa del sitio</a></li>
+                </ul>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-3 mb-3">
+                <p class="list__title">Otros trámites</p>
+                <ul class="list">
+                    <li>Mesa de ayuda: dudas e información</li>
+                    <li><a href="mailto:gobmx@funcionpublica.gob.mx">gobmx@funcionpublica.gob.mx</a></li>
+                    <li>Denuncia contra servidores públicos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function togglePass() {
+    const input = document.getElementById('_password');
+    const icon  = document.getElementById('eye-icon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('ti-eye', 'ti-eye-off');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('ti-eye-off', 'ti-eye');
+    }
+}
+</script>
+</body>
+</html>

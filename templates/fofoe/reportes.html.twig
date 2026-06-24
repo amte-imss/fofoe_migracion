@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe_reportes-inicio') }}
+    <style>
+        .wrapper-fofoe {
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+
+    <div class='container-fluid wrapper-fofoe'>
+        <div class="container">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 40px">Reportes</h1>
+                </div>
+            </div>
+            <div id="reportes-container"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe_reportes-inicio') }}
+{% endblock %}

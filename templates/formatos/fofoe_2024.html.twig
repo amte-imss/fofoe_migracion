@@ -1,0 +1,223 @@
+{%extends'formatos/base.html.twig'%}
+
+{% block stylesheets %}
+      {{ parent() }}
+    <style>
+        .table-descuentos {
+            border: 1px solid black;
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 5px;|
+        }
+        .table-descuentos th {
+            font-size: 12px;
+            padding: 3px;
+        }
+        .table-descuentos td, th {
+            font-size: 14px;
+            border: 1px solid black;
+            padding: 6px;
+        }
+        .text-right {
+            text-align: right ;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{%block body%}
+    <div id="cabecera">
+        <p><img src="{{ app.request.getSchemeAndHttpHost() ~ asset('build/images/logo_IMSS_verde.png') }}" alt=""></p>
+        <p>INSTITUTO MEXICANO DEL SEGURO SOCIAL</p>
+        <p>DIRECCIÓN DE PRESTACIONES MÉDICAS</p>
+        <p>UNIDAD DE EDUCACIÓN, INVESTIGACIÓN Y POLÍTICAS DE SALUD</p>
+        <p>COORDINACIÓN DE EDUCACIÓN EN SALUD</p>
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+        <p>FORMATO DE CÁLCULO DE CUOTAS DE RECUPERACIÓN DE CICLOS CLÍNICOS PARA</p>
+        <p>CARRERAS DEL ÁREA DE LA SALUD</p>
+        {% else %}
+        <p>FORMATO DE CÁLCULO DE CUOTAS DE RECUPERACIÓN PARA INTERNADO MÉDICO</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <p>OOAD : {{ campo_clinico.unidad.delegacion.nombre | upper }}</p>
+        <p>SEDE: {{ campo_clinico.unidad.nombre | upper }}</p>
+        <p>ESCUELA O FACULTAD: {{ campo_clinico.convenio.institucion.nombre | upper }}</p>
+        <p>NOMBRE DE LA CARRERA: {{ campo_clinico.convenio.carrera.nombre | upper }}</p>
+        <p>NÚMERO DEL CONVENIO: {{ campo_clinico.convenio.numero | upper }}</p>
+        <p>VIGENCIA DEL CONVENIO: {{ campo_clinico.convenio.vigenciaFormatted }}</p>
+        <p>CICLO ACADÉMICO: {{ campo_clinico.cicloAcademico.nombre | upper }}</p>
+    </div>
+    <div id="periodo">
+        <p>FECHA DE INICIO: {{ campo_clinico.displayFechaInicial }}</p>
+        <p>FECHA DE TÉRMINO: {{ campo_clinico.displayFechaFinal }}</p>
+    </div>
+    <div id="montos">
+        <div class="monto">
+            <div class="monto_name"><p>INSCRIPCIÓN</p></div>
+            <div class="monto_value"><p>$ {{ campo_clinico.montoInscripcion | number_format(2)  }}</p></div>
+        </div>
+        <div class="monto">
+            <div class="monto_name"><p>COLEGIATURA</p></div>
+            <div class="monto_value"><p>$ {{ campo_clinico.montoColegiatura | number_format(2) }}</p></div>
+        </div>
+        <div class="monto">
+            <div class="monto_name"><p>IMPORTE COLEGIATURA ANUAL INTEGRADA (CAI)</p></div>
+            <div class="monto_value"><p>$ {{ campo_clinico.importeColegiaturaAnualIntegrada | number_format(2) }}</p></div>
+        </div>
+        {% set importeAlumno = campo_clinico.importeColegiaturaAnualIntegrada %}
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+            {% set importeAlumno = importeAlumno*campo_clinico.factorSemanalAutorizado %}
+        <div class="monto">
+            <div class="monto_name"><p>FACTOR SEMANAL AUTORIZADO</p></div>
+            <div class="monto_value"><p>{{ campo_clinico.factorSemanalAutorizado }}</p></div>
+        </div>
+        {% else %}
+            {% set importeAlumno = importeAlumno*0.5 %}
+        <div class="monto">
+            <div class="monto_name"><p>PORCENTAJE AUTORIZADO</p></div>
+            <div class="monto_value"><p>50%</p></div>
+        </div>
+        {% endif %}
+        <div class="monto">
+            <div class="monto_name"><p>IMPORTE POR ALUMNO</p></div>
+            <div class="monto_value"><p>$ {{ campo_clinico.importeAlumno | number_format(2)}}</p></div>
+        </div>
+        <div class="monto">
+            <div class="monto_name"><p>NÚMERO DE ALUMNOS</p></div>
+            <div class="monto_value"><p>{{ campo_clinico.lugaresAutorizados }}</p></div>
+        </div>
+        {% set subtotalGeneral = importeAlumno*campo_clinico.lugaresAutorizados %}
+        {% if campo_clinico.cicloAcademico.id == 1 %}
+        <div class="monto">
+            <div class="monto_name"><p>SUBTOTAL 1:</p></div>
+            <div class="monto_value"><p>$ {{ campo_clinico.subTotal | number_format(2)}}</p></div>
+        </div>
+            {% set subtotalGeneral = subtotalGeneral*campo_clinico.weeks %}
+            {% set importeAlumno = importeAlumno*campo_clinico.weeks %}
+        <div class="monto">
+            <div class="monto_name"><p>NÚMERO DE SEMANAS:</p></div>
+            <div class="monto_value"><p>{{ campo_clinico.weeks }}</p></div>
+        </div>
+        {% endif %}
+        <div class="monto">
+            <div class="monto_name"><p>SUBTOTAL GENERAL:</p></div>
+            <div class="monto_value"><p>$ {{ subtotalGeneral | number_format(2)}}</p></div>
+        </div>
+
+        <div class="monto">
+            <div class="monto_name"><p>IMPORTE TOTAL DE BECAS OTORGADAS:</p></div>
+            <div class="monto_value"><p>$ {{ ((subtotalGeneral| round(2)) - (montoCC| round(2)))| number_format(2)}}</p></div>
+        </div>
+        <div class="monto">
+            <div class="monto_name"><p>TOTAL DE LA APORTACIÓN A FOFOE:</p></div>
+            <div class="monto_value"><p>$ {{ montoCC | number_format(2)}}</p></div>
+        </div>
+    </div>
+
+    <div id="firmas">
+        <div>
+            <p>ELABORÓ</p>
+            <p> {{ came.fullname | upper }}</p>
+            <p> {{ campo_clinico.unidad.delegacion.nombre | upper }}</p>
+            <hr>
+        </div>
+        <div>
+            <p>ACEPTÓ</p>
+            <p> {{ campo_clinico.convenio.institucion.representante | upper }}</p>
+            <p>REPRESENTANTE</p>
+            <hr>
+        </div>
+    </div>
+
+    {% if ((campo_clinico.descuentos is defined) and (campo_clinico.descuentos|length > 0))
+        or campo_clinico.totalTrabajadoresBecados > 0
+    %}
+    <div class="descuentos">
+        <h2 class="text-center">Detalle de los descuentos aplicados</h2>
+        <p>Importe por alumno (sin descuento), por todo el período, del campo clínico: ${{ importeAlumno|number_format(2) }} </p>
+        <div>
+            <h3>Becas otorgadas:</h3>
+            <table class="table table-bordered table-sm text-center table-descuentos">
+                <thead>
+                    <tr>
+                        <th class="text-center">% desc. Inscripción</th>
+                        <th class="text-center">Monto Inscripción *</th>
+                        <th class="text-center">% desc. Colegiatura</th>
+                        <th class="text-center">Monto Colegiatura *</th>
+                        <th class="text-center">CAI *</th>
+                        <th class="text-center">Importe por Alumno *</th>
+                        <th class="text-center"># de Alumnos Becados</th>
+                        <th class="text-center">Sub Total *</th>
+                        <th class="text-center">Descuento Aplicado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if campo_clinico.totalTrabajadoresBecados > 0  %}
+                        <tr>
+                            <td>100%</td>
+                            <td>$0</td>
+                            <td>100%</td>
+                            <td>$0</td>
+                            <td>$0</td>
+                            <td>$0</td>
+                            <td>{{ campo_clinico.totalTrabajadoresBecados }}</td>
+                            <td>$0</td>
+                            <td>${{ ((importeAlumno|round(2))*campo_clinico.totalTrabajadoresBecados)|number_format(2) }}</td>
+                        </tr>
+                    {% endif %}
+                    {% for desc in campo_clinico.descuentos %}
+                        {% set importeAlumnoDesc = desc.importeCAI*campo_clinico.factorSemanalAutorizado %}
+                        <tr>
+                            <td>{{ desc.descuentoInscripcion }}%</td>
+                            <td>${{ (campo_clinico.montoInscripcion*(100.0- desc.descuentoInscripcion)/100.0)|number_format(2) }}</td>
+                            <td>{{ desc.descuentoColegiatura }}%</td>
+                            <td>${{ (campo_clinico.montoColegiatura*(100.0- desc.descuentoColegiatura)/100.0)|number_format(2) }}</td>
+                            <td>${{ desc.importeCAI|number_format(2) }}</td>
+                            <td>${{ importeAlumnoDesc|number_format(2) }}</td>
+                            <td>{{ desc.numAlumnos }}</td>
+                            {% set weeks = campo_clinico.cicloAcademico.id == 1 ? campo_clinico.weeks : 1 %}
+                            {% set subTotalDesc = importeAlumnoDesc*desc.numAlumnos*weeks %}
+                            <td>${{ subTotalDesc|number_format(2) }}</td>
+                            <td>${{ ((( (importeAlumno|round(2)) - (importeAlumnoDesc|round(2))*weeks)|number_format(2))*desc.numAlumnos)|number_format(2) }}</td>
+                        </tr>
+                    {% endfor %}
+                <tr>
+                    <td colspan="8" class="text-right">IMPORTE TOTAL DE BECAS OTORGADAS:</td>
+                    <td>${{ ( (subtotalGeneral|round(2))-(montoCC|round(2)))| number_format(2) }}</td>
+                </tr>
+                </tbody>
+            </table>
+            * Montos con el descuento aplicado
+            {#
+            <ul>
+                {% for desc in campo_clinico.descuentos %}
+                    <li class="desc-descrip">
+                        <ul>
+                            <li>Descuento Inscripción: {{ desc.descuentoInscripcion }} %</li>
+                            <li>Descuento Colegiatura: {{ desc.descuentoColegiatura }} %</li>
+                            <!--li>Importe por alumno: ${{ importeAlumno|number_format(2) }} </li-->
+                            {% set importeAlumnoDesc = desc.importeCAI*campo_clinico.factorSemanalAutorizado*campo_clinico.weeks %}
+                            <li>Importe por alumno con Descuento: ${{ importeAlumnoDesc|number_format(2) }} </li>
+                            <li>Núm alumnos: {{ desc.numAlumnos }}</li>
+
+                        </ul>
+                        <div class="importe-desc">Importe descuento aplicado: $
+                            {{ ((importeAlumno|round(2) - importeAlumnoDesc|number_format(2))*desc.numAlumnos)|number_format(2) }}</div>
+                    </li>
+
+                {% endfor %}
+            </ul>
+            #}
+        </div>
+    </div>
+    {% endif %}
+{%endblock%}

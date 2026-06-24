@@ -1,0 +1,53 @@
+
+.list-convenios {
+
+  .label-green {
+    background-color: #90ee90;
+  }
+
+  .label-yellow {
+    background-color: yellow;
+  }
+
+  .label-red {
+    background-color: #e84a4a;
+  }
+
+  .tabla-vigencia {
+    & > *:not(last-child) {
+      margin-bottom: 10px;
+    }
+  }
+
+  .tabla-vigencia__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &:before {
+      content: "";
+      position: absolute;
+      display: inline-block;
+      padding-left: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:first-child:before {
+      background-color: #90ee90;
+    }
+
+    &:nth-child(2):before {
+      background-color: yellow;
+    }
+
+    &:last-child:before {
+      background-color: #ea3b3b;
+    }
+
+  }
+
+  .tabla-vigencia__title {
+    margin-left: 30px;
+  }
+}

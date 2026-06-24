@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('ie.carga.comprobante.pago') }}
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\IE\\InstitucionController::menu')) }}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center">Carga de comprobante de pago</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="cargar-de-comprobante-de-pago-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('ie.carga.comprobante.pago') }}
+    <script>
+        window.GESTION_PAGO_PROPS = {{ gestionPago  | json_encode | raw }};
+        window.PAGO_ID_PROPS      = {{ id           | json_encode | raw }};
+        window.INSTITUCION_PROPS  = {{ institucion   | json_encode | raw }};
+        window.ERRORS_PROPS       = {{ errors        | json_encode | raw }};
+    </script>
+{% endblock %}

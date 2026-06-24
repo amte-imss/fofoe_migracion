@@ -1,0 +1,29 @@
+{% if showHeaderFooter %}
+<header>
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#navbarMainCollapse">
+                    <span class="sr-only">Interruptor de Navegación</span><span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="logos" href="https://www.gob.mx/" target="_blank">
+                    <img src="https://framework-gb.cdn.gob.mx/landing/img/logoheader.png"
+                         alt="logo gobierno de méxico"
+                    />
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarMainCollapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://www.gob.mx/tramites" title="Trámites">Trámites</a></li>
+                    <li><a href="https://www.gob.mx/gobierno" title="Gobierno">Gobierno</a></li>
+                    <li><a href="https://www.gob.mx/busqueda"><img
+                                    src="https://framework-gb.cdn.gob.mx/landing/img/lupa.png" alt=""/></a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+{% endif %}

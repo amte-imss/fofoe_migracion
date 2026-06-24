@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DashboardController extends AbstractController
 {
-    #[Route('/', name: 'app_dashboard')]
+    #[Route('/app_dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
         // SUPER y ADM ven el dashboard principal (no redirigir)

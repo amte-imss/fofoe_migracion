@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('came_solicitud_index') }}
+    <style>
+        .wrapper-came {
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Came\\CameController::menu')) }}
+    <div class='container-fluid wrapper-came'>
+        <div class="container">
+            <div class='row'>
+                <div class="col-md-12">
+                    <a href="{{ path('came.solicitud.index') }}">Regresar</a>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 40px">Validación de Montos de Inscripción y Colegiatura</h1>
+                </div>
+                <div class='col-md-12 mt-10 mb-30'>
+                    <div style="display: flex; align-items: flex-start; background-color: #ffeeba; border: 1px solid #ffc107; border-radius: 5px; padding: 10px;">
+                        <span style="font-size: 20px; margin-right: 10px;">📌</span>
+                        <p style="margin: 0; font-weight: bold; color: darkred">
+                            Debe revisar los montos de inscripción, colegiatura y listado de alumnos, así como todos los formatos FOFOE de los campos solicitados antes de continuar con la solicitud.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="solicitud-valida-montos-wrapper"></div>
+            <div class='row'>
+                <div class="col-md-12">
+                    <a href="{{ path('came.solicitud.index') }}">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('came_solicitud_index') }}
+    <script>
+        window.SOLICITUD = {{ solicitud | json_encode | raw }};
+    </script>
+{% endblock %}

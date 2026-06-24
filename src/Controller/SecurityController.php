@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\ConfiguracionGlobal;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -9,22 +11,44 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function __construct(
+        private readonly EntityManagerInterface $em,
+    ) {}
+
+    #[Route('/login/{tipo}', name: 'app_login')]
+    public function login(AuthenticationUtils $authenticationUtils, string $tipo = ''): Response
     {
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_dashboard');
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('homepage');
         }
 
-        return $this->render('security/login.html.twig', [
+        $view = match($tipo) {
+            'convenio'  => 'security/login_convenio.html.twig',
+            default     => 'security/login.html.twig',
+        };
+
+        return $this->render($view, [
             'last_username' => $authenticationUtils->getLastUsername(),
             'error'         => $authenticationUtils->getLastAuthenticationError(),
+            'tipo'          => $tipo,
+            'path_login'    => $this->generateUrl('app_login', ['tipo' => $tipo]),
+            'showImage'     => $this->showImages(),
         ]);
     }
 
-    #[Route('/logout', name: 'app_logout')]
-    public function logout(): void
+    private function showImages(): bool
     {
-        // interceptado por Symfony automáticamente
+        $config = $this->em->getRepository(ConfiguracionGlobal::class)
+            ->findOneBy(['clave' => 'FRONTEND_SHOW_HEADER_FOOTER']);
+
+        return $config ? boolval($config->getValor()) : true;
+    }
+
+    #[Route('/logout', name: 'app_logout')]
+    public function logout(): never
+    {
+        // Este método nunca se ejecuta —
+        // el firewall intercepta la ruta antes
+        throw new \LogicException('El firewall intercepta esta ruta.');
     }
 }

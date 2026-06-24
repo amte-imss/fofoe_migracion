@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('build/came_solicitud_index.css') }}">
+    <style>
+        .wrapper-came{
+            margin-top: 80px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class='container-fluid  wrapper-came'>
+        <div class="container">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 40px">Información del Campo Clínico</h1>
+                    <h2>Acreditación al portador</h2>
+                    <p>{{ campo_clinico.convenio.institucion.nombre }}</p>
+                    <p>Campo clínico: {{ campo_clinico.convenio.ciclosAcademicosFormatted }}</p>
+                    <p>Carrera: {{ campo_clinico.convenio.carrera.nombre }}</p>
+                    <p>Periodo: {{ campo_clinico.fechaInicialFormatted }} al {{ campo_clinico.fechaFinalFormatted }}</p>
+                    {%  if (campo_clinico.horario) %}
+                        Horario: {{ campo_clinico.horario }}
+                    {% endif%}
+                    <h2>SEDE</h2>
+                    <p>{{ campo_clinico.unidad.nombre }}</p>
+                    <p>DELEGACIÓN: {{ campo_clinico.unidad.delegacion.nombre | upper }}</p>
+                    <p>{{ index }} / {{ total }}</p>
+                </div>
+            </div>
+            <div id="solicitudes-table"></div>
+        </div>
+    </div>
+{% endblock %}

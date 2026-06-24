@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe.ciclo-educativo.index') }}
+    <style>
+        .container_fofoe {
+            width: 95vw !important;
+            margin-top: 64px;
+            margin-bottom: 64px;
+        }
+        .container_content {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+    <div class='container-fluid wrapper-fofoe'>
+        <div class="container_fofoe">
+            <div class='row'>
+                <div class='col-md-12'>
+                    <h1 style="text-align: center; padding-bottom: 10px">Solicitudes de ciclos educativos</h1>
+                </div>
+            </div>
+            <div class="react"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe.ciclo-educativo.index') }}
+{% endblock %}

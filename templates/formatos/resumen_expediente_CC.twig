@@ -1,0 +1,199 @@
+{%extends'formatos/base.html.twig'%}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .table {
+            border: 1px solid black;
+            border-collapse: collapse;
+            border-spacing: 0;
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 5px;|
+        }
+        .table th {
+            font-size: 12px;
+            padding: 3px;
+        }
+        .table td, th {
+            font-size: 14px;
+            border: 1px solid black;
+            padding: 6px;
+        }
+        .text-right {
+            text-align: right ;
+        }
+        .text-center {
+            text-align: center;
+        }
+
+        .column {
+            float: left;
+            width: 50%;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+{% endblock %}
+
+{%block body%}
+
+    {# -------------- TITULO ------------ #}
+    <div>
+        <h1> RESUMEN DEL EXPEDIENTE DE
+            LA REFERENCIA
+            DE PAGO DE CAMPO(S) CLÍNICO(S)</h1>
+    </div>
+
+    {# -------------- DATOS SOLICITUD ------------ #}
+    <div class="">
+        <div class="row">
+            <div class="col-md-6 mt-10">
+                <h2>Referencia Bancaria: <strong>{{ pagos[0].referenciaBancaria }}</strong></h2>
+                <p><strong>Estado de la referencia:</strong>
+                    {% if solicitud.esPagoMultiple  %}
+                        {{ campos[0].estatus.nombre }}
+                    {% else %}
+                        {{ solicitud.estatus }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <h3><strong>Solicitud</strong></h3>
+                <p class='mb-5'>No. de Solicitud: <strong>{{solicitud.noSolicitud}}</strong></p>
+                <p class='mb-5'>Fecha de registro: <strong>{{ solicitud.fecha }}</strong></p>
+                <p class='mb-5'>Tipo de pago: <strong>{{ solicitud.tipoPago }}</strong></p>
+                <p class='mb-20'>Monto total del campo
+                    {% if solicitud.esPagoMultiple  %}
+                        del campo clínico <strong>$ {{ campos[0].monto|number_format(2, '.', ',') }}</strong>
+                    {% else %}
+                        de la solicitud <strong>$ {{ solicitud.monto|number_format(2, '.', ',') }}</strong>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="column">
+                <h3 class='mb-5'><strong>Institución</strong></h3>
+                <p class='mb-5'>Nombre: <strong>{{ solicitud.institucion.nombre }}</strong></p>
+                <p class='mb-5'>RFC: <strong>{{ solicitud.institucion.rfc }}</strong></p>
+                <p class='mb-5'>OOAD: <strong>{{ solicitud.delegacion.nombre }}</strong></p>
+                {#
+                campos.length > 0 && campos[0].unidad.esUmae ?
+                <p class='mb-5'>UMAE: <strong>{campos[0].unidad.nombre}</strong></p>
+                : null
+                #}
+            </div>
+        </div>
+    </div>
+
+    {# ---- DATOS DEL CAMPO------------------- #}
+    <div class="row" >
+        <h3 class='mb-5'><strong>Campo(s) clínico(s)</strong></h3>
+
+        <table class='table table-condensed'>
+            <thead>
+            <tr>
+                <th>Sede</th>
+                <th>Campo Clínico</th>
+                <th>Carrera</th>
+                <th>No. Lugares</th>
+                <th>Período</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for campo in campos %}
+                {% if campo.lugaresAutorizados > 0 %}
+                <tr>
+                    <td>{{ campo.unidad.nombre }}</td>
+                    <td>{{ campo.cicloAcademico ? campo.cicloAcademico.nombre : ''}}</td>
+                    <td>{{ campo.convenio.nivelAcademico ? campo.convenio.nivelAcademico.nombre : ''}} -
+                        {{ campo.convenio.carrera ? campo.convenio.carrera.nombre  : ''}}</td>
+                    <td>
+                        Autorizados {{ campo.lugaresAutorizados }} <br />
+                        {% if campo.totalTrabajadoresBecados > 0 %}
+                            Trabajadores Becados {{ campo.totalTrabajadoresBecados }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ campo.fechaInicialFormatted }}
+                        -
+                        {{ campo.fechaFinalFormatted }}
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# --------------------- HISTORIAL DE PAGOS --------------- #}
+    {% if pagos|length > 0 %}
+        <div class="col-md-12 mb-20">
+            <h3 class='mb-5'><strong>Pago(s)</strong></h3>
+
+            <table class='table table-condensed'>
+                <thead>
+                <tr>
+                    <th>Situación</th>
+                    <th>Fecha de Pago</th>
+                    <th>Monto validado</th>
+                    <th>Observaciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for pago in pagos %}
+                    <tr>
+                        <td> {% if pago.isComprobantePagoCargado %}
+                                Cargado
+                            {% else %}
+                                Pendiente de cargar
+                            {% endif %}
+                        </td>
+                        <td>{{ pago.fechaPagoFormatted }}</td>
+                        {% if pago.validado or pago.observaciones %}
+                            <td> $ {{ pago.monto|number_format(2, '.', ',') }} </td>
+                            <td> {{ pago.observaciones}} </td>
+                        {% else %}
+                            <td> - </td>
+                            <td>Pendiente de Validar</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {# --------- FACTURA ------ #}
+    {% if facturas|length > 0 %}
+        <div class="row">
+            <div class="col-md-12">
+                <h3><strong>Factura(s) generada(s)</strong></h3>
+                <table class='table'>
+                    <thead class='headers'>
+                    <tr>
+                        <th>Fecha Facturación</th>
+                        <th>Monto Facturado</th>
+                        <th>Folio Factura</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for factura in facturas %}
+                        <tr>
+                            <td>{{factura.fechaFacturacionFormatted}}</td>
+                            <td>$ {{ factura.monto|number_format(2, '.', ',') }}</td>
+                            <td>{{ factura.folio }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+{%endblock%}

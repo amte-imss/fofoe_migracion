@@ -1,0 +1,26 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader">Actualización de validación de pago para Ciclo Educativo.</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>Estimado</p>
+
+            <p>
+                El Instituto Mexicano del Seguro Social, te informamos que se rechazó el OFICIO DE MONTOS para la
+                solicitud "{{ solicitud.noSolicitud }}".
+            </p>
+
+            <p>Recibe un cordial saludo y quedamos a tus órdenes para cualquier aclaración o duda; comunícate con
+                nosotros por medio del correo electrónico factura.fofoe@imss.gob.mx.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}
