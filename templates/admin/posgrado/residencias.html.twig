@@ -1,0 +1,109 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}{{ titulo }} - Administración{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .residences-admin-table { min-width: 1050px; }
+    .residences-admin-table th { white-space: nowrap; font-size: .7rem; text-transform: uppercase; color: #667085; }
+    .residences-admin-table td { white-space: nowrap; font-size: .8rem; vertical-align: middle; }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set imssRows = [
+    {id: 871, folio: 'IMSS-2026-0871', ciclo: '2026-2027', ooad: 'Jalisco', especialidad: 'Medicina Interna', grado: 'R2', residente: 'María Fernanda López'},
+    {id: 870, folio: 'IMSS-2026-0870', ciclo: '2026-2027', ooad: 'Nuevo León', especialidad: 'Cardiología', grado: 'R3', residente: 'Carlos Andrés Gómez'},
+    {id: 869, folio: 'IMSS-2026-0869', ciclo: '2026-2027', ooad: 'Puebla', especialidad: 'Pediatría', grado: 'R1', residente: 'Laura Isabel Pérez'}
+] %}
+{% set noImssRows = [
+    {id: 522, folio: 'OF-EXT-2026-0522', nacionalidad: 'Colombiana', ooad: 'Jalisco', especialidad: 'Anestesiología', ciclo: '2026', residente: 'Camila Andrea Torres'},
+    {id: 521, folio: 'OF-EXT-2026-0521', nacionalidad: 'Peruana', ooad: 'Nuevo León', especialidad: 'Cirugía General', ciclo: '2026', residente: 'Diego Sebastián Rojas'},
+    {id: 520, folio: 'OF-EXT-2026-0520', nacionalidad: 'Ecuatoriana', ooad: 'Ciudad de México Sur', especialidad: 'Dermatología', ciclo: '2026', residente: 'Valentina Mora'}
+] %}
+{% set residencias = tipo == 'imss' ? imssRows : noImssRows %}
+
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">{{ titulo }}</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">{{ subtitulo }}</div>
+        </div>
+        <div class="d-flex gap-2">
+            {% if tipo == 'no_imss' %}
+            <button type="button" class="btn btn-primary" disabled title="Disponible cuando se implemente el backend">
+                <i class="ti ti-plus me-1"></i>Registrar residencia
+            </button>
+            {% endif %}
+            <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" onsubmit="return false;">
+                <div class="col-lg-5">
+                    <label class="form-label">Buscar</label>
+                    <input type="search" class="form-control" placeholder="OOAD, especialidad, sede, folio, ciclo o residente">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Ciclo</label>
+                    <select class="form-select"><option>Todos</option><option>2026-2027</option><option>2026</option><option>2025-2026</option></select>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <label class="form-label">OOAD</label>
+                    <select class="form-select"><option>Todas</option><option>Jalisco</option><option>Nuevo León</option><option>Ciudad de México Sur</option></select>
+                </div>
+                <div class="col-md-4 col-lg-2 d-flex gap-2">
+                    <button type="button" class="btn btn-primary flex-fill"><i class="ti ti-search me-1"></i>Buscar</button>
+                    <button type="reset" class="btn btn-icon btn-outline-secondary"><i class="ti ti-x"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table residences-admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Folio/Oficio</th>
+                        {% if tipo == 'no_imss' %}<th>Nacionalidad</th>{% endif %}
+                        <th>Ciclo</th>
+                        <th>OOAD</th>
+                        <th>Especialidad</th>
+                        {% if tipo == 'imss' %}<th>Grado</th>{% endif %}
+                        <th>Residente</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for residencia in residencias %}
+                    <tr>
+                        <td class="fw-bold">#{{ residencia.id }}</td>
+                        <td class="font-monospace">{{ residencia.folio }}</td>
+                        {% if tipo == 'no_imss' %}<td>{{ residencia.nacionalidad }}</td>{% endif %}
+                        <td>{{ residencia.ciclo }}</td>
+                        <td>{{ residencia.ooad }}</td>
+                        <td>{{ residencia.especialidad }}</td>
+                        {% if tipo == 'imss' %}<td>{{ residencia.grado }}</td>{% endif %}
+                        <td class="fw-semibold">{{ residencia.residente }}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary" disabled>
+                                <i class="ti ti-eye me-1"></i>Detalle
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer text-muted">Mostrando 3 registros de ejemplo</div>
+    </div>
+</div>
+{% endblock %}

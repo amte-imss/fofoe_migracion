@@ -24,13 +24,14 @@
 
 {% block userbar_aside %}
     {# ── Etiqueta de rol (h3 bold, igual que el original) ── #}
-    {% if is_granted('ROLE_CAME') %}
+    {% set directRoles = app.user.directRoles|default(app.user.roles) %}
+    {% if 'ROLE_CAME' in directRoles %}
         <h3>CPEI</h3>
-    {% elseif is_granted('ROLE_JDES') %}
+    {% elseif 'ROLE_JDES' in directRoles %}
         <h3>DEIS</h3>
-    {% elseif is_granted('ROLE_CAME_MINUS') %}
+    {% elseif 'ROLE_CAME_MINUS' in directRoles %}
         <h3>CAME</h3>
-    {% elseif is_granted('ROLE_JDES_MINUS') %}
+    {% elseif 'ROLE_JDES_MINUS' in directRoles %}
         <h3>JDES</h3>
     {% endif %}
 

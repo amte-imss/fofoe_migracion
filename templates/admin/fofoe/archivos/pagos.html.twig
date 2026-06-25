@@ -1,0 +1,89 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Archivos de Pagos - FOFOE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .document-preview { min-height: 430px; border: 1px dashed #cfd8d3; border-radius: 8px; background: #f8faf9; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #667085; text-align: center; padding: 2rem; }
+    .document-preview i { color: #b42318; font-size: 4rem; }
+    .data-label { color: #667085; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+    .data-value { color: #1f2933; font-size: .9rem; font-weight: 600; margin-top: .2rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Archivos de Pagos</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">Consulta y reemplazo de comprobantes de pago</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" onsubmit="return false;">
+                <div class="col-md-8 col-lg-5">
+                    <label class="form-label">ID del pago</label>
+                    <input type="number" class="form-control" value="946" min="1" placeholder="Captura el ID del pago">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <button type="button" class="btn btn-primary w-100"><i class="ti ti-search me-1"></i>Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header"><h2 class="card-title">Información del pago</h2></div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-4"><div class="data-label">ID</div><div class="data-value">#946</div></div>
+                        <div class="col-8"><div class="data-label">Tipo</div><div class="data-value">Solicitud CC</div></div>
+                        <div class="col-6"><div class="data-label">Monto</div><div class="data-value">$78,500.00 MXN</div></div>
+                        <div class="col-6"><div class="data-label">Fecha de pago</div><div class="data-value">18/05/2026</div></div>
+                        <div class="col-12"><div class="data-label">Referencia bancaria</div><div class="data-value font-monospace">5500264092001847</div></div>
+                        <div class="col-6"><div class="data-label">Validado</div><div class="data-value">Pendiente</div></div>
+                        <div class="col-6"><div class="data-label">Requiere factura</div><div class="data-value">Sí</div></div>
+                        <div class="col-12"><div class="data-label">Observaciones</div><div class="data-value">Comprobante pendiente de revisión administrativa.</div></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <label class="form-label">Reemplazar comprobante</label>
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" accept=".pdf" disabled>
+                        <button type="button" class="btn btn-primary" disabled title="Disponible cuando se implemente el backend">
+                            <i class="ti ti-upload me-1"></i>Reemplazar
+                        </button>
+                    </div>
+                    <div class="form-hint">Solo archivos PDF. La carga estará disponible al conectar el backend.</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-header d-flex align-items-center">
+                    <h2 class="card-title">Comprobante de pago</h2>
+                    <button type="button" class="btn btn-sm btn-outline-primary ms-auto" disabled>
+                        <i class="ti ti-external-link me-1"></i>Abrir PDF
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="document-preview">
+                        <i class="ti ti-file-type-pdf mb-3"></i>
+                        <div class="fw-bold text-dark">comprobante_pago_946.pdf</div>
+                        <div class="small mt-1">Aquí se mostrará el comprobante cargado en un visor PDF.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

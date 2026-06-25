@@ -1,0 +1,151 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Pagos - Administración FOFOE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payments-table { min-width: 1540px; }
+    .payments-table th { white-space: nowrap; font-size: .72rem; text-transform: uppercase; color: #667085; }
+    .payments-table td { white-space: nowrap; font-size: .8rem; }
+    .payment-reference { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .76rem; }
+    .status-badge { display: inline-flex; align-items: center; gap: .3rem; border-radius: 20px; padding: .24rem .6rem; font-size: .72rem; font-weight: 700; }
+    .status-pending { background: #fff4dc; color: #8a5a00; }
+    .status-valid { background: #e6f4ee; color: #006847; }
+    .status-rejected { background: #fce8e6; color: #b42318; }
+    .origin-badge { background: #eef2f6; color: #475467; border-radius: 5px; padding: .22rem .45rem; font-size: .7rem; font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h2 mb-1">Listado de pagos</h1>
+            <div class="text-muted">{{ total|number_format(0, '.', ',') }} registros encontrados</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-lg-5">
+                    <label class="form-label">Buscar</label>
+                    <input type="search" name="q" class="form-control" value="{{ filters.q }}" placeholder="ID, referencia, solicitud, residencia, alumno o factura">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Estado</label>
+                    <select name="status" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="pendiente" {{ filters.status == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+                        <option value="validado" {{ filters.status == 'validado' ? 'selected' : '' }}>Validado</option>
+                        <option value="rechazado" {{ filters.status == 'rechazado' ? 'selected' : '' }}>No validado</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Origen</label>
+                    <select name="origin" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="cc" {{ filters.origin == 'cc' ? 'selected' : '' }}>Solicitud CC</option>
+                        <option value="residencia" {{ filters.origin == 'residencia' ? 'selected' : '' }}>Residencia</option>
+                        <option value="enfermeria" {{ filters.origin == 'enfermeria' ? 'selected' : '' }}>Enfermería</option>
+                        <option value="simulacion" {{ filters.origin == 'simulacion' ? 'selected' : '' }}>Simulación</option>
+                        <option value="edu_per" {{ filters.origin == 'edu_per' ? 'selected' : '' }}>Educación Permanente</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-1">
+                    <label class="form-label">Filas</label>
+                    <select name="limit" class="form-select">
+                        {% for option in [20, 50, 100] %}
+                            <option value="{{ option }}" {{ limit == option ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary flex-fill"><i class="ti ti-search me-1"></i>Buscar</button>
+                    <a href="{{ path('admin.fofoe.pagos.index') }}" class="btn btn-icon btn-outline-secondary" title="Limpiar filtros"><i class="ti ti-x"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table payments-table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Monto</th><th>Monto registrado</th><th>Fecha registrada</th>
+                        <th>Fecha de pago</th><th>Referencia bancaria</th><th>Moneda</th>
+                        <th>Validado</th><th>Requiere factura</th><th>Factura generada</th>
+                        <th>Es test</th><th>Comprobante</th><th>Origen</th>
+                        <th>Registro relacionado</th><th>Factura</th><th>Fecha creación</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for pago in pagos %}
+                    <tr>
+                        <td class="fw-bold">#{{ pago.id }}</td>
+                        <td>{{ pago.monto is not null ? '$' ~ pago.monto|number_format(2, '.', ',') : '—' }}</td>
+                        <td>{{ pago.monto_registrado is not null ? '$' ~ pago.monto_registrado|number_format(2, '.', ',') : '—' }}</td>
+                        <td>{{ pago.fecha_pago_registrada ? pago.fecha_pago_registrada|date('d/m/Y') : '—' }}</td>
+                        <td>{{ pago.fecha_pago ? pago.fecha_pago|date('d/m/Y') : '—' }}</td>
+                        <td class="payment-reference">{{ pago.referencia_bancaria ?: '—' }}</td>
+                        <td>{{ pago.tipo_moneda }}</td>
+                        <td>
+                            {% if pago.validado is same as(null) %}
+                                <span class="table-switch is-pending" title="Pendiente de validación">
+                                    <span class="form-check form-switch"><input class="form-check-input" type="checkbox" disabled></span>
+                                    <span class="table-switch-label">Pendiente</span>
+                                </span>
+                            {% else %}
+                                <span class="table-switch">
+                                    <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ pago.validado ? 'checked' : '' }} disabled></span>
+                                    <span class="table-switch-label">{{ pago.validado ? 'Sí' : 'No' }}</span>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ pago.requiere_factura ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ pago.requiere_factura ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ pago.factura_generada ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ pago.factura_generada ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ pago.is_test ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ pago.is_test ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td>{{ pago.comprobante_pago ?: '—' }}</td>
+                        <td><span class="origin-badge">{{ pago.origen }}</span></td>
+                        <td>{{ pago.origen_referencia }}</td>
+                        <td>{{ pago.factura_folio ?: '—' }}</td>
+                        <td>{{ pago.fecha_creacion ? pago.fecha_creacion|date('d/m/Y') : '—' }}</td>
+                        <td><a href="{{ path('admin.fofoe.pagos.show', {id: pago.id}) }}" class="btn btn-sm btn-icon btn-outline-primary" title="Ver detalle"><i class="ti ti-eye"></i></a></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="17" class="text-center text-muted py-5">No se encontraron pagos con los filtros seleccionados.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% set pages = (total / limit)|round(0, 'ceil') %}
+        {% if pages > 1 %}
+        <div class="card-footer d-flex align-items-center">
+            <span class="text-muted">Página {{ page }} de {{ pages }}</span>
+            <div class="ms-auto d-flex gap-2">
+                {% if page > 1 %}<a class="btn btn-sm btn-outline-secondary" href="{{ path('admin.fofoe.pagos.index', filters|merge({page: page - 1})) }}"><i class="ti ti-chevron-left"></i></a>{% endif %}
+                {% if page < pages %}<a class="btn btn-sm btn-outline-secondary" href="{{ path('admin.fofoe.pagos.index', filters|merge({page: page + 1})) }}"><i class="ti ti-chevron-right"></i></a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

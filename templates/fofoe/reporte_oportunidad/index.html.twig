@@ -1,0 +1,177 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}FOFOE — Oportunidad de pago{% endblock %}
+
+{% block extra_css %}
+    {{ parent() }}
+    .reporte-oportunidad-table th,
+    .reporte-oportunidad-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .reporte-oportunidad-table .group-head {
+        text-align: center;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        background: #f8faf9;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .reporte-oportunidad-table .money {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col">
+                <div class="text-muted mb-1">FOFOE / Reportes</div>
+                <h2 class="page-title mb-0">Reporte de oportunidad de pago</h2>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('fofoe.reportes') }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left me-1"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-sm-6 col-md-3">
+                    <label for="desde" class="form-label">Desde</label>
+                    <input id="desde" name="desde" type="date" class="form-control" value="{{ filters.desde }}">
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <label for="hasta" class="form-label">Hasta</label>
+                    <input id="hasta" name="hasta" type="date" class="form-control" value="{{ filters.hasta }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input id="search" name="search" type="search" class="form-control" value="{{ filters.search }}" placeholder="Solicitud, institución o referencia">
+                </div>
+                <div class="col-sm-4 col-md-2">
+                    <label for="limit" class="form-label">Registros</label>
+                    <select id="limit" name="limit" class="form-select">
+                        {% for option in [10, 25, 50, 100] %}
+                            <option value="{{ option }}" {{ filters.limit == option ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-search me-1"></i>Consultar
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-outline-success" href="{{ path('fofoe.reporte_oportunidad', {
+                        desde: filters.desde,
+                        hasta: filters.hasta,
+                        search: filters.search,
+                        export: 1
+                    }) }}">
+                        <i class="ti ti-file-spreadsheet me-1"></i>Descargar CSV
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table reporte-oportunidad-table" style="min-width: 1400px;">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Consecutivo</th>
+                        <th rowspan="2">Número de Solicitud</th>
+                        <th rowspan="2">Fecha de Solicitud</th>
+                        <th rowspan="2">Delegación</th>
+                        <th rowspan="2">Campo Clínico</th>
+                        <th rowspan="2">Carrera</th>
+                        <th rowspan="2">Período</th>
+                        <th rowspan="2">Institución</th>
+                        <th rowspan="2">Alumnos</th>
+                        <th colspan="4" class="group-head">Datos de la aportación</th>
+                        <th rowspan="2">Indicador</th>
+                        <th rowspan="2">Días</th>
+                    </tr>
+                    <tr>
+                        <th class="text-end">Importe</th>
+                        <th>Referencia de Pago</th>
+                        <th>Fecha de depósito</th>
+                        <th>Fecha de Facturación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set offset = meta.totalItems > 0 ? ((meta.pageSize * (meta.page - 1)) + 1) : 0 %}
+                    {% for row in reporte %}
+                        <tr>
+                            <td>{{ offset + loop.index0 }}</td>
+                            <td>{{ row.solicitud_numero }}</td>
+                            <td>{{ row.fechaSolicitudFormatted }}</td>
+                            <td>{{ row.delegacion }}</td>
+                            <td>{{ row.campo_clinico_nombre }}</td>
+                            <td>{{ row.carrera }}</td>
+                            <td>{{ row.fechaInicialFormatted }} / {{ row.fechaFinalFormatted }}</td>
+                            <td>{{ row.institucion }}</td>
+                            <td>{{ row.lugares_autorizados }}</td>
+                            <td class="money">${{ row.monto|number_format(2, '.', ',') }}</td>
+                            <td>{{ row.referencia_bancaria }}</td>
+                            <td>{{ row.fechaPagoFormatted }}</td>
+                            <td>{{ row.facturacion }}</td>
+                            <td>
+                                {% if row.indicador == 'CUMPLE' %}
+                                    <span class="badge bg-success-lt">{{ row.indicador }}</span>
+                                {% elseif row.indicador == 'NO CUMPLE' %}
+                                    <span class="badge bg-danger-lt">{{ row.indicador }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary-lt">{{ row.indicador }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ row.dias }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="15" class="text-center text-muted py-4">
+                                No hay registros disponibles.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if reporte %}
+        {% set first = (meta.pageSize * (meta.page - 1)) + 1 %}
+        {% set last = first + reporte|length - 1 %}
+        <div class="d-flex align-items-center justify-content-between mt-3">
+            <div class="text-muted">
+                Mostrando {{ first }} - {{ last }} de {{ meta.totalItems }}
+            </div>
+            <div class="btn-list">
+                {% set queryBase = {
+                    desde: filters.desde,
+                    hasta: filters.hasta,
+                    search: filters.search,
+                    limit: filters.limit
+                } %}
+                <a class="btn btn-outline-secondary {{ meta.page <= 1 ? 'disabled' : '' }}"
+                   href="{{ path('fofoe.reporte_oportunidad', queryBase|merge({page: meta.page - 1})) }}">
+                    Anterior
+                </a>
+                <span class="btn disabled">Página {{ meta.page }} de {{ meta.numPags }}</span>
+                <a class="btn btn-outline-secondary {{ meta.page >= meta.numPags ? 'disabled' : '' }}"
+                   href="{{ path('fofoe.reporte_oportunidad', queryBase|merge({page: meta.page + 1})) }}">
+                    Siguiente
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

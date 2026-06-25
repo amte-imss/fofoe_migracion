@@ -1,0 +1,184 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}FOFOE — Detalle CCS/INT{% endblock %}
+
+{% block extra_css %}
+    {{ parent() }}
+    .reporte-detalle-table th,
+    .reporte-detalle-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .reporte-detalle-table .money {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col">
+                <div class="text-muted mb-1">FOFOE / Reportes</div>
+                <h2 class="page-title mb-0">Reporte detallado de campos clínicos - Ciclos Clínicos e Internado Médico</h2>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('fofoe.reportes') }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left me-1"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="carrera" class="form-label">Carrera</label>
+                    <select id="carrera" name="carrera" class="form-select">
+                        <option value="">Todas</option>
+                        {% for carrera in catalogs.carreras %}
+                            <option value="{{ carrera.id }}" {{ filters.carrera == carrera.id ? 'selected' : '' }}>{{ carrera.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="estatus" class="form-label">Estado de la solicitud</label>
+                    <select id="estatus" name="estatus" class="form-select">
+                        <option value="">Todos</option>
+                        {% for estatus in catalogs.estatus %}
+                            <option value="{{ estatus.id }}" {{ filters.estatus == estatus.id ? 'selected' : '' }}>{{ estatus.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-6 col-md-2">
+                    <label for="fechaIni" class="form-label">Fecha inicio desde</label>
+                    <input id="fechaIni" name="fechaIni" type="date" class="form-control" value="{{ filters.fechaIni }}">
+                </div>
+                <div class="col-sm-6 col-md-2">
+                    <label for="fechaFin" class="form-label">Fecha fin hasta</label>
+                    <input id="fechaFin" name="fechaFin" type="date" class="form-control" value="{{ filters.fechaFin }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input id="search" name="search" type="search" class="form-control" value="{{ filters.search }}" placeholder="Solicitud, institución, RFC o referencia">
+                </div>
+                <div class="col-sm-4 col-md-2">
+                    <label for="limit" class="form-label">Registros</label>
+                    <select id="limit" name="limit" class="form-select">
+                        {% for option in [10, 25, 50, 100] %}
+                            <option value="{{ option }}" {{ filters.limit == option ? 'selected' : '' }}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-search me-1"></i>Consultar
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-outline-success" href="{{ path('fofoe.reporte_detalle_ccs_int', {
+                        search: filters.search,
+                        estatus: filters.estatus,
+                        carrera: filters.carrera,
+                        fechaIni: filters.fechaIni,
+                        fechaFin: filters.fechaFin,
+                        export: 1
+                    }) }}">
+                        <i class="ti ti-file-spreadsheet me-1"></i>Descargar CSV
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table reporte-detalle-table" style="min-width: 1800px;">
+                <thead>
+                    <tr>
+                        <th>Número de Solicitud</th>
+                        <th>Fecha de Solicitud</th>
+                        <th>OOAD</th>
+                        <th>Unidad</th>
+                        <th>Institución Educativa</th>
+                        <th>RFC</th>
+                        <th>Ciclo Académico</th>
+                        <th>Carrera</th>
+                        <th>Asignatura</th>
+                        <th>Núm. lugares solicitados</th>
+                        <th>Núm. lugares autorizados</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha de Conclusión</th>
+                        <th>Número de Referencia</th>
+                        <th>Importe del Pago</th>
+                        <th>Fecha del Pago</th>
+                        <th>Número de Factura</th>
+                        <th>Estado de la solicitud</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in reporte %}
+                        <tr>
+                            <td>{{ row.no_solicitud }}</td>
+                            <td>{{ row.fechaSolicitudFormatted }}</td>
+                            <td>{{ row.ooad }}</td>
+                            <td>{{ row.unidad }}</td>
+                            <td>{{ row.institucion }}</td>
+                            <td>{{ row.institucion_rfc }}</td>
+                            <td>{{ row.ciclo_academico }}</td>
+                            <td>{{ row.carrera }}</td>
+                            <td>{{ row.asignatura }}</td>
+                            <td class="text-center">{{ row.lugares_solicitados }}</td>
+                            <td class="text-center">{{ row.lugares_autorizados }}</td>
+                            <td>{{ row.fechaInicialFormatted }}</td>
+                            <td>{{ row.fechaFinalFormatted }}</td>
+                            <td>{{ row.referencia_bancaria }}</td>
+                            <td class="money">{{ row.pago_monto is not null ? '$' ~ row.pago_monto|number_format(2, '.', ',') : '' }}</td>
+                            <td>{{ row.pagoFechaFormatted }}</td>
+                            <td>{{ row.factura_folio }}</td>
+                            <td>{{ row.estado_solicitud }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="18" class="text-center text-muted py-4">
+                                No hay registros disponibles.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if reporte %}
+        {% set first = (meta.pageSize * (meta.page - 1)) + 1 %}
+        {% set last = first + reporte|length - 1 %}
+        <div class="d-flex align-items-center justify-content-between mt-3">
+            <div class="text-muted">
+                Mostrando {{ first }} - {{ last }} de {{ meta.totalItems }}
+            </div>
+            <div class="btn-list">
+                {% set queryBase = {
+                    search: filters.search,
+                    estatus: filters.estatus,
+                    carrera: filters.carrera,
+                    fechaIni: filters.fechaIni,
+                    fechaFin: filters.fechaFin,
+                    limit: filters.limit
+                } %}
+                <a class="btn btn-outline-secondary {{ meta.page <= 1 ? 'disabled' : '' }}"
+                   href="{{ path('fofoe.reporte_detalle_ccs_int', queryBase|merge({page: meta.page - 1})) }}">
+                    Anterior
+                </a>
+                <span class="btn disabled">Página {{ meta.page }} de {{ meta.numPags }}</span>
+                <a class="btn btn-outline-secondary {{ meta.page >= meta.numPags ? 'disabled' : '' }}"
+                   href="{{ path('fofoe.reporte_detalle_ccs_int', queryBase|merge({page: meta.page + 1})) }}">
+                    Siguiente
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

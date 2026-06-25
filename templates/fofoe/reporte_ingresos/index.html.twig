@@ -1,0 +1,163 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}FOFOE — Reporte de ingresos{% endblock %}
+
+{% block extra_css %}
+    {{ parent() }}
+    .reporte-ingresos-table th,
+    .reporte-ingresos-table td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .reporte-ingresos-table .group-head {
+        text-align: center;
+        font-size: .72rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        background: #f8faf9;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .reporte-ingresos-table .sub-head {
+        text-align: right;
+        font-size: .72rem;
+        color: #6c757d;
+    }
+    .reporte-ingresos-table .money {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+    }
+    .reporte-ingresos-table tfoot td {
+        background: #f8faf9;
+        border-top: 2px solid #dee2e6;
+    }
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col">
+                <div class="text-muted mb-1">FOFOE / Reportes</div>
+                <h2 class="page-title mb-0">Reporte de ingresos</h2>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('fofoe.reportes') }}" class="btn btn-outline-secondary">
+                    <i class="ti ti-arrow-left me-1"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-sm-4 col-md-3">
+                    <label for="anio" class="form-label">Año de consulta</label>
+                    <select id="anio" name="anio" class="form-select">
+                        {% for year in currentYear..(currentYear - 4) %}
+                            <option value="{{ year }}" {{ selectedYear == year ? 'selected' : '' }}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-search me-1"></i>Consultar
+                    </button>
+                </div>
+                <div class="col-auto">
+                    <a class="btn btn-outline-success" href="{{ path('fofoe.reporte_ingresos', {anio: selectedYear, export: 1}) }}">
+                        <i class="ti ti-file-spreadsheet me-1"></i>Descargar CSV
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table reporte-ingresos-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Mes/Año</th>
+                        <th colspan="2" class="group-head">Enfermería IMSS</th>
+                        <th colspan="2" class="group-head">Extranjeros</th>
+                        <th colspan="2" class="group-head">Ciclos Clínicos</th>
+                        <th colspan="2" class="group-head">Internado Médico</th>
+                        <th colspan="2" class="group-head">Edu Per Presencial</th>
+                        <th colspan="2" class="group-head">Edu Per Simulación</th>
+                        <th colspan="2" class="group-head">Edu Per A Distancia</th>
+                        <th rowspan="2" class="text-end">Total mensual</th>
+                    </tr>
+                    <tr>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                        <th class="sub-head">Validados</th>
+                        <th class="sub-head">Pendientes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in reporte %}
+                        <tr>
+                            <td class="fw-semibold">{{ '%02d'|format(row.Mes) }}/{{ row.Anio }}</td>
+                            <td class="money">${{ row.enfVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.enfPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.extVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.extPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.ccVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.ccPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.intVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.intPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.presVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.presPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.simVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.simPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.distVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ row.distPend|number_format(2, '.', ',') }}</td>
+                            <td class="money fw-semibold">${{ row.totalMensual|number_format(2, '.', ',') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="16" class="text-center text-muted py-4">
+                                No hay ingresos registrados para {{ selectedYear }}.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                {% if reporte %}
+                    <tfoot>
+                        <tr class="fw-bold">
+                            <td>Total</td>
+                            <td class="money">${{ totals.enfVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.enfPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.extVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.extPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.ccVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.ccPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.intVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.intPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.presVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.presPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.simVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.simPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.distVal|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.distPend|number_format(2, '.', ',') }}</td>
+                            <td class="money">${{ totals.totalMensual|number_format(2, '.', ',') }}</td>
+                        </tr>
+                    </tfoot>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -30,6 +30,35 @@
             font-size: .65rem; font-weight: 700; letter-spacing: .1em;
             text-transform: uppercase; color: rgba(255,255,255,.35); padding: 1rem 1.25rem .35rem;
         }
+        .nav-group { margin: 2px 0; }
+        .nav-group details { margin: 0 8px .2rem; }
+        .nav-group summary::-webkit-details-marker { display: none; }
+        .nav-group-toggle {
+            display: flex; align-items: center; gap: .55rem;
+            color: rgba(255,255,255,.76); font-size: .78rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            border-radius: 6px; padding: 8px 12px; cursor: pointer;
+            transition: background .15s, color .15s;
+        }
+        .nav-group-toggle:hover,
+        .nav-group details[open] .nav-group-toggle {
+            background: rgba(255,255,255,.12); color: #fff;
+        }
+        .nav-group-toggle .nav-link-icon { color: rgba(255,255,255,.55); }
+        .nav-group-toggle .nav-group-chevron {
+            margin-left: auto; color: rgba(255,255,255,.45);
+            font-size: .9rem; transition: transform .15s, color .15s;
+        }
+        .nav-group details[open] .nav-group-chevron { transform: rotate(90deg); color: #fff; }
+        .nav-group-list {
+            list-style: none; margin: .25rem 0 .45rem .95rem; padding: 0 0 0 .6rem;
+            border-left: 1px solid rgba(255,255,255,.12);
+        }
+        .nav-group-list .nav-link {
+            margin: 1px 0 1px 6px !important;
+            padding: 7px 10px !important;
+            font-size: .8rem !important;
+        }
         .sidebar-user { border-top: 1px solid rgba(255,255,255,.1); padding: 1rem 1.5rem; }
         .sidebar-logo-text { color: #fff; font-weight: 700; font-size: 1rem; }
         .sidebar-logo-sub { color: rgba(255,255,255,.45); font-size: .7rem; letter-spacing: .05em; text-transform: uppercase; }
@@ -79,6 +108,40 @@
         .section-header .section-label { font-weight: 700; font-size: .8rem; text-transform: uppercase; letter-spacing: .07em; color: #495057; }
         .section-divider { flex: 1; height: 1px; background: #f0f0f0; margin-left: .5rem; }
         .role-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--imss-green-light); color: var(--imss-green); border-radius: 20px; padding: 3px 12px; font-size: .75rem; font-weight: 600; }
+        .table-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            white-space: nowrap;
+        }
+        .table-switch .form-check {
+            min-height: 0;
+            margin: 0;
+            padding-left: 2.15rem;
+        }
+        .table-switch .form-check-input {
+            width: 1.8rem;
+            height: .95rem;
+            margin-top: .08rem;
+            margin-left: -2.15rem;
+            cursor: default;
+            opacity: 1;
+        }
+        .table-switch .form-check-input:checked {
+            background-color: var(--imss-green);
+            border-color: var(--imss-green);
+        }
+        .table-switch-label {
+            color: #667085;
+            font-size: .7rem;
+            font-weight: 700;
+        }
+        .table-switch.is-pending .form-check-input {
+            background-color: #f4b740;
+            border-color: #d99a16;
+            background-image: none;
+        }
+        .table-switch.is-pending .table-switch-label { color: #8a5a00; }
         .welcome-banner { background: linear-gradient(135deg, var(--imss-green) 0%, #009b6a 100%); border-radius: 16px; color: #fff; padding: 1.75rem 2rem; position: relative; overflow: hidden; }
         .welcome-banner::after { content: '\eb04'; font-family: 'tabler-icons'; position: absolute; right: 2rem; top: 50%; transform: translateY(-50%); font-size: 6rem; color: rgba(255,255,255,.08); pointer-events: none; }
         .welcome-banner h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .25rem; }
@@ -142,6 +205,7 @@
 <aside class="navbar navbar-vertical navbar-expand-lg d-none d-lg-flex">
     <div class="container-fluid flex-column p-0">
         {# Menú de navegación #}
+        {% set isAdminSidebar = is_granted('ROLE_SUPER') or is_granted('ROLE_ADM_FOFOE') %}
         <div class="sidebar-nav-scroll w-100">
         <div class="collapse navbar-collapse show" id="navbar-menu">
             <ul class="navbar-nav pt-1">
@@ -152,6 +216,197 @@
                         <span class="nav-link-title">Inicio</span>
                     </a>
                 </li>
+
+                {% if isAdminSidebar %}
+                {# Sidebar admin agrupado para evitar un menú demasiado largo. #}
+
+                {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
+                {% set conveniosOpen = app.request.pathInfo starts with '/admin/conveniosadmin' or app.request.pathInfo starts with '/admin/convenios-especiales' or app.request.pathInfo starts with '/admin/coordfirmante' or app.request.pathInfo starts with '/admin/disciplina' or app.request.pathInfo starts with '/admin/institucion' %}
+                <li class="nav-group">
+                    <details {{ conveniosOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span>
+                            <span>Gestión Convenios</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios CAME</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="{{ path('admin.convenios-especiales.index') }}"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coord. Firmante</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="{{ path('disciplina_index') }}"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
+                            {% endif %}
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="{{ path('admin.institucion.index') }}"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                {% set fofoeOpen = app.request.pathInfo starts with '/admin/fofoe/pagos' or app.request.pathInfo starts with '/admin/fofoe/residencias' or app.request.pathInfo starts with '/admin/enfermeria/solicitudes' or app.request.pathInfo starts with '/admin/fofoe/solicitudes-cc' or app.request.pathInfo starts with '/enfermeria/alumnos' %}
+                <li class="nav-group">
+                    <details {{ fofoeOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-report-money"></i></span>
+                            <span>Gestión FOFOE</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/fofoe/pagos' ? 'active' : '' }}" href="{{ path('admin.fofoe.pagos.index') }}"><span class="nav-link-icon"><i class="ti ti-cash"></i></span><span class="nav-link-title">Pagos</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/fofoe/residencias' ? 'active' : '' }}" href="{{ path('admin.fofoe.residencias.index') }}"><span class="nav-link-icon"><i class="ti ti-building-hospital"></i></span><span class="nav-link-title">Residencias</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/enfermeria/solicitudes' ? 'active' : '' }}" href="{{ path('admin.enfermeria.solicitudes.index') }}"><span class="nav-link-icon"><i class="ti ti-nurse"></i></span><span class="nav-link-title">Solicitudes de Enfermería</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/fofoe/solicitudes-cc' ? 'active' : '' }}" href="{{ path('admin.fofoe.solicitudes_cc.index') }}"><span class="nav-link-icon"><i class="ti ti-file-text"></i></span><span class="nav-link-title">Solicitudes CC</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/enfermeria/alumnos' ? 'active' : '' }}" href="{{ path('enfermeria.alumno.index') }}"><span class="nav-link-icon"><i class="ti ti-users-group"></i></span><span class="nav-link-title">Alumnos de Enfermería</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                {% set archivosOpen = app.request.pathInfo starts with '/admin/fofoe/archivos' %}
+                <li class="nav-group">
+                    <details {{ archivosOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-folder-open"></i></span>
+                            <span>Gestión Archivos FOFOE</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/fofoe/archivos/pagos' ? 'active' : '' }}" href="{{ path('admin.fofoe.archivos.pagos') }}"><span class="nav-link-icon"><i class="ti ti-file-invoice"></i></span><span class="nav-link-title">Archivos de Pagos</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/fofoe/archivos/solicitudes-ce' ? 'active' : '' }}" href="{{ path('admin.fofoe.archivos.solicitudes_ce') }}"><span class="nav-link-icon"><i class="ti ti-folder"></i></span><span class="nav-link-title">Archivos de Solicitud de Ciclos Educativos</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                {% set posgradoOpen = app.request.pathInfo starts with '/admin/posgrado' %}
+                <li class="nav-group">
+                    <details {{ posgradoOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-stethoscope"></i></span>
+                            <span>Posgrado</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/posgrado/residencias-ex-imss' ? 'active' : '' }}" href="{{ path('admin.posgrado.residencias_ex_imss') }}"><span class="nav-link-icon"><i class="ti ti-user-plus"></i></span><span class="nav-link-title">Residencias Ex IMSS</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/posgrado/cargas-residentes-imss' ? 'active' : '' }}" href="{{ path('admin.posgrado.cargas_residentes_imss') }}"><span class="nav-link-icon"><i class="ti ti-upload"></i></span><span class="nav-link-title">Cargas Residentes IMSS</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/posgrado/residencias-ex-no-imss' ? 'active' : '' }}" href="{{ path('admin.posgrado.residencias_ex_no_imss') }}"><span class="nav-link-icon"><i class="ti ti-user-check"></i></span><span class="nav-link-title">Residencias Ex NO IMSS</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
+                {% set camposOpen = app.request.pathInfo starts with '/came' %}
+                <li class="nav-group">
+                    <details {{ camposOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-first-aid-kit"></i></span>
+                            <span>Campos Clínicos</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/came' ? 'active' : '' }}" href="{{ path('came.solicitud.index') }}"><span class="nav-link-icon"><i class="ti ti-calendar-event"></i></span><span class="nav-link-title">Ciclos Educativos</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
+                            {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+                            <li class="nav-item"><a class="nav-link spa-link" href="{{ path('enfermeria.index') }}"><span class="nav-link-icon"><i class="ti ti-nurse"></i></span><span class="nav-link-title">Escuelas de Enfermería</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_ENFERMERIA') or is_granted('ROLE_SUPER') %}
+                {% set enfermeriaOpen = app.request.pathInfo starts with '/enfermeria' %}
+                <li class="nav-group">
+                    <details {{ enfermeriaOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-nurse"></i></span>
+                            <span>Enfermería</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {% if app.request.pathInfo starts with '/enfermeria' %}active{% endif %}" href="{{ path('enfermeria.index') }}"><span class="nav-link-icon"><i class="ti ti-stethoscope"></i></span><span class="nav-link-title">Escuelas de Enfermería</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_SIMULACION') or is_granted('ROLE_SUPER') %}
+                <li class="nav-group">
+                    <details>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-device-desktop"></i></span>
+                            <span>Simulación</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-device-desktop"></i></span><span class="nav-link-title">Solicitudes Simulación</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
+                <li class="nav-group">
+                    <details>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-school"></i></span>
+                            <span>Educación Permanente</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-school"></i></span><span class="nav-link-title">Solicitudes Edu. Per.</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_SUPER') %}
+                <li class="nav-group">
+                    <details>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-database"></i></span>
+                            <span>Catálogos Generales</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-map"></i></span><span class="nav-link-title">Regiones</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-map-pin"></i></span><span class="nav-link-title">Delegaciones</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-building-hospital"></i></span><span class="nav-link-title">Unidades</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-category"></i></span><span class="nav-link-title">Carreras</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-list"></i></span><span class="nav-link-title">Departamentos</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-tag"></i></span><span class="nav-link-title">Categorías</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-certificate"></i></span><span class="nav-link-title">Especialidades</span></a></li>
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADM_FOFOE') %}
+                {% set adminOpen = app.request.pathInfo starts with '/admin/usuarios' or app.request.pathInfo starts with '/admin/permisos' or app.request.pathInfo starts with '/admin/roles' %}
+                <li class="nav-group">
+                    <details {{ adminOpen ? 'open' : '' }}>
+                        <summary class="nav-group-toggle">
+                            <span class="nav-link-icon"><i class="ti ti-settings"></i></span>
+                            <span>Administración</span>
+                            <i class="ti ti-chevron-right nav-group-chevron"></i>
+                        </summary>
+                        <ul class="nav-group-list">
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/usuarios' ? 'active' : '' }}" href="{{ path('admin.usuarios.index') }}"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Usuarios</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-list-details"></i></span><span class="nav-link-title">Bitácora</span></a></li>
+                            {% if is_granted('ROLE_SUPER') %}
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/permisos' ? 'active' : '' }}" href="{{ path('admin.permisos.index') }}"><span class="nav-link-icon"><i class="ti ti-shield-lock"></i></span><span class="nav-link-title">Permisos</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/roles' ? 'active' : '' }}" href="{{ path('admin.roles.index') }}"><span class="nav-link-icon"><i class="ti ti-user-shield"></i></span><span class="nav-link-title">Roles</span></a></li>
+                            <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-adjustments-horizontal"></i></span><span class="nav-link-title">Configuración Global</span></a></li>
+                            {% endif %}
+                        </ul>
+                    </details>
+                </li>
+                {% endif %}
+
+                {% else %}
 
                 {# ── Gestión Convenios ── #}
                 {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
@@ -170,11 +425,7 @@
                 <div class="nav-section-label">Gestión FOFOE</div>
                 <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/resumen' ? 'active' : '' }}" href="{{ path('fofoe.resumen_pagos') }}"><span class="nav-link-icon"><i class="ti ti-report-money"></i></span><span class="nav-link-title">Resumen Pagos Recibidos</span></a></li>
                 {% if is_granted('ROLE_FOFOE_REPORTE_INGS') or is_granted('ROLE_FOFOE_REPORTE_OP') or is_granted('ROLE_SUPER') %}
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo == '/fofoe/reportes/' ? 'active' : '' }}" href="{{ path('fofoe.reportes') }}"><span class="nav-link-icon"><i class="ti ti-chart-bar"></i></span><span class="nav-link-title">Reportes</span></a></li>
-                {% endif %}
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/reportes/pagos' ? 'active' : '' }}" href="{{ path('fofoe.reportes.pagos') }}"><span class="nav-link-icon"><i class="ti ti-file-dollar"></i></span><span class="nav-link-title">Reporte de pagos</span></a></li>
-                {% if is_granted('ROLE_FOFOE_DETALLE_INSTITUCION_EDUCATIVA') or is_granted('ROLE_SUPER') %}
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/instituciones/pendientes' ? 'active' : '' }}" href="{{ path('fofoe.instituciones.pendientes') }}"><span class="nav-link-icon"><i class="ti ti-building-check"></i></span><span class="nav-link-title">Instituciones por validar</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/fofoe/reportes' or app.request.pathInfo starts with '/fofoe/reporte_' ? 'active' : '' }}" href="{{ path('fofoe.reportes') }}"><span class="nav-link-icon"><i class="ti ti-chart-bar"></i></span><span class="nav-link-title">Reportes</span></a></li>
                 {% endif %}
                 {% endif %}
 
@@ -236,6 +487,8 @@
                 <li class="nav-item"><a class="nav-link spa-link" href="{{ path('admin.roles.index') }}"><span class="nav-link-icon"><i class="ti ti-user-shield"></i></span><span class="nav-link-title">Roles</span></a></li>
                 <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-adjustments-horizontal"></i></span><span class="nav-link-title">Configuración Global</span></a></li>
                 {% endif %}
+                {% endif %}
+
                 {% endif %}
 
             </ul>

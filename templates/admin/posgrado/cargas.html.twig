@@ -1,0 +1,70 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Cargas Residentes IMSS - Administración{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .upload-dropzone { border: 1px dashed #b8c7bf; border-radius: 8px; background: #f8faf9; padding: 1.5rem; text-align: center; color: #667085; }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set cargas = [
+    {id: 214, fecha: '20/06/2026 10:35', usuario: 'ADMIN001', registros: 84, eliminado: false},
+    {id: 213, fecha: '03/06/2026 16:12', usuario: 'ADMIN002', registros: 67, eliminado: false},
+    {id: 212, fecha: '18/05/2026 09:40', usuario: 'ADMIN001', registros: 72, eliminado: true}
+] %}
+
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Cargas Residentes IMSS</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">Historial de cargas masivas de residentes</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title">Nueva carga</h2></div>
+        <div class="card-body">
+            <div class="upload-dropzone">
+                <i class="ti ti-file-spreadsheet fs-1 text-success"></i>
+                <div class="fw-bold text-dark mt-2">Archivo de residentes IMSS</div>
+                <div class="small mb-3">La carga estará disponible cuando se implemente el backend.</div>
+                <input type="file" class="form-control mx-auto" accept=".csv,.xlsx" disabled style="max-width:460px;">
+                <button type="button" class="btn btn-primary mt-3" disabled><i class="ti ti-upload me-1"></i>Cargar archivo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">Historial de cargas</h2></div>
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                <thead><tr><th>ID</th><th>Fecha de la carga</th><th>Usuario</th><th>Registros</th><th>Eliminado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                {% for carga in cargas %}
+                    <tr>
+                        <td class="fw-bold">#{{ carga.id }}</td>
+                        <td>{{ carga.fecha }}</td>
+                        <td>{{ carga.usuario }}</td>
+                        <td>{{ carga.registros }}</td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ carga.eliminado ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ carga.eliminado ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td><button type="button" class="btn btn-sm btn-outline-primary" disabled><i class="ti ti-eye me-1"></i>Detalle</button></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

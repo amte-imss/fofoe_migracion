@@ -34,6 +34,7 @@
                     <th>Fecha Fin</th>
                     <th>Alumnos</th>
                     <th>Creado</th>
+                    <th>Es test</th>
                     <th></th>
                 </tr>
             </thead>
@@ -49,13 +50,19 @@
                     <td>{{ s.alumnos|length }}</td>
                     <td>{{ s.createdAt ? s.createdAt|date('d/m/Y H:i') : '—' }}</td>
                     <td>
+                        <span class="table-switch">
+                            <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ s.isTest ? 'checked' : '' }} disabled></span>
+                            <span class="table-switch-label">{{ s.isTest ? 'Sí' : 'No' }}</span>
+                        </span>
+                    </td>
+                    <td>
                         <a href="{{ path('admin.enfermeria.solicitud.show', {id: s.id}) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="ti ti-eye"></i> Ver
+                            <i class="ti ti-pencil me-1"></i>Modificar
                         </a>
                     </td>
                 </tr>
             {% else %}
-                <tr><td colspan="9" class="text-center text-muted py-4">Sin resultados.</td></tr>
+                <tr><td colspan="10" class="text-center text-muted py-4">Sin resultados.</td></tr>
             {% endfor %}
             </tbody>
         </table>

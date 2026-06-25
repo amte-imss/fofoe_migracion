@@ -1,0 +1,37 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Pago #{{ pago.id }}{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <div>
+            <h1 class="h2 mb-1">Pago #{{ pago.id }}</h1>
+            <div class="text-muted">{{ pago.origen }} · {{ pago.origen_referencia }}</div>
+        </div>
+        <a href="{{ path('admin.fofoe.pagos.index') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Regresar</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">Información del pago</h2></div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4"><div class="text-muted small">Monto</div><div class="fw-bold fs-3">{{ pago.monto is not null ? '$' ~ pago.monto|number_format(2, '.', ',') : '—' }} {{ pago.tipo_moneda }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">Monto registrado</div><div class="fw-semibold">{{ pago.monto_registrado is not null ? '$' ~ pago.monto_registrado|number_format(2, '.', ',') : '—' }}</div></div>
+                <div class="col-md-4"><div class="text-muted small">Referencia bancaria</div><div class="fw-semibold">{{ pago.referencia_bancaria ?: '—' }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Fecha registrada</div><div>{{ pago.fecha_pago_registrada ? pago.fecha_pago_registrada|date('d/m/Y') : '—' }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Fecha de pago</div><div>{{ pago.fecha_pago ? pago.fecha_pago|date('d/m/Y') : '—' }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Fecha creación</div><div>{{ pago.fecha_creacion ? pago.fecha_creacion|date('d/m/Y') : '—' }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Validado</div><div>{{ pago.validado is same as(null) ? 'Pendiente' : (pago.validado ? 'Sí' : 'No') }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Requiere factura</div><div>{{ pago.requiere_factura is same as(null) ? '—' : (pago.requiere_factura ? 'Sí' : 'No') }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Factura generada</div><div>{{ pago.factura_generada is same as(null) ? '—' : (pago.factura_generada ? 'Sí' : 'No') }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Folio de factura</div><div>{{ pago.factura_folio ?: '—' }}</div></div>
+                <div class="col-md-3"><div class="text-muted small">Es test</div><div>{{ pago.is_test ? 'Sí' : 'No' }}</div></div>
+                <div class="col-md-6"><div class="text-muted small">Comprobante de pago</div><div>{{ pago.comprobante_pago ?: 'Sin archivo' }}</div></div>
+                <div class="col-md-6"><div class="text-muted small">Origen</div><div>{{ pago.origen }} · {{ pago.origen_referencia }}</div></div>
+                <div class="col-12"><div class="text-muted small">Observaciones</div><div class="mt-1">{{ pago.observaciones ?: 'Sin observaciones.' }}</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

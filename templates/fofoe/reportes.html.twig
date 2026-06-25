@@ -5,31 +5,84 @@
 {% block body %}
 <div class="container-xl py-4">
     <div class="page-header mb-4">
-        <h2 class="page-title">Reportes</h2>
-        <div class="text-muted mt-1">Consulta de reportes FOFOE disponibles para tu usuario.</div>
+        <div class="row align-items-center g-3">
+            <div class="col">
+                <div class="text-muted mb-1">Gestión FOFOE</div>
+                <h2 class="page-title mb-0">Reportes</h2>
+                <div class="text-muted mt-1">Consulta y descarga de reportes operativos.</div>
+            </div>
+            <div class="col-auto">
+                <span class="role-chip">
+                    <i class="ti ti-shield-check"></i>FOFOE
+                </span>
+            </div>
+        </div>
     </div>
 
     <div class="row g-3">
-        {% if is_granted('ROLE_FOFOE_REPORTE_INGS') %}
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">Reporte de ingresos</h3>
-                        <p class="text-muted">Pendiente de migrar la pantalla funcional.</p>
+        {% if is_granted('ROLE_FOFOE_REPORTE_INGS') or is_granted('ROLE_SUPER') %}
+            <div class="col-md-6 col-xl-4">
+                <a href="{{ path('fofoe.reporte_ingresos') }}" class="module-card p-4 h-100">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="mod-icon" style="background:#e6f4ee;color:var(--imss-green);">
+                            <i class="ti ti-chart-histogram"></i>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="mod-title">Reporte de ingresos</div>
+                            <div class="mod-sub">Ingresos por concepto de Campos Clínicos</div>
+                        </div>
+                        <i class="ti ti-chevron-right mod-arrow"></i>
                     </div>
-                </div>
+                </a>
             </div>
         {% endif %}
-        {% if is_granted('ROLE_FOFOE_REPORTE_OP') %}
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h3 class="card-title">Reporte de oportunidad de pago</h3>
-                        <p class="text-muted">Pendiente de migrar la pantalla funcional.</p>
+
+        {% if is_granted('ROLE_FOFOE_REPORTE_OP') or is_granted('ROLE_SUPER') %}
+            <div class="col-md-6 col-xl-4">
+                <a href="{{ path('fofoe.reporte_oportunidad') }}" class="module-card p-4 h-100">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="mod-icon" style="background:#fff4e6;color:#f76707;">
+                            <i class="ti ti-clock-dollar"></i>
+                        </div>
+                        <div class="flex-fill">
+                            <div class="mod-title">Oportunidad de pago</div>
+                            <div class="mod-sub">Pago oportuno de cuotas de recuperación al Fondo de Fomento a la Educación (FOFOE)</div>
+                        </div>
+                        <i class="ti ti-chevron-right mod-arrow"></i>
                     </div>
-                </div>
+                </a>
             </div>
         {% endif %}
+
+        <div class="col-md-6 col-xl-4">
+            <a href="{{ path('fofoe.reporte_detalle_ccs_int') }}" class="module-card p-4 h-100">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="mod-icon" style="background:#f3e8ff;color:#7c3aed;">
+                        <i class="ti ti-list-details"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="mod-title">Detalle CCS/INT</div>
+                        <div class="mod-sub">Reporte detallado de campos clínicos - Ciclos Clínicos e Internado Médico</div>
+                    </div>
+                    <i class="ti ti-chevron-right mod-arrow"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-xl-4">
+            <a href="{{ path('fofoe.reporte_ccs_int_unidad') }}" class="module-card p-4 h-100">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="mod-icon" style="background:#e8f0fe;color:#1a73e8;">
+                        <i class="ti ti-building-hospital"></i>
+                    </div>
+                    <div class="flex-fill">
+                        <div class="mod-title">CCS/INT por Unidad</div>
+                        <div class="mod-sub">Reporte de Campos Clínicos por Unidad</div>
+                    </div>
+                    <i class="ti ti-chevron-right mod-arrow"></i>
+                </div>
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,143 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Modificar Solicitud CC #{{ solicitudId }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .preview-notice { display: flex; gap: .7rem; border: 1px solid #e9d7fe; border-radius: 8px; background: #faf5ff; color: #6941c6; padding: .8rem 1rem; font-size: .82rem; }
+    .form-section { border-bottom: 1px solid #edf1ef; padding: 1.1rem 1.25rem; }
+    .form-section:last-child { border-bottom: 0; }
+    .form-section-title { display: flex; align-items: center; gap: .55rem; color: #344054; font-size: .82rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; }
+    .form-section-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #e8f0fe; color: #175cd3; font-size: 1rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Modificar Solicitud CC #{{ solicitudId }}</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Vista previa</span>
+            </div>
+            <div class="text-muted">CC-2026-004092</div>
+        </div>
+        <a href="{{ path('admin.fofoe.solicitudes_cc.index') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Regresar al listado</a>
+    </div>
+
+    <div class="preview-notice mb-3">
+        <i class="ti ti-info-circle fs-3"></i>
+        <div><strong>Formulario demostrativo.</strong> Los cambios no se guardarán hasta implementar el backend.</div>
+    </div>
+
+    <form onsubmit="return false;">
+        <div class="card">
+            <section class="form-section">
+                <div class="form-section-title"><span class="form-section-icon"><i class="ti ti-file-text"></i></span>Identificación</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">No. Solicitud</label>
+                        <input type="text" class="form-control" value="CC-2026-004092">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Estatus</label>
+                        <select class="form-select"><option selected>En revisión</option><option>Validada</option><option>Con observaciones</option></select>
+                        <div class="form-hint">Debe corresponder a uno de los estados permitidos por el flujo.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title"><span class="form-section-icon"><i class="ti ti-cash"></i></span>Pago y referencias</div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Referencia bancaria</label>
+                        <input type="text" class="form-control" value="5500264092001847">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Monto</label>
+                        <div class="input-group"><span class="input-group-text">$</span><input type="number" class="form-control" value="78500.00" step="0.01"></div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Tipo de pago</label>
+                        <select class="form-select"><option>Único</option><option selected>Múltiple</option></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Validado</label>
+                        <select class="form-select"><option selected>Pendiente</option><option>Sí</option><option>No</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de comprobante</label>
+                        <input type="date" class="form-control" value="2026-05-18">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title"><span class="form-section-icon"><i class="ti ti-paperclip"></i></span>Documentación</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Documento</label>
+                        <input type="file" class="form-control" accept=".pdf">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Archivo actual</label>
+                        <input type="text" class="form-control" value="formato_fofoe_CC-2026-004092.pdf" disabled>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Confirmó oficio adjunto</label>
+                        <select class="form-select"><option selected>Sí</option><option>No</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Aceptación FOFOE IE</label>
+                        <select class="form-select"><option selected>Sí</option><option>No</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Validación oficio montos</label>
+                        <select class="form-select"><option selected>Pendiente</option><option>Sí</option><option>No</option></select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Motivo oficio montos</label>
+                        <textarea class="form-control" rows="3">Pendiente de validación administrativa</textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title"><span class="form-section-icon"><i class="ti ti-link"></i></span>Relaciones</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Campos clínicos</label>
+                        <input type="text" class="form-control" value="24 campos solicitados / 20 autorizados" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Pagos</label>
+                        <input type="text" class="form-control" value="2 pagos relacionados" disabled>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title"><span class="form-section-icon"><i class="ti ti-settings"></i></span>Metadatos</div>
+                <label class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox">
+                    <span class="form-check-label">Es registro de prueba</span>
+                </label>
+            </section>
+
+            <div class="card-footer d-flex flex-wrap justify-content-between gap-2">
+                <button type="button" class="btn btn-outline-danger" disabled title="Disponible cuando se implemente el backend">
+                    <i class="ti ti-trash me-1"></i>Eliminar documentos FOFOE
+                </button>
+                <div class="d-flex gap-2">
+                    <a href="{{ path('admin.fofoe.solicitudes_cc.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                    <button type="button" class="btn btn-primary" disabled title="Disponible cuando se implemente el backend">
+                        <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

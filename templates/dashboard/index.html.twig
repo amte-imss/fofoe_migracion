@@ -1,194 +1,827 @@
 {% extends 'layouts/app.html.twig' %}
 
-{% block title %}Dashboard — Sistema FOFOE{% endblock %}
+{% block title %}Dashboard - Sistema FOFOE{% endblock %}
 
 {% block extra_css %}
 <style>
-    .kpi-card { border: none; border-radius: 12px; box-shadow: 0 1px 8px rgba(0,0,0,.06); transition: box-shadow .2s, transform .2s; }
-    .kpi-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.1); transform: translateY(-2px); }
-    .kpi-icon { width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
-    .welcome-banner { background: linear-gradient(135deg, var(--imss-green) 0%, #009b6a 100%); border-radius: 16px; color: #fff; padding: 1.75rem 2rem; position: relative; overflow: hidden; }
-    .welcome-banner::after { content: '\eb04'; font-family: 'tabler-icons'; position: absolute; right: 2rem; top: 50%; transform: translateY(-50%); font-size: 6rem; color: rgba(255,255,255,.08); pointer-events: none; }
-    .welcome-banner h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .25rem; }
-    .welcome-banner p { font-size: .9rem; color: rgba(255,255,255,.8); margin: 0; }
-    .role-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--imss-green-light); color: var(--imss-green); border-radius: 20px; padding: 3px 12px; font-size: .75rem; font-weight: 600; }
+    .admin-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .welcome-panel {
+        border: 1px solid #e7eee9;
+        border-radius: 10px;
+        background: #fff;
+        padding: 1.15rem 1.25rem;
+        box-shadow: 0 1px 8px rgba(0,0,0,.04);
+    }
+
+    .welcome-panel h1 {
+        color: var(--imss-green);
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0 0 .2rem;
+        letter-spacing: 0;
+    }
+
+    .welcome-panel p {
+        color: #667085;
+        font-size: .88rem;
+        margin: 0;
+    }
+
+    .quick-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: .75rem;
+        margin-top: 1rem;
+    }
+
+    .quick-stat {
+        border: 1px solid #edf1ef;
+        border-radius: 8px;
+        background: #fbfcfc;
+        padding: .85rem .95rem;
+        min-height: 74px;
+        border-left: 4px solid var(--stat-color, var(--imss-green));
+    }
+
+    .quick-stat-label {
+        color: #6c757d;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+    }
+
+    .quick-stat-value {
+        color: var(--stat-color, #1f2933);
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.1;
+        margin-top: .3rem;
+    }
+
+    .quick-stat.stat-green { --stat-color: #006847; }
+    .quick-stat.stat-blue { --stat-color: #1a73e8; }
+    .quick-stat.stat-gold { --stat-color: #b7791f; }
+    .quick-stat.stat-red { --stat-color: #c2410c; }
+
+    .menu-panel,
+    .side-panel {
+        border: 1px solid #e8ecea;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 1px 8px rgba(0,0,0,.04);
+        overflow: hidden;
+    }
+
+    .menu-panel-title,
+    .side-panel-title {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        border-bottom: 1px solid #edf1ef;
+        background: #fbfcfc;
+        padding: .9rem 1rem;
+        color: #344054;
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+    }
+
+    .menu-section {
+        --section-color: var(--imss-green);
+        --section-bg: #eef8f4;
+        --section-soft: #fbfefd;
+        display: grid;
+        grid-template-columns: 210px minmax(0, 1fr);
+        border-bottom: 1px solid #f0f2f1;
+        border-left: 5px solid var(--section-color);
+    }
+
+    .menu-section.theme-fofoe {
+        --section-color: #006847;
+        --section-bg: #e6f4ee;
+        --section-soft: #f6fbf9;
+    }
+
+    .menu-section.theme-convenios {
+        --section-color: #b7791f;
+        --section-bg: #fff4dc;
+        --section-soft: #fffaf0;
+    }
+
+    .menu-section.theme-campos {
+        --section-color: #1a73e8;
+        --section-bg: #e8f0fe;
+        --section-soft: #f6f9ff;
+    }
+
+    .menu-section.theme-posgrado {
+        --section-color: #0f766e;
+        --section-bg: #dff7f3;
+        --section-soft: #f2fbfa;
+    }
+
+    .menu-section.theme-enfermeria {
+        --section-color: #c2410c;
+        --section-bg: #ffedd5;
+        --section-soft: #fff7ed;
+    }
+
+    .menu-section.theme-edu-per {
+        --section-color: #7c3aed;
+        --section-bg: #f3e8ff;
+        --section-soft: #fbf7ff;
+    }
+
+    .menu-section.theme-simulacion {
+        --section-color: #0369a1;
+        --section-bg: #e0f2fe;
+        --section-soft: #f0f9ff;
+    }
+
+    .menu-section.theme-admin {
+        --section-color: #475467;
+        --section-bg: #eef2f6;
+        --section-soft: #f8fafc;
+    }
+
+    .menu-section.theme-archivos {
+        --section-color: #9a3412;
+        --section-bg: #ffedd5;
+        --section-soft: #fff7ed;
+    }
+
+    .menu-section:last-child {
+        border-bottom: 0;
+    }
+
+    .menu-section-head {
+        display: flex;
+        gap: .7rem;
+        align-items: flex-start;
+        border-right: 1px solid #f0f2f1;
+        background: linear-gradient(90deg, var(--section-soft), #fbfcfc);
+        padding: 1rem;
+    }
+
+    .menu-section-icon,
+    .menu-link-icon,
+    .side-link-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .menu-section-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--section-bg);
+        color: var(--section-color);
+        font-size: 1.05rem;
+    }
+
+    .menu-section-name {
+        color: var(--section-color);
+        font-size: .9rem;
+        font-weight: 700;
+        line-height: 1.25;
+    }
+
+    .menu-section-sub {
+        color: #7b8794;
+        font-size: .76rem;
+        line-height: 1.25;
+        margin-top: .2rem;
+    }
+
+    .menu-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .65rem;
+        padding: .8rem;
+    }
+
+    .menu-link {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        min-height: 58px;
+        border: 1px solid #eef2f0;
+        border-radius: 8px;
+        background: #fff;
+        color: inherit;
+        padding: .72rem .8rem;
+        text-decoration: none !important;
+        transition: border-color .15s, background .15s, box-shadow .15s;
+        border-left: 3px solid transparent;
+    }
+
+    .menu-link:hover {
+        border-color: color-mix(in srgb, var(--section-color) 35%, #eef2f0);
+        border-left-color: var(--section-color);
+        background: var(--section-soft);
+        box-shadow: 0 3px 14px color-mix(in srgb, var(--section-color) 12%, transparent);
+        color: inherit;
+    }
+
+    .menu-link.is-disabled {
+        opacity: .58;
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .menu-link-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: var(--section-bg);
+        color: var(--section-color);
+        font-size: 1rem;
+    }
+
+    .menu-link-title {
+        color: #263238;
+        font-size: .85rem;
+        font-weight: 700;
+        line-height: 1.18;
+    }
+
+    .menu-link-sub {
+        color: #7b8794;
+        font-size: .74rem;
+        line-height: 1.2;
+        margin-top: .12rem;
+    }
+
+    .menu-link-arrow {
+        color: color-mix(in srgb, var(--section-color) 55%, #b8c0bd);
+        margin-left: auto;
+        font-size: 1rem;
+    }
+
+    .side-panel {
+        position: sticky;
+        top: 76px;
+    }
+
+    .side-list {
+        padding: .75rem;
+    }
+
+    .side-link {
+        --side-color: var(--imss-green);
+        --side-bg: #eef8f4;
+        display: flex;
+        align-items: center;
+        gap: .7rem;
+        border-radius: 8px;
+        color: inherit;
+        padding: .7rem;
+        text-decoration: none !important;
+        border-left: 3px solid transparent;
+    }
+
+    .side-link:hover {
+        background: color-mix(in srgb, var(--side-bg) 55%, #fff);
+        border-left-color: var(--side-color);
+        color: inherit;
+    }
+
+    .side-link.side-fofoe { --side-color: #006847; --side-bg: #e6f4ee; }
+    .side-link.side-reportes { --side-color: #7c3aed; --side-bg: #f3e8ff; }
+    .side-link.side-campos { --side-color: #1a73e8; --side-bg: #e8f0fe; }
+    .side-link.side-enfermeria { --side-color: #c2410c; --side-bg: #ffedd5; }
+
+    .side-link-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--side-bg);
+        color: var(--side-color);
+    }
+
+    .side-link-title {
+        color: #2f3a42;
+        font-size: .82rem;
+        font-weight: 700;
+        line-height: 1.18;
+    }
+
+    .side-link-sub {
+        color: #7b8794;
+        font-size: .72rem;
+        line-height: 1.2;
+        margin-top: .1rem;
+    }
+
+    .role-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+        padding: .9rem;
+    }
+
+    .role-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--imss-green-light);
+        color: var(--imss-green);
+        border-radius: 20px;
+        padding: 3px 12px;
+        font-size: .74rem;
+        font-weight: 600;
+    }
+
+    @media (max-width: 1199.98px) {
+        .admin-shell {
+            grid-template-columns: 1fr;
+        }
+
+        .side-panel {
+            position: static;
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .menu-section {
+            grid-template-columns: 1fr;
+        }
+
+        .menu-section-head {
+            border-right: 0;
+            border-bottom: 1px solid #f0f2f1;
+        }
+
+        .quick-strip {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .menu-links,
+        .quick-strip {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-panel {
+            padding: 1rem;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block body %}
 <div class="page-body">
     <div class="container-xl py-4">
+        <div class="welcome-panel mb-3">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+                <div>
+                    <h1>Bienvenido{% if app.user %}, {{ app.user.getUserIdentifier() }}{% endif %}</h1>
+                    <p>Sistema de Administración FOFOE - Instituto Mexicano del Seguro Social</p>
+                </div>
+                <div class="text-muted small">
+                    <i class="ti ti-calendar-event me-1"></i>{{ "now"|date("d/m/Y") }}
+                </div>
+            </div>
 
-        {# Welcome #}
-        <div class="welcome-banner mb-4">
-            <h3>Bienvenido{% if app.user %}, {{ app.user.getUserIdentifier() }}{% endif %} 👋</h3>
-            <p>Sistema de Gestión FOFOE — Instituto Mexicano del Seguro Social</p>
-        </div>
-
-        {# KPIs #}
-        <div class="row g-3 mb-4">
-            <div class="col-6 col-lg-3">
-                <div class="card kpi-card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="kpi-icon" style="background:#e6f4ee;"><i class="ti ti-file-text" style="color:var(--imss-green);"></i></div>
-                        <div>
-                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Solicitudes</div>
-                            <div class="fw-bold fs-4" style="color:var(--imss-green);">—</div>
-                        </div>
-                    </div>
+            <div class="quick-strip">
+                <div class="quick-stat stat-green">
+                    <div class="quick-stat-label">Solicitudes</div>
+                    <div class="quick-stat-value">-</div>
                 </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card kpi-card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="kpi-icon" style="background:#e8f0fe;"><i class="ti ti-users" style="color:#1a73e8;"></i></div>
-                        <div>
-                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Residentes</div>
-                            <div class="fw-bold fs-4" style="color:#1a73e8;">—</div>
-                        </div>
-                    </div>
+                <div class="quick-stat stat-blue">
+                    <div class="quick-stat-label">Residentes</div>
+                    <div class="quick-stat-value">-</div>
                 </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card kpi-card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="kpi-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div>
-                        <div>
-                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Convenios</div>
-                            <div class="fw-bold fs-4" style="color:#f59e0b;">—</div>
-                        </div>
-                    </div>
+                <div class="quick-stat stat-gold">
+                    <div class="quick-stat-label">Convenios</div>
+                    <div class="quick-stat-value">-</div>
                 </div>
-            </div>
-            <div class="col-6 col-lg-3">
-                <div class="card kpi-card p-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="kpi-icon" style="background:#fce8e6;"><i class="ti ti-cash" style="color:#d93025;"></i></div>
-                        <div>
-                            <div class="text-muted" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;">Pagos pendientes</div>
-                            <div class="fw-bold fs-4" style="color:#d93025;">—</div>
-                        </div>
-                    </div>
+                <div class="quick-stat stat-red">
+                    <div class="quick-stat-label">Pagos pendientes</div>
+                    <div class="quick-stat-value">-</div>
                 </div>
             </div>
         </div>
 
-        {# ── Gestión Convenios ── #}
-        {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><span class="section-label">Gestión Convenios</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Convenios CAME</div><div class="mod-sub">Acuerdos institucionales</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('admin.convenios-especiales.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-file-star" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Convenios Especiales</div><div class="mod-sub">Acuerdos específicos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('admin.coordfirmante.coordfirmante.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-users" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Coord. Firmante</div><div class="mod-sub">Catálogo de coordinadores</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('disciplina_index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-book" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Disciplinas</div><div class="mod-sub">Catálogo de disciplinas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            {% endif %}
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('admin.institucion.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-building" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Instituciones Educativas</div><div class="mod-sub">Directorio educativo</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+        <div class="admin-shell">
+            <main class="menu-panel">
+                <div class="menu-panel-title">
+                    <i class="ti ti-layout-list"></i>
+                    Menú principal
+                </div>
 
-        {# ── Gestión FOFOE ── #}
-        {% if is_granted('ROLE_FOFOE_INICIO') or is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#e6f4ee;"><i class="ti ti-cash" style="color:var(--imss-green);"></i></div><span class="section-label">Gestión FOFOE</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-cash" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Pagos</div><div class="mod-sub">Control de cobros</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-building-hospital" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Residencias</div><div class="mod-sub">Gestión de plazas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-nurse" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Enfermería</div><div class="mod-sub">Solicitudes de enfermería</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-text" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes CC</div><div class="mod-sub">Campos clínicos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('enfermeria.alumno.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-users-group" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Alumnos Enfermería</div><div class="mod-sub">Registro de alumnos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-fofoe">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-report-money"></i></span>
+                        <div>
+                            <div class="menu-section-name">Gestión FOFOE</div>
+                            <div class="menu-section-sub">Administración de pagos, residencias y solicitudes.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('admin.fofoe.pagos.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-cash"></i></span>
+                            <span>
+                                <span class="menu-link-title">Pagos</span>
+                                <span class="menu-link-sub d-block">Consulta y seguimiento de pagos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.fofoe.residencias.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-building-hospital"></i></span>
+                            <span>
+                                <span class="menu-link-title">Residencias</span>
+                                <span class="menu-link-sub d-block">Consulta de residentes y plazas.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.enfermeria.solicitudes.index') }}" class="menu-link">
+                            <span class="menu-link-icon"><i class="ti ti-nurse"></i></span>
+                            <span>
+                                <span class="menu-link-title">Solicitudes de Enfermería</span>
+                                <span class="menu-link-sub d-block">Administración de solicitudes.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.fofoe.solicitudes_cc.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-file-text"></i></span>
+                            <span>
+                                <span class="menu-link-title">Solicitudes CC</span>
+                                <span class="menu-link-sub d-block">Solicitudes de campos clínicos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('enfermeria.alumno.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-users-group"></i></span>
+                            <span>
+                                <span class="menu-link-title">Alumnos de Enfermería</span>
+                                <span class="menu-link-sub d-block">Consulta y seguimiento de alumnos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Posgrado ── #}
-        {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#e8f0fe;"><i class="ti ti-stethoscope" style="color:#1a73e8;"></i></div><span class="section-label">Posgrado</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-user-plus" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Alumnos extr. ciclo anual</div><div class="mod-sub">Ciclo académico anual</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-user-check" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Alumnos extr. rot. parcial</div><div class="mod-sub">Rotación parcial</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-upload" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Carga Masiva Residentes</div><div class="mod-sub">Importar residentes</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-archivos">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-folder-open"></i></span>
+                        <div>
+                            <div class="menu-section-name">Gestión de Archivos FOFOE</div>
+                            <div class="menu-section-sub">Consulta y reemplazo de documentos administrativos.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('admin.fofoe.archivos.pagos') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-file-invoice"></i></span>
+                            <span>
+                                <span class="menu-link-title">Archivos de Pagos</span>
+                                <span class="menu-link-sub d-block">Comprobantes asociados a pagos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.fofoe.archivos.solicitudes_ce') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-folder"></i></span>
+                            <span>
+                                <span class="menu-link-title">Archivos de Solicitud de Ciclos Educativos</span>
+                                <span class="menu-link-sub d-block">Oficios de montos y formatos FOFOE.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Campos Clínicos ── #}
-        {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#fce8e6;"><i class="ti ti-first-aid-kit" style="color:#d93025;"></i></div><span class="section-label">Campos Clínicos</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-calendar-event" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Ciclos Educativos</div><div class="mod-sub">Periodos activos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-file-certificate" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Convenios</div><div class="mod-sub">Acuerdos de campo clínico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-nurse" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Escuelas de Enfermería</div><div class="mod-sub">Centros formativos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            {% endif %}
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-convenios">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-file-certificate"></i></span>
+                        <div>
+                            <div class="menu-section-name">Gestión Convenios</div>
+                            <div class="menu-section-sub">Convenios, instituciones y catálogos relacionados.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
+                        <a href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-file-certificate"></i></span>
+                            <span>
+                                <span class="menu-link-title">Convenios CAME</span>
+                                <span class="menu-link-sub d-block">Acuerdos institucionales.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.convenios-especiales.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-file-star"></i></span>
+                            <span>
+                                <span class="menu-link-title">Convenios Especiales</span>
+                                <span class="menu-link-sub d-block">Acuerdos específicos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.coordfirmante.coordfirmante.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-users"></i></span>
+                            <span>
+                                <span class="menu-link-title">Catálogo Coord. Firmante</span>
+                                <span class="menu-link-sub d-block">Coordinadores firmantes.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('disciplina_index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-book"></i></span>
+                            <span>
+                                <span class="menu-link-title">Catálogo de Disciplinas</span>
+                                <span class="menu-link-sub d-block">Disciplinas académicas.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        {% endif %}
+                        <a href="{{ path('admin.institucion.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-building"></i></span>
+                            <span>
+                                <span class="menu-link-title">Instituciones Educativas</span>
+                                <span class="menu-link-sub d-block">Directorio educativo.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Simulación ── #}
-        {% if is_granted('ROLE_SIMULACION') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#e8f0fe;"><i class="ti ti-device-desktop" style="color:#1a73e8;"></i></div><span class="section-label">Simulación</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-device-desktop" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Simulación</div><div class="mod-sub">Gestión de solicitudes</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-campos">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-first-aid-kit"></i></span>
+                        <div>
+                            <div class="menu-section-name">Campos Clínicos</div>
+                            <div class="menu-section-sub">Ciclos educativos y solicitudes de campos clínicos.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('came.solicitud.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-calendar-event"></i></span>
+                            <span>
+                                <span class="menu-link-title">Ciclos Educativos</span>
+                                <span class="menu-link-sub d-block">Solicitudes y periodos activos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="#" class="menu-link is-disabled">
+                            <span class="menu-link-icon"><i class="ti ti-file-certificate"></i></span>
+                            <span>
+                                <span class="menu-link-title">Convenios</span>
+                                <span class="menu-link-sub d-block">Pendiente de migración.</span>
+                            </span>
+                            <i class="ti ti-lock menu-link-arrow"></i>
+                        </a>
+                        {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+                        <a href="{{ path('enfermeria.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-nurse"></i></span>
+                            <span>
+                                <span class="menu-link-title">Escuelas de Enfermería</span>
+                                <span class="menu-link-sub d-block">Centros formativos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Enfermería ── #}
-        {% if is_granted('ROLE_ENFERMERIA') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#fce8e6;"><i class="ti ti-stethoscope" style="color:#d93025;"></i></div><span class="section-label">Enfermería</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="{{ path('fofoe.enfermeria.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-school" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Escuelas de Enfermería</div><div class="mod-sub">Centros formativos</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-posgrado">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-stethoscope"></i></span>
+                        <div>
+                            <div class="menu-section-name">Posgrado</div>
+                            <div class="menu-section-sub">Administración de residencias y cargas masivas.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('admin.posgrado.residencias_ex_imss') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-user-plus"></i></span>
+                            <span>
+                                <span class="menu-link-title">Residencias Ex IMSS</span>
+                                <span class="menu-link-sub d-block">Residencias de extranjeros IMSS.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.posgrado.cargas_residentes_imss') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-upload"></i></span>
+                            <span>
+                                <span class="menu-link-title">Cargas Residentes IMSS</span>
+                                <span class="menu-link-sub d-block">Historial de cargas masivas.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.posgrado.residencias_ex_no_imss') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-user-check"></i></span>
+                            <span>
+                                <span class="menu-link-title">Residencias Ex NO IMSS</span>
+                                <span class="menu-link-sub d-block">Residencias de extranjeros no IMSS.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Educación Permanente ── #}
-        {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#e6f4ee;"><i class="ti ti-school" style="color:var(--imss-green);"></i></div><span class="section-label">Educación Permanente</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-notebook" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Edu. Per.</div><div class="mod-sub">Educación permanente</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_ENFERMERIA') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-enfermeria">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-nurse"></i></span>
+                        <div>
+                            <div class="menu-section-name">Enfermería</div>
+                            <div class="menu-section-sub">Solicitudes, alumnos y comprobantes.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('enfermeria.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-school"></i></span>
+                            <span>
+                                <span class="menu-link-title">Escuelas de Enfermería</span>
+                                <span class="menu-link-sub d-block">Solicitudes de escuelas.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('enfermeria.alumno.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-users-group"></i></span>
+                            <span>
+                                <span class="menu-link-title">Alumnos Enfermería</span>
+                                <span class="menu-link-sub d-block">Registro y seguimiento.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Catálogos Generales ── #}
-        {% if is_granted('ROLE_SUPER') %}
-        <div class="section-header"><div class="section-icon" style="background:#f3e8ff;"><i class="ti ti-database" style="color:#7c3aed;"></i></div><span class="section-label">Catálogos Generales</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-map" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Regiones</div><div class="mod-sub">Catálogo de regiones</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-map-pin" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Delegaciones</div><div class="mod-sub">Cobertura regional</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-building-hospital" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Unidades</div><div class="mod-sub">Unidades médicas</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-category" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Carreras</div><div class="mod-sub">Catálogo académico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-list" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Departamentos</div><div class="mod-sub">Estructura organizacional</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-tag" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Categorías</div><div class="mod-sub">Tipos y clasificaciones</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-certificate" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Especialidades</div><div class="mod-sub">Catálogo médico</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-edu-per">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-school"></i></span>
+                        <div>
+                            <div class="menu-section-name">Educación Permanente</div>
+                            <div class="menu-section-sub">Solicitudes de educación permanente.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="#" class="menu-link is-disabled">
+                            <span class="menu-link-icon"><i class="ti ti-notebook"></i></span>
+                            <span>
+                                <span class="menu-link-title">Solicitudes Edu. Per.</span>
+                                <span class="menu-link-sub d-block">Pendiente de migración.</span>
+                            </span>
+                            <i class="ti ti-lock menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# ── Administración ── #}
-        {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADM_FOFOE') %}
-        <div class="section-header"><div class="section-icon" style="background:#f3e8ff;"><i class="ti ti-settings" style="color:#7c3aed;"></i></div><span class="section-label">Administración</span><div class="section-divider"></div></div>
-        <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#f3e8ff;"><i class="ti ti-users" style="color:#7c3aed;"></i></div><div class="flex-fill"><div class="mod-title">Usuarios</div><div class="mod-sub">Alta, edición y baja</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fff3cd;"><i class="ti ti-list-details" style="color:#f59e0b;"></i></div><div class="flex-fill"><div class="mod-title">Bitácora</div><div class="mod-sub">Log del sistema</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            {% if is_granted('ROLE_SUPER') %}
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#fce8e6;"><i class="ti ti-shield-lock" style="color:#d93025;"></i></div><div class="flex-fill"><div class="mod-title">Permisos</div><div class="mod-sub">Control de acceso</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e8f0fe;"><i class="ti ti-user-shield" style="color:#1a73e8;"></i></div><div class="flex-fill"><div class="mod-title">Roles</div><div class="mod-sub">Gestión de roles</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-adjustments-horizontal" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Configuración Global</div><div class="mod-sub">Parámetros del sistema</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
-            {% endif %}
-        </div>
-        {% endif %}
+                {% if is_granted('ROLE_SIMULACION') or is_granted('ROLE_SUPER') %}
+                <section class="menu-section theme-simulacion">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-device-desktop"></i></span>
+                        <div>
+                            <div class="menu-section-name">Simulación</div>
+                            <div class="menu-section-sub">Solicitudes y control de simulación.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="#" class="menu-link is-disabled">
+                            <span class="menu-link-icon"><i class="ti ti-device-desktop"></i></span>
+                            <span>
+                                <span class="menu-link-title">Solicitudes Simulación</span>
+                                <span class="menu-link-sub d-block">Pendiente de migración.</span>
+                            </span>
+                            <i class="ti ti-lock menu-link-arrow"></i>
+                        </a>
+                    </div>
+                </section>
+                {% endif %}
 
-        {# Permisos activos #}
-        {% if app.user %}
-        <div class="card mt-2" style="border-radius:12px;border:1px solid #f0f0f0;background:#fafafa;">
-            <div class="card-body py-3 px-4">
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <span class="text-muted me-1" style="font-size:.78rem;"><i class="ti ti-shield-check me-1"></i>Permisos activos:</span>
+                {% if is_granted('ROLE_SUPER') or is_granted('ROLE_ADM_FOFOE') %}
+                <section class="menu-section theme-admin">
+                    <div class="menu-section-head">
+                        <span class="menu-section-icon"><i class="ti ti-settings"></i></span>
+                        <div>
+                            <div class="menu-section-name">Administración</div>
+                            <div class="menu-section-sub">Usuarios, permisos y administración general.</div>
+                        </div>
+                    </div>
+                    <div class="menu-links">
+                        <a href="{{ path('admin.usuarios.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-users"></i></span>
+                            <span>
+                                <span class="menu-link-title">Usuarios</span>
+                                <span class="menu-link-sub d-block">Alta, edición y baja.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.enfermeria.solicitudes.index') }}" class="menu-link">
+                            <span class="menu-link-icon"><i class="ti ti-nurse"></i></span>
+                            <span>
+                                <span class="menu-link-title">Solicitudes Enfermería</span>
+                                <span class="menu-link-sub d-block">Administración de solicitudes.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        {% if is_granted('ROLE_SUPER') %}
+                        <a href="{{ path('admin.permisos.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-shield-lock"></i></span>
+                            <span>
+                                <span class="menu-link-title">Permisos</span>
+                                <span class="menu-link-sub d-block">Control de accesos.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        <a href="{{ path('admin.roles.index') }}" class="menu-link spa-link">
+                            <span class="menu-link-icon"><i class="ti ti-user-shield"></i></span>
+                            <span>
+                                <span class="menu-link-title">Roles</span>
+                                <span class="menu-link-sub d-block">Gestión de roles.</span>
+                            </span>
+                            <i class="ti ti-chevron-right menu-link-arrow"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+                {% endif %}
+            </main>
+
+            <aside class="side-panel">
+                <div class="side-panel-title">
+                    <i class="ti ti-pin"></i>
+                    Accesos frecuentes
+                </div>
+                <div class="side-list">
+                    {% if is_granted('ROLE_ADM_FOFOE') or is_granted('ROLE_SUPER') %}
+                    <a href="{{ path('admin.fofoe.pagos.index') }}" class="side-link side-fofoe spa-link">
+                        <span class="side-link-icon"><i class="ti ti-cash"></i></span>
+                        <span>
+                            <span class="side-link-title d-block">Pagos</span>
+                            <span class="side-link-sub d-block">FOFOE</span>
+                        </span>
+                    </a>
+                    <a href="{{ path('admin.fofoe.residencias.index') }}" class="side-link side-reportes spa-link">
+                        <span class="side-link-icon"><i class="ti ti-building-hospital"></i></span>
+                        <span>
+                            <span class="side-link-title d-block">Residencias</span>
+                            <span class="side-link-sub d-block">FOFOE</span>
+                        </span>
+                    </a>
+                    <a href="{{ path('admin.enfermeria.solicitudes.index') }}" class="side-link side-enfermeria">
+                        <span class="side-link-icon"><i class="ti ti-nurse"></i></span>
+                        <span>
+                            <span class="side-link-title d-block">Solicitudes de Enfermería</span>
+                            <span class="side-link-sub d-block">FOFOE</span>
+                        </span>
+                    </a>
+                    <a href="{{ path('admin.fofoe.solicitudes_cc.index') }}" class="side-link side-campos spa-link">
+                        <span class="side-link-icon"><i class="ti ti-file-text"></i></span>
+                        <span>
+                            <span class="side-link-title d-block">Solicitudes CC</span>
+                            <span class="side-link-sub d-block">FOFOE</span>
+                        </span>
+                    </a>
+                    <a href="{{ path('enfermeria.alumno.index') }}" class="side-link side-fofoe spa-link">
+                        <span class="side-link-icon"><i class="ti ti-users-group"></i></span>
+                        <span>
+                            <span class="side-link-title d-block">Alumnos de Enfermería</span>
+                            <span class="side-link-sub d-block">FOFOE</span>
+                        </span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if app.user %}
+                <div class="side-panel-title">
+                    <i class="ti ti-shield-check"></i>
+                    Permisos activos
+                </div>
+                <div class="role-list">
                     {% for role in app.user.roles %}
                         {% if role != 'ROLE_USER' %}
                         <span class="role-chip"><i class="ti ti-check" style="font-size:.6rem;"></i>{{ role|replace({'ROLE_': ''})|lower|capitalize }}</span>
                         {% endif %}
                     {% endfor %}
                 </div>
-            </div>
+                {% endif %}
+            </aside>
         </div>
-        {% endif %}
-
     </div>
 </div>
 {% endblock %}
