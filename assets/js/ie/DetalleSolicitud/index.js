@@ -5,10 +5,11 @@ import {
   isActionDisabledByInstitucionEducativa
 } from "../../utils"
 import { SOLICITUD } from "../../constants"
+import {createRoot} from "react-dom/client";
 const DEFAULT_DOCUMENT_VALUE = '-'
 const DEFAULT_DOCUMENT = 'Archivo pendiente de carga'
 
-const ListaCampos = ({ solicitud }) => {
+const ListaCampos = ({solicitud}) => {
   function handleStatusAction() {
     if (isActionDisabledByInstitucionEducativa(solicitud.estatus)) return;
 
@@ -316,13 +317,12 @@ const ListaCampos = ({ solicitud }) => {
   )
 }
 
-ReactDOM.render(
+createRoot(document.getElementById('detalle-solicitud-component')).render(
   <ListaCampos
     solicitud={window.SOLICITUD_PROP}
     total={window.TOTAL_PROP}
     autorizado={window.AUTORIZADO_PROP}
     campos={window.CAMPOS_PROP}
     pago={window.PAGO_PROP}
-  />,
-  document.getElementById('detalle-solicitud-component')
+  />
 );

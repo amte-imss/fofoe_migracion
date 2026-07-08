@@ -137,3 +137,47 @@ services:
         arguments:
             $mailerSender: '%mailer_sender%'
             $calculator:   '@App\Calculator\CampoClinicoCalculatorInterface'
+
+
+    #DetalleSolicitud
+    App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\Expediente\Expediente:
+        alias: App\Repository\IE\DetalleSolicitud\Expediente\ExpedienteUsingSql
+
+    App\Repository\IE\DetalleSolicitud\Expediente\ExpedienteUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\DetalleSolicitud:
+        alias: App\Repository\IE\DetalleSolicitud\DetalleSolicitudUsingSql
+
+    #DetalleSolicitudMultiple
+    App\Repository\IE\DetalleSolicitudMultiple\DetalleSolicitudMultiple:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\DetalleSolicitudMultipleUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\Expediente\Expediente:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\Expediente\ExpedienteUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\Expediente\ExpedienteUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
