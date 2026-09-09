@@ -123,6 +123,11 @@ export const checkInputFile = (input, validations = {}, callback) => {
     }
 }
 
+function isMultipleTipoPago(tipoPago) {
+    return tipoPago === TIPO_PAGO.MULTIPLE;
+}
+
+
 export const getActionNameByInstitucionEducativa = (estatus, tipoPago, showDetalle = true) => {
     switch (estatus) {
         case SOLICITUD.CREADA:

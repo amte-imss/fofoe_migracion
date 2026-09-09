@@ -1,28 +1,35 @@
 import * as React from 'react'
-import SelectSearch from "react-select-search";
+import SelectSearch from 'react-select-search/dist/cjs';
 import './Institucion.scss';
 import {getSchemeAndHttpHost} from "../../../utils";
 
-const Institucion = (props) => {
+const InstitucionS = ({instituciones, disableSelect, callbackIsLoading, institucion, parentCallback}) => {
+    React.useEffect(() => {
+        console.log(instituciones, disableSelect, callbackIsLoading, institucion, parentCallback);
+    }, [])
+    return (<><h1>jejejej</h1></>)
+}
 
-    const [selectedInstitution, setSelectedInstitution] = React.useState(props.institucion ? props.institucion : {});
+const Institucion = ({instituciones, disableSelect, callbackIsLoading, institucion, parentCallback}) => {
 
-    const [rfc, setRfc] = React.useState(props.institucion && props.institucion.rfc ? props.institucion.rfc : '');
-    const [domicilio, setDomicilio] = React.useState(props.institucion && props.institucion.direccion ? props.institucion.direccion : '');
-    const [phone, setPhone] = React.useState(props.institucion && props.institucion.telefono ? props.institucion.telefono : '');
-    const [extension, setExtension] = React.useState(props.institucion && props.institucion.extension ? props.institucion.extension : '')
-    const [web, setWeb] = React.useState(props.institucion && props.institucion.sitioWeb ? props.institucion.sitioWeb : '');
-    const [email, setEmail] = React.useState(props.institucion && props.institucion.correo ? props.institucion.correo : '');
-    const [fax, setFax] = React.useState(props.institucion && props.institucion.fax ? props.institucion.fax : '');
-    const [representante, setRepresentante] = React.useState(props.institucion && props.institucion.representante ? props.institucion.representante : '')
+    const [selectedInstitution, setSelectedInstitution] = React.useState(institucion ? institucion : {});
+
+    const [rfc, setRfc] = React.useState(institucion && institucion.rfc ? institucion.rfc : '');
+    const [domicilio, setDomicilio] = React.useState(institucion && institucion.direccion ? institucion.direccion : '');
+    const [phone, setPhone] = React.useState(institucion && institucion.telefono ? institucion.telefono : '');
+    const [extension, setExtension] = React.useState(institucion && institucion.extension ? institucion.extension : '')
+    const [web, setWeb] = React.useState(institucion && institucion.sitioWeb ? institucion.sitioWeb : '');
+    const [email, setEmail] = React.useState(institucion && institucion.correo ? institucion.correo : '');
+    const [fax, setFax] = React.useState(institucion && institucion.fax ? institucion.fax : '');
+    const [representante, setRepresentante] = React.useState(institucion && institucion.representante ? institucion.representante : '')
 
     const [errores, setErrores] = React.useState({});
     const [alert, setAlert] = React.useState({});
 
-    const [disableSelect, setDisableSelect] = React.useState(false)
+    const [disableSelectState, setDisableSelectState] = React.useState(false)
 
     const handleSelectedInstitution = (value) => {
-        const results = props.instituciones.filter(item => {
+        const results = instituciones.filter(item => {
             return value.toString() === item.id.toString()
         });
         const institucion = results.length > 0 ? results[0] : {};
@@ -36,18 +43,18 @@ const Institucion = (props) => {
         setFax(institucion.fax ? institucion.fax : '');
         setRepresentante(institucion.representante ? institucion.representante : '');
         if(institucion.id){
-            props.callbackIsLoading(true);
+            callbackIsLoading(true);
             fetch(`${getSchemeAndHttpHost()}/came/api/convenio/${institucion.id}`)
                 .then(response => {
                     return response.json()}, error => {
                     console.error(error)})
                 .then(json => {
-                    props.conveniosCallback(json.data);
+                    conveniosCallback(json.data);
                 })
-                .finally(() => {props.callbackIsLoading(false);});
-            props.parentCallback(institucion);
+                .finally(() => {callbackIsLoading(false);});
+            parentCallback(institucion);
         } else {
-            props.parentCallback({});
+            parentCallback({});
         }
         return institucion ? institucion : {};
     }
@@ -55,7 +62,7 @@ const Institucion = (props) => {
     const handleUpdateInstitucion = (event) => {
         event.preventDefault();
         setAlert({});
-        props.callbackIsLoading(true);
+        callbackIsLoading(true);
         if(validateForm()){
             let data = new FormData();
             data.append('institucion[rfc]', rfc);
@@ -81,22 +88,23 @@ const Institucion = (props) => {
                     type: (json.status ? 'success' : 'danger')
                 }))
                 if(json.data){
-                    props.parentCallback(json.data);
+                    parentCallback(json.data);
                 }
                 if(json.status){
-                    setDisableSelect(true);
+                    setDisableSelectState(true);
                 }
             }).finally(() => {
-                props.callbackIsLoading(false)
+                callbackIsLoading(false)
             });
         }else {
-            props.callbackIsLoading(false)
+            callbackIsLoading(false)
         }
     }
 
     const getInstituciones = () =>{
-        const result = [{value:'-', name: 'Seleccionar ...'}];
-        props.instituciones.map(item => {
+        const result = [];
+       // const result = [{value:'-', name: 'Seleccionar ...'}];
+        instituciones.map(item => {
             result.push({value: item.id.toString(), name:item.nombre});
         })
         return result;
@@ -166,7 +174,7 @@ const Institucion = (props) => {
                             value={selectedInstitution.id ? selectedInstitution.id.toString() : ''}
                             placeholder="Seleccionar ..."
                             required={true}
-                            disabled={props.disableSelect || disableSelect}
+                            disabled={disableSelect || disableSelectState}
                         />
                         <span className="help-block">{errores.institucion ? errores.institucion[0] : ''}</span>
                         {/*<p><strong>Seleccionada: </strong> {selectedInstitution.id}</p>*/}

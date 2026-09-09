@@ -30,12 +30,12 @@ class ComprobantePagoType extends AbstractType
                 'data_class'    => Institucion::class,
                 'property_path' => 'solicitud.institucion.cedulaFile',
                 'constraints'   => [
-                    new File([
-                        'mimeTypes'        => ['application/pdf', 'application/x-pdf'],
-                        'maxSize'          => '2M',
-                        'mimeTypesMessage' => 'Solo se admiten archivos PDF de máx 2MB',
-                        'maxSizeMessage'   => 'Solo se admiten archivos PDF de máx 2MB',
-                    ]),
+                    new File(
+                        maxSize: '2M',
+                        mimeTypes: ['application/pdf', 'application/x-pdf'],
+                        maxSizeMessage: 'Solo se admiten archivos PDF de máx 2MB',
+                        mimeTypesMessage: 'Solo se admiten archivos PDF de máx 2MB',
+                    ),
                 ],
             ]);
 

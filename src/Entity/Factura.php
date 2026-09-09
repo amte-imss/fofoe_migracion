@@ -10,9 +10,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity]
 #[ORM\Table(name: 'factura')]
 class Factura
@@ -45,11 +43,12 @@ class Factura
      #[ORM\Column(type: 'string', length: 100)]
      private $folio;
 
-    /**
-     * @Vich\UploadableField(mapping="facturas", fileNameProperty="zip")
-     * @var File
-     */
-    #[Assert\File(maxSize: '2M', mimeTypes: ['application/zip'], mimeTypesMessage: 'Solo se admiten archivos ZIP')]
+    #[Vich\UploadableField(mapping: 'facturas', fileNameProperty: 'zip')]
+    #[Assert\File(
+        maxSize: '2M',
+        mimeTypes: ['application/zip'],
+        mimeTypesMessage: 'Solo se admiten archivos ZIP'
+    )]
     private $zipFile;
 
     /**

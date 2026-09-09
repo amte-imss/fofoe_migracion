@@ -16,6 +16,7 @@ parameters:
     app.path.uploads: /uploads
     app.path.alumno_enfermeria: /uploads/alumno_enfermeria
     mailer_sender:                  'no_contestar@educacionensalud.imss.gob.mx'
+    mail_fofoe: '%env(MAIL_FOFOE)%'
     referencias_bancarias_dir:      '%kernel.project_dir%/var/referencias_bancarias'
     tmp_dir:                        '%kernel.project_dir%/var/tmp'
     zip_referencias_bancarias_dir:  '%kernel.project_dir%/var/Referenciasbancarias.zip'
@@ -25,6 +26,8 @@ parameters:
     private_dir:                    '%kernel.project_dir%/public/uploads'
     institucion_dir:                '%private_dir%/instituciones'
     alumno_enfermeria_dir:          '%private_dir%/alumno_enfermeria'
+    residente_dir: '%kernel.project_dir%/public/uploads/residentes'
+    edu_per_dir: '%kernel.project_dir%/public/uploads/edu_per'
 
 services:
     # default configuration for services in *this* file
@@ -137,3 +140,142 @@ services:
         arguments:
             $mailerSender: '%mailer_sender%'
             $calculator:   '@App\Calculator\CampoClinicoCalculatorInterface'
+
+
+    #DetalleSolicitud
+    App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitud\ListaCamposClinicos\CamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitud\TotalCamposClinicosAutorizados\TotalCamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\Expediente\Expediente:
+        alias: App\Repository\IE\DetalleSolicitud\Expediente\ExpedienteUsingSql
+
+    App\Repository\IE\DetalleSolicitud\Expediente\ExpedienteUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitud\DetalleSolicitud:
+        alias: App\Repository\IE\DetalleSolicitud\DetalleSolicitudUsingSql
+
+    #DetalleSolicitudMultiple
+    App\Repository\IE\DetalleSolicitudMultiple\DetalleSolicitudMultiple:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\DetalleSolicitudMultipleUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\Expediente\Expediente:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\Expediente\ExpedienteUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\Expediente\ExpedienteUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicos:
+        alias: App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicosUsingSql
+
+    App\Repository\IE\DetalleSolicitudMultiple\ListaCamposClinicos\CamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Service\ProcesadorFormaPagoInterface:
+        alias: App\Service\ProcesadorFormaPago
+
+    App\Repository\IE\SeleccionarFormaPago\ListaCamposClinicosAutorizados\CamposClinicos:
+        alias: App\Repository\IE\SeleccionarFormaPago\ListaCamposClinicosAutorizados\CamposClinicosUsingSql
+
+    App\Repository\IE\SeleccionarFormaPago\ListaCamposClinicosAutorizados\CamposClinicosUsingSql:
+        arguments:
+            $connection: '@database_connection'
+
+    App\Service\GeneradorReferenciaBancariaZIPInterface:
+        alias: App\Service\GeneradorReferenciaBancariaZIP
+
+    App\Service\GeneradorReferenciaBancariaZIP:
+        arguments:
+            $referenciasDir: '%referencias_bancarias_dir%'
+            $zipDir: '%zip_referencias_bancarias_dir%'
+
+    App\Service\GeneradorComprobantePagosZIPInterface:
+        alias: App\Service\GeneradorComprobantesPagoZIP
+
+    App\Service\GeneradorComprobantesPagoZIP:
+        arguments:
+            $tmpDir: '%tmp_dir%'
+
+    App\Service\GeneradorReferenciaBancariaPDFInterface:
+        alias: App\Service\GeneradorReferenciaBancariaPDF
+
+    App\Service\GeneradorReferenciaBancariaPDF:
+        arguments:
+            $normalizer: '@serializer.normalizer.object'
+
+    app.directory_namer.comprobante_pago:
+        class: App\Vich\Naming\ComprobantePagoDirectoryNamer
+        arguments:
+            $institucionDirectory: '%institucion_dir%'
+            $residenteDirectory:   '%residente_dir%'
+
+    App\Vich\Naming\ComprobantePagoDirectoryNamer:
+        arguments:
+            $institucionDirectory: '%institucion_dir%'
+            $residenteDirectory:   '%residente_dir%'
+
+    app.directory_namer.institucion:
+        class: App\Vich\Naming\InstitucionDirectoryNamer
+
+    App\Vich\Naming\InstitucionDirectoryNamer: ~
+
+    App\Repository\InstitucionRepositoryInterface:
+        alias: App\Repository\InstitucionRepository
+
+    App\EventListener\ReferenciaBancariaDownloadedListener:
+        tags:
+            -   name: kernel.event_listener
+                event: referencia_bancaria.downloaded
+                method: handleReferenciaBancariaDownloaded
+
+    App\Service\UploaderComprobantePago:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+            $mailSendToFofoe: '%mail_fofoe%'
+
+    App\Service\UploaderComprobantePagoInterface:
+        alias: App\Service\UploaderComprobantePago
+
+    App\EventSubscriber\Posgrado\ResidenciaSubscriber:
+        arguments:
+            $mailerSender: '%mailer_sender%'
+
+    App\EventListener\ComprobantePagoUploadedListener:
+        tags:
+            -   name: kernel.event_listener
+                event: vich_uploader.post_upload
+                method: comprobantePagoUploaded
+
+    App\EventListener\Posgrado\ReferenciaBancariaResidenteDownloadedListener:
+        tags:
+            -   name: kernel.event_listener
+                event: referencia_bancaria_residente.downloaded
+                method: handleReferenciaBancariaDownloaded
+
+    App\EventListener\FormatoFofoeDownloadedListener:
+        tags:
+            -   name: kernel.event_listener
+                event: formato_fofoe.downloaded
+                method: handleFormatoFofoeDownloaded
+
+    App\EventSubscriber\AuditSubscriber:
+        arguments:
+            $registry: '@doctrine'
+            $tokenStorage: '@security.token_storage'
+            $requestStack: '@request_stack'
+        tags:
+            -   name: doctrine.event_subscriber

@@ -1,0 +1,32 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader">Registro de montos para solicitud de campos clínicos</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>{{ usuario.fullName }}</p>
+            {% if solicitud.esUMAE %}
+                <p>JDES - {{ solicitud.unidad.nombre }}, {{ solicitud.delegacion.nombre }}</p>
+            {% else %}
+                <p>Autoridad educativa OOAD - {{ solicitud.delegacion.nombre }}</p>
+            {% endif %}
+            <p>Por medio del presente, se le notifica que la Institución Educativa <strong>{{ solicitud.institucion.nombre }}</strong>
+                ha realizado el registro de montos de inscripción y colegiatura para
+                la solicitud <strong>{{ solicitud.noSolicitud }}</strong> de campos clínicos
+                en el  <strong>Sistema de Administración del FOFOE</strong>.</p>
+            <p>Puede consultar el estado y realizar la validación de la información correspondiente accediendo al sistema mediante la siguiente liga:</p>
+
+            <p class="text-center"><a href="{{ app.request.getSchemeAndHttpHost() ~ path('homepage')  }}">{{ app.request.getSchemeAndHttpHost() ~ path('homepage') }}</a></p>
+
+            <p>Sin otro particular, reciba un cordial saludo.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

@@ -30,14 +30,18 @@ abstract class DIEControllerController extends AbstractController
     {
         $errors = [];
 
+        if (!$form->isSubmitted()) {
+            return $errors;
+        }
+
         // Global
         foreach ($form->getErrors($deepGlobal) as $error) {
             $errors[$form->getName()][] = $error->getMessage();
         }
 
         // Fields
-        foreach ($form as $child /** @var Form $child */) {
-            if (!$child->isValid()) {
+        foreach ($form as $child /** @var FormInterface $child */) {
+            if ($child->isSubmitted() && !$child->isValid()) {
                 foreach ($child->getErrors($deepField) as $error) {
                     $errors[$child->getName()][] = $error->getMessage();
                 }

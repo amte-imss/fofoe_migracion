@@ -35,8 +35,8 @@
 
 {% block javascripts %}
     {{ parent() }}
-    {{ encore_entry_script_tags('ie.detalle.solicitud') }}
     <script>
         window.SOLICITUD_PROP = {{ solicitud | json_encode | raw }};
     </script>
+    {{ encore_entry_script_tags('ie.detalle.solicitud') }}
 {% endblock %}

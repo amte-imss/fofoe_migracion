@@ -1,6 +1,62 @@
 vich_uploader:
     db_driver: orm
     mappings:
-        solicitud_oficio:
-            uri_prefix: /uploads/oficios
-            upload_destination: '%kernel.project_dir%/public/uploads/oficios'
+        institucion_cedulas:
+            uri_prefix: '%institucion_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/instituciones'
+            namer: App\Vich\Naming\CedulaNamer
+            directory_namer: app.directory_namer.institucion
+
+        institucion_cedulas2:
+            uri_prefix: '%institucion_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/instituciones'
+            namer: App\Vich\Naming\CedulaNamer
+            directory_namer: app.directory_namer.institucion
+
+        comprobantes_pagos:
+            uri_prefix: '%private_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads'
+            namer: App\Vich\Naming\ComprobantePagoNamer
+            directory_namer: app.directory_namer.comprobante_pago
+
+        residente_cedulas:
+            uri_prefix: '%residente_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/residentes'
+            namer: App\Vich\Naming\CedulaNamer
+            directory_namer: app.directory_namer.residente
+
+        comprobantes_pagos_residentes:
+            uri_prefix: '%residente_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/residentes'
+            namer: App\Vich\Naming\ComprobantePagoNamer
+            directory_namer: app.directory_namer.residente
+
+        comprobantes_inscripcion:
+            uri_prefix: '%institucion_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/instituciones'
+            namer: App\Vich\Naming\ComprobanteInscripcionNamer
+            directory_namer: app.directory_namer.institucion
+
+        facturas:
+            uri_prefix: '%institucion_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/instituciones'
+            namer: App\Vich\Naming\FacturaNamer
+            directory_namer: app.directory_namer.institucion
+
+        formatos_fofoe:
+            uri_prefix: '%institucion_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/instituciones'
+            namer: App\Vich\Naming\FormatoFofoeNamer
+            directory_namer: app.directory_namer.institucion
+
+        alumno_enfermeria_cedula:
+            uri_prefix: '%alumno_enfermeria_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/alumno_enfermeria'
+            namer: App\Vich\Naming\CedulaNamer
+            directory_namer: app.directory_namer.alumno_enfermeria
+
+        edu_per_solicitud:
+            uri_prefix: '%edu_per_dir%'
+            upload_destination: '%kernel.project_dir%/public/uploads/edu_per'
+            namer: App\Vich\Naming\CedulaNamer
+            directory_namer: app.directory_namer.institucion
