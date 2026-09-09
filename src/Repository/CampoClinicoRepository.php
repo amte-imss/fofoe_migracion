@@ -75,7 +75,7 @@ class CampoClinicoRepository extends ServiceEntityRepository implements CampoCli
     public function getDistinctCarrerasBySolicitud(int $id): array
     {
         try {
-            $conn = $this->_em->getConnection();
+            $conn = $this->getEntityManager()->getConnection();
             $stmt = $conn->prepare('
                 SELECT carreras_unicas.*,
                        monto_carrera.monto_colegiatura,
@@ -369,7 +369,7 @@ class CampoClinicoRepository extends ServiceEntityRepository implements CampoCli
     public function getAutorizadosBySolicitud(int $id): int
     {
         try {
-            $result = $this->_em->getConnection()->executeQuery('
+            $result = $this->getEntityManager()->getConnection()->executeQuery('
                 SELECT COUNT(*) AS autorizados
                 FROM campo_clinico
                 WHERE (lugares_autorizados <> 0 AND lugares_autorizados IS NOT NULL)

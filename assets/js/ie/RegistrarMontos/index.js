@@ -1,5 +1,5 @@
 import React, {Fragment} from 'react';
-import ReactDOM from 'react-dom'
+import {createRoot} from 'react-dom/client'
 import camelcaseKeys from 'camelcase-keys'
 import RegistrarDescuentos from "./Descuentos";
 import {checkInputFile, formatNumeroDinero, getSchemeAndHttpHost} from "../../utils";
@@ -62,12 +62,12 @@ const Registrar = (
         }
     };
 
-    if (autorizados[0].autorizados !== 0) acceso = true;
+    if (autorizados) acceso = true;
     if (route === "ie#corregir_montos") editar = true;
     return (
         <>
             {
-                acceso ?
+                autorizados ?
                     <form
                         action={`${getSchemeAndHttpHost()}/ie/solicitudes/${solicitudId.id}/registrar-montos`}
                         method="post"
@@ -86,7 +86,8 @@ const Registrar = (
                                 <div className="row">
                                     <div className="col-md-8">
                                         <p>
-                                            Adjunte documento original oficial que contenga los importes <span style={{fontWeight: 'bold', textDecoration: 'underline'}}>ANUALES</span> de
+                                            Adjunte documento original oficial que contenga los importes <span
+                                            style={{fontWeight: 'bold', textDecoration: 'underline'}}>ANUALES</span> de
                                             inscripción y colegiaturas de todas las carreras que comprenden su solicitud
                                             de campos clínicos igualmente oficio detallado de los importes de beca que
                                             aplique, así como el listado de alumnos.
@@ -95,7 +96,7 @@ const Registrar = (
                                     <div className="col-md-4">
                                         <input
                                             type="file"
-                                            onInput={event => checkInputFile(event.target, {size: 2097152 })}
+                                            onInput={event => checkInputFile(event.target, {size: 2097152})}
                                             name='solicitud_registro_montos[urlArchivoFile]'
                                             required={true}
                                         />
@@ -205,16 +206,16 @@ const Registrar = (
                                                             {
                                                                 true &&
 
-                                                            <td colSpan={5}>
-                                                                <RegistrarDescuentos
-                                                                    prefixName={`solicitud_registro_montos[campo_${campo.id}][montoCarrera][descuentos]`}
-                                                                    carrera={campo.carrera}
-                                                                    campo={campo}
-                                                                    descuentos={campo.montoCarrera ? campo.montoCarrera.descuentos : []}
-                                                                    onChange={callbackValidateDescCC}
-                                                                    indexMonto={index}
-                                                                />
-                                                            </td>
+                                                                <td colSpan={5}>
+                                                                    <RegistrarDescuentos
+                                                                        prefixName={`solicitud_registro_montos[campo_${campo.id}][montoCarrera][descuentos]`}
+                                                                        carrera={campo.carrera}
+                                                                        campo={campo}
+                                                                        descuentos={campo.montoCarrera ? campo.montoCarrera.descuentos : []}
+                                                                        onChange={callbackValidateDescCC}
+                                                                        indexMonto={index}
+                                                                    />
+                                                                </td>
                                                             }
                                                         </tr>
                                                     </Fragment>
@@ -261,7 +262,7 @@ const Registrar = (
                     :
                     <div className="mt-20">
                         <h1>
-                            <center>Lo sentimos, no tiene campos clínicos autorizados</center>
+                            <center>Lo sentimos, no tiene campos clínicos autorizados {autorizados}+</center>
                         </h1>
                     </div>
             }
@@ -269,16 +270,18 @@ const Registrar = (
     )
 }
 
-ReactDOM.render(
-    <Registrar
-        autorizados={window.AUTORIZADOS_PROP}
-        institucion={window.INSTITUCION_PROP}
-        carreras={camelcaseKeys(window.CARRERAS_PROP)}
-        campos={camelcaseKeys(window.CAMPOS_PROP)}
-        montos={window.MONTOS_PROP}
-        solicitudId={window.SOLICITUD_ID_PROP}
-        errors={window.ERRORS_PROP}
-        route={window.ROUTE_PROP}
-    />,
-    document.getElementById('registrar-montos-component')
-);
+const rootElement = document.getElementById('registrar-montos-component');
+if (rootElement) {
+    createRoot(rootElement).render(
+        <Registrar
+            autorizados={window.AUTORIZADOS_PROP}
+            institucion={window.INSTITUCION_PROP}
+            carreras={camelcaseKeys(window.CARRERAS_PROP)}
+            campos={camelcaseKeys(window.CAMPOS_PROP)}
+            montos={window.MONTOS_PROP}
+            solicitudId={window.SOLICITUD_ID_PROP}
+            errors={window.ERRORS_PROP}
+            route={window.ROUTE_PROP}
+        />
+    );
+}

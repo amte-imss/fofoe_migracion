@@ -13,9 +13,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\CampoClinicoRepository::class)]
 #[UniqueEntity(fields: ['solicitud', 'fechaInicial', 'fechaFinal', 'convenio', 'unidad', 'asignatura'], errorPath: 'convenio', message: 'Ya registró un campo clínico para ese período, sede y asignatura.')]
 #[ORM\Table(name: 'campo_clinico')]
@@ -61,10 +59,7 @@ class CampoClinico implements ReferenciaBancariaInterface, \Stringable
     #[ORM\Column(type: 'string', length: 100, nullable: true)]
     private $formatoFofoeFileName;
 
-    /**
-     * @var File
-     * @Vich\UploadableField(mapping="formatos_fofoe", fileNameProperty="formatoFofoeFileName")
-     */
+    #[Vich\UploadableField(mapping: 'formatos_fofoe', fileNameProperty: 'formatoFofoeFileName')]
     #[Assert\File(maxSize: '2M', mimeTypes: ['application/pdf', 'application/x-pdf'], mimeTypesMessage: 'Sólo se admiten archivos PDF', maxSizeMessage: 'El archivo es muy grande  ({{ size }} {{ suffix }}). El tamaño máximo permitido es {{ limit }} {{ suffix }}.')]
     private $formatoFofoeFile;
 

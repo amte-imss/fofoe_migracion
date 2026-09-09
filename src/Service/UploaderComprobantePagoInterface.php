@@ -8,7 +8,7 @@ use App\Entity\Solicitud;
 
 interface UploaderComprobantePagoInterface
 {
-    public function update(Pago $pago): void;
+    public function update(Pago $pago): bool;
 
     public function sendEmailRegistroFactura(Solicitud $solicitud, Pago $pago, Factura $factura): void;
 }

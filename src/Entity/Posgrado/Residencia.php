@@ -12,11 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * Residencia
- *
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\Posgrado\ResidenciaRepository::class)]
 #[ORM\Table(name: 'posgrado_residencia')]
 class Residencia implements ResidenciaInterface
@@ -155,10 +151,12 @@ class Residencia implements ResidenciaInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $oficioAceptacion;
 
-    /**
-     * @Vich\UploadableField(mapping="residente_cedulas", fileNameProperty="oficioAceptacion")
-     * @var File
-     */
+    #[Vich\UploadableField(mapping: 'residente_cedulas', fileNameProperty: 'oficioAceptacion')]
+    #[Assert\File(
+        maxSize: '2m',
+        mimeTypes: ['application/pdf', 'application/x-pdf'],
+        mimeTypesMessage: 'Solo se admiten archivos PDF'
+    )]
     #[Assert\File(maxSize: '2m', mimeTypes: ['application/pdf', 'application/x-pdf'], mimeTypesMessage: 'Solo se admiten archivos PDF')]
     protected $oficioFile;
 

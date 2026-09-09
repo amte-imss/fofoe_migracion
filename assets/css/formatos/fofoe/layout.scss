@@ -1,0 +1,95 @@
+body{
+    margin: 16px 16px 0 16px;
+    font-size: 12px;
+}
+
+header {
+    padding: 16px;
+    //border: 1px solid;
+}
+
+h1 {
+    text-align: center;
+}
+
+main {
+    padding: 16px 16px 0 16px;
+    //border: 1px solid;
+    margin-top: 16px;
+}
+
+#cabecera img {
+    width: 40px;
+}
+
+@media print {
+    .sf-toolbarreset {
+        display: none;
+    }
+}
+
+#cabecera {
+    text-align: center;
+}
+
+#periodo {
+    display: flex;
+    display: -webkit-box; /* wkhtmltopdf uses this one */
+    text-align: center;
+}
+
+#periodo p {
+    width: 50%;
+}
+
+.monto {
+    display: flex;
+    display: -webkit-box; /* wkhtmltopdf uses this one */
+    height: 26px;
+}
+
+.monto_name {
+    width: 60%;
+}
+
+.monto_value {
+    width: 40%;
+    text-align: right;
+    border: solid 1px;
+}
+
+.monto_value p {
+    margin-right: 16px;
+    padding-top: 3px;
+}
+
+#firmas {
+    margin-top: 100px;
+    display: flex;
+    display: -webkit-box; /* wkhtmltopdf uses this one */
+    text-align: center;
+}
+
+#firmas div {
+    width: 50%;
+}
+
+.descuentos {
+    margin-top: 50px;
+    padding: 16px;
+    page-break-before: always; /* wkhtmltopdf uses this one */
+}
+
+.descuentos h2 {
+    padding: 16px;
+}
+
+.desc-descrip {
+    margin-top: 30px;
+    display: flex;
+    display: -webkit-box; /* wkhtmltopdf uses this one */
+}
+
+.importe-desc {
+    margin-left: 80px;
+}

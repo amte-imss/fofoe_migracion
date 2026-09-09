@@ -349,4 +349,22 @@ class Usuario implements UserInterface, PasswordAuthenticatedUserInterface, Equa
     {
         return '[' . $this->getUserIdentifier() . '] ' . $this->getFullName();
     }
+
+    public function __serialize(): array
+    {
+        return [
+            'id'        => $this->id,
+            'matricula' => $this->matricula,
+            'correo'    => $this->correo,
+            'contrasena'=> $this->contrasena,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->id         = $data['id'];
+        $this->matricula  = $data['matricula'];
+        $this->correo     = $data['correo'];
+        $this->contrasena = $data['contrasena'];
+    }
 }

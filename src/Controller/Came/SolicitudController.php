@@ -345,10 +345,11 @@ class SolicitudController extends DIEControllerController
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $solicitudData = $request->request->all('solicitud');
             $result = $solicitudManager->validarMontos(
                 $form->getData(),
                 $this->getDataMontosForm($form, $solicitud),
-                isset($request->request->get('solicitud')['validado']),
+                isset($solicitudData['validado']),
                 $this->getUser(),
                 $originalDescuentos
             );

@@ -11,11 +11,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
-/**
- * Residente
- *
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\Posgrado\ResidenteRepository::class)]
 #[ORM\Table(name: 'posgrado_residente')]
 class Residente implements \Stringable
@@ -93,10 +89,12 @@ class Residente implements \Stringable
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $cedulaIdentificacion;
 
-    /**
-     * @Vich\UploadableField(mapping="residente_cedulas", fileNameProperty="cedulaIdentificacion")
-     * @var File
-     */
+    #[Vich\UploadableField(mapping: 'residente_cedulas', fileNameProperty: 'cedulaIdentificacion')]
+    #[Assert\File(
+        maxSize: '2m',
+        mimeTypes: ['application/pdf', 'application/x-pdf'],
+        mimeTypesMessage: 'Solo se admiten archivos PDF'
+    )]
     #[Assert\File(maxSize: '2m', mimeTypes: ['application/pdf', 'application/x-pdf'], mimeTypesMessage: 'Solo se admiten archivos PDF')]
     protected $cedulaFile;
 
@@ -201,7 +199,7 @@ class Residente implements \Stringable
         return $this->usuario;
     }
 
-    
+
     /**
      * Get usuario
      *

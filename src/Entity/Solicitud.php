@@ -14,9 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Exception;
 use Symfony\Component\HttpFoundation\File\File;
 
-/**
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\SolicitudRepository::class)]
 #[ORM\Table(name: 'solicitud')]
 class Solicitud implements SolicitudInterface, SolicitudTipoPagoInterface, ReferenciaBancariaInterface, \Stringable
@@ -57,12 +55,11 @@ class Solicitud implements SolicitudInterface, SolicitudTipoPagoInterface, Refer
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $urlArchivo;
 
-    /**
-     * @var File
-     *
-     * @Vich\UploadableField(mapping="comprobantes_inscripcion", fileNameProperty="urlArchivo")
-     */
-    #[Assert\File(maxSize: '2m', mimeTypes: ['application/pdf', 'application/x-pdf'])]
+    #[Vich\UploadableField(mapping: 'comprobantes_inscripcion', fileNameProperty: 'urlArchivo')]
+    #[Assert\File(
+        maxSize: '2m',
+        mimeTypes: ['application/pdf', 'application/x-pdf']
+    )]
     protected $urlArchivoFile;
 
     #[ORM\Column(type: 'boolean', nullable: true)]

@@ -1,0 +1,26 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader">Nueva comprobante de pago recibido.</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>Por medio del presente, se le notifica que la Institución Educativa <strong>{{ solicitud.institucion.nombre }}</strong>
+                ha registrado un pago ({{ pago.referenciaBancaria }}) para la solicitud <strong>{{ solicitud.noSolicitud }}</strong> de campos clínicos
+                en el  <strong>Sistema de Administración del FOFOE</strong>.</p>
+
+            <p>Puede consultar el estado y realizar la validación del pago accediendo mediante la siguiente liga:</p>
+
+            <p class="text-center"><a href="{{ app.request.getSchemeAndHttpHost() ~ path('homepage')  }}">{{ app.request.getSchemeAndHttpHost() ~ path('homepage') }}</a></p>
+
+            <p>Sin otro particular, reciba un cordial saludo.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

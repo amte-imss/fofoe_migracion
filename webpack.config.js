@@ -26,7 +26,7 @@ Encore
 
     // CAME
     .addEntry('came_solicitud_index', './assets/js/came/solicitud/index.js')
-//    .addEntry('came_solicitud_validar', './assets/js/came/solicitud/ValidarSolicitud/index.js')
+    .addEntry('came_solicitud_validar', './assets/js/came/solicitud/ValidarSolicitud/index.js')
 //    .addEntry('pregrado_reporte', './assets/js/pregrado/reporte/index.js')
 //    .addEntry('enfermeria_reporte-ciclos', './assets/js/enfermeria/reporte_ciclos/index.js')
 
@@ -45,6 +45,7 @@ Encore
     // ── FOFOE / Enfermería ───────────────────────────────────────────────────
     .addEntry('fofoe.enfermeria.index', './assets/js/enfermeria/pages/fofoe/index.js')
     .addEntry('fofoe.enfermeria.show',  './assets/js/enfermeria/pages/fofoe/show.js')
+    .addStyleEntry('layout-formato-fofoe', './assets/css/formatos/fofoe/layout.scss')
 
     // ── Estilos compartidos ──────────────────────────────────────────────────
     .addStyleEntry('loader',        './assets/js/components/Loader/styles.scss')

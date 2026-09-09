@@ -13,9 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-/**
- * @Vich\Uploadable
- */
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\InstitucionRepository::class)]
 #[ORM\Table(name: 'institucion')]
 class Institucion implements \Stringable
@@ -80,16 +78,10 @@ class Institucion implements \Stringable
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $cedulaIdentificacion2;
 
-    /**
-     * @Vich\UploadableField(mapping="institucion_cedulas", fileNameProperty="cedulaIdentificacion")
-     * @var File|null
-     */
+    #[Vich\UploadableField(mapping: 'institucion_cedulas', fileNameProperty: 'cedulaIdentificacion')]
     private $cedulaFile;
 
-    /**
-     * @Vich\UploadableField(mapping="institucion_cedulas2", fileNameProperty="cedulaIdentificacion2")
-     * @var File|null
-     */
+    #[Vich\UploadableField(mapping: 'institucion_cedulas2', fileNameProperty: 'cedulaIdentificacion2')]
     private $cedulaFile2;
 
     /**
@@ -419,7 +411,7 @@ class Institucion implements \Stringable
     public function setCedulaFile($cedulaFile = null)
     {
         $this->cedulaFile = $cedulaFile;
-    
+
         if ($cedulaFile instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
             $this->setFechaCedulaIdentificacion(new \DateTime());
         }

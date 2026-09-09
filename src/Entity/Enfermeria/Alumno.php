@@ -14,9 +14,10 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\Enfermeria\AlumnoRepository::class)]
 #[ORM\Table(name: 'lote_alumno_escuela_enf')]
-class Alumno implements UserInterface, \Serializable, \Stringable
+class Alumno implements UserInterface, \Stringable
 {
 
     const STATUS_INICIO = '';
@@ -99,10 +100,7 @@ class Alumno implements UserInterface, \Serializable, \Stringable
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $cedulaIdentificacion;
 
-    /**
-     * @Vich\UploadableField(mapping="alumno_enfermeria_cedula", fileNameProperty="cedulaIdentificacion")
-     * @var File|null
-     */
+    #[Vich\UploadableField(mapping: 'alumno_enfermeria_cedula', fileNameProperty: 'cedulaIdentificacion')]
     private $cedulaFile;
 
     /**
@@ -412,18 +410,20 @@ class Alumno implements UserInterface, \Serializable, \Stringable
         $this->hasDiferencia = $hasDiferencia;
     }
 
-    public function serialize()
+    public function __serialize(): array
     {
-        return serialize([
-            $this->id,
-            $this->email,
-            $this->curp
-        ]);
+        return [
+            'id'    => $this->id,
+            'email' => $this->email,
+            'curp'  => $this->curp,
+        ];
     }
 
-    public function unserialize($serialized)
+    public function __unserialize(array $data): void
     {
-        [$this->id, $this->email, $this->curp] = unserialize($serialized);
+        $this->id    = $data['id'];
+        $this->email = $data['email'];
+        $this->curp  = $data['curp'];
     }
 
     public function __toString(): string

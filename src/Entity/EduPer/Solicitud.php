@@ -14,6 +14,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[Vich\Uploadable]
 #[ORM\Entity(repositoryClass: \App\Repository\EduPer\SolicitudRepository::class)]
 #[ORM\Table(name: 'edu_per_request')]
 class Solicitud implements UserInterface
@@ -66,10 +67,7 @@ class Solicitud implements UserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected $cedulaIdentificacion;
 
-    /**
-     * @Vich\UploadableField(mapping="edu_per_solicitud", fileNameProperty="cedulaIdentificacion")
-     * @var File|null
-     */
+    #[Vich\UploadableField(mapping: 'edu_per_solicitud', fileNameProperty: 'cedulaIdentificacion')]
     private $cedulaFile;
 
     #[ORM\Column(type: 'datetime')]
