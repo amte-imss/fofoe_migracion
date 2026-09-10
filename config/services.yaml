@@ -279,3 +279,13 @@ services:
             $requestStack: '@request_stack'
         tags:
             -   name: doctrine.event_subscriber
+
+    # Alias de interfaces → implementación concreta
+    App\Calculator\ComprobantePagoCalculatorInterface:
+        alias: App\Calculator\ComprobantePagoCalculator
+
+    # ProcesadorValidarPago: solo el argumento escalar necesita declararse.
+    # El resto (calculador, repos, dispatcher, logger, mailer, twig) se autowirea.
+    App\Service\ProcesadorValidarPago:
+        arguments:
+            $sender: '%mailer_sender%'   # ajusta al parámetro/valor real de tu remitente

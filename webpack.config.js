@@ -30,6 +30,19 @@ Encore
 //    .addEntry('pregrado_reporte', './assets/js/pregrado/reporte/index.js')
 //    .addEntry('enfermeria_reporte-ciclos', './assets/js/enfermeria/reporte_ciclos/index.js')
 
+    // FOFOE
+    .addEntry('fofoe.inicio', './assets/js/fofoe/Inicio/index.js')
+    .addEntry('fofoe_referencia', './assets/js/fofoe/referencia/index.js')
+    .addEntry('fofoe_detalle_referencia', './assets/js/fofoe/DetalleReferencia/index.js')
+    .addEntry('fofoe.registrar.factura', './assets/js/fofoe/RegistrarFactura/index.js')
+    .addEntry('fofoe_reportes-inicio', './assets/js/fofoe/reportes-inicio/index.js')
+    .addEntry('fofoe_reporte-oportunidad', './assets/js/fofoe/reporte_oportunidad/index.js')
+    .addEntry('fofoe_reporte-ingresos', './assets/js/fofoe/reporte_ingresos/index.js')
+    .addEntry('validacion.de.pago', './assets/js/fofoe/ValidacionDePago/index.js')
+    .addEntry('ie.detalle.ie', './assets/js/fofoe/DetalleIE/index.js')
+    .addEntry('fofoe.ciclo-educativo.index', './assets/js/fofoe/CicloEducativo/IndexPage.js')
+    .addEntry('fofoe.ciclo-educativo.show', './assets/js/fofoe/CicloEducativo/ShowPage.js')
+
     // ── Enfermería (escuela) ──────────────────────────────────────────────────
     .addEntry('enfermeria.index',  './assets/js/enfermeria/pages/index.js')
     .addEntry('enfermeria.show',   './assets/js/enfermeria/pages/show.js')

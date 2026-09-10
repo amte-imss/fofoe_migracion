@@ -1,0 +1,113 @@
+
+form.form {
+    margin-bottom: 20px;
+}
+
+fieldset {
+    border: none;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+label {
+    font-weight: 600;
+    margin-right: 10px;
+}
+
+input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    transition: border 0.2s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #007bff;
+}
+
+/* Botones */
+input[type="submit"],
+button,
+.btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+input[type="submit"]:hover,
+button:hover,
+.btn:hover {
+    background-color: #0056b3;
+}
+
+input[type="submit"]:active,
+button:active,
+.btn:active {
+    transform: scale(0.98);
+}
+
+/* =======================
+   TABLA DETALLE
+======================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+tbody tr {
+    border-bottom: 1px solid #eee;
+}
+
+tbody tr:last-child {
+    border-bottom: none;
+}
+
+td {
+    padding: 12px 16px;
+}
+
+td:first-child {
+    font-weight: 600;
+    background-color: #fafafa;
+}
+
+/* =======================
+   FILE INPUT
+======================= */
+
+input[type="file"] {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Botón secundario para reemplazar */
+button[type="submit"] {
+    background-color: #28a745;
+}
+
+button[type="submit"]:hover {
+    background-color: #1e7e34;
+}
+
+.solicitud__status {
+    font-weight: 600;
+    font-size: 24px;
+    color: #1e7e34;
+}
+
+.solicitud__status_black {
+    color: black;
+}
