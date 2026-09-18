@@ -102,7 +102,7 @@
                     {% endif %}
 
                     {# ===== POSGRADO ===== #}
-                    {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_SUPER') %}
+                    {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_JDES') or is_granted('ROLE_JDES_MINUS') or is_granted('ROLE_SUPER') %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'posgrado' ? 'active' }}"
                            href="#posgrado-menu" data-bs-toggle="dropdown" role="button">
@@ -112,21 +112,18 @@
                             <span class="nav-link-title">Posgrado</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('posgrado_residentes') }}">
-                                <i class="ti ti-users me-2"></i>Residentes
+                            <a class="dropdown-item" href="{{ path('posgrado.residentes-imss.index', {tipo: 'imss'}) }}">
+                                <i class="ti ti-user-plus me-2"></i>Alumnos extranjeros en Ciclo académico anual
                             </a>
-                            <a class="dropdown-item" href="{{ path('posgrado_residencias') }}">
-                                <i class="ti ti-building-hospital me-2"></i>Residencias
-                            </a>
-                            <a class="dropdown-item" href="{{ path('posgrado_documentos') }}">
-                                <i class="ti ti-file-text me-2"></i>Documentos
+                            <a class="dropdown-item" href="{{ path('posgrado.residentes-imss.index', {tipo: 'no_imss'}) }}">
+                                <i class="ti ti-user-check me-2"></i>Alumnos extranjeros rotación parcial de especialidad
                             </a>
                         </div>
                     </li>
                     {% endif %}
 
                     {# ===== ENFERMERÍA ===== #}
-                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_SUPER') %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'enfermeria' ? 'active' }}"
                            href="#enfermeria-menu" data-bs-toggle="dropdown" role="button">
@@ -136,11 +133,8 @@
                             <span class="nav-link-title">Enfermería</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('enfermeria_solicitudes') }}">
-                                <i class="ti ti-list me-2"></i>Solicitudes
-                            </a>
-                            <a class="dropdown-item" href="{{ path('enfermeria_alumnos') }}">
-                                <i class="ti ti-user-check me-2"></i>Alumnos
+                            <a class="dropdown-item" href="{{ path('enfermeria.index') }}">
+                                <i class="ti ti-school me-2"></i>Escuelas de Enfermería
                             </a>
                         </div>
                     </li>
@@ -171,15 +165,23 @@
                     {% endif %}
 
                     {# ===== CAME ===== #}
-                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
-                    <li class="nav-item">
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_JDES') or is_granted('ROLE_JDES_MINUS') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
                         <a class="nav-link {{ app.request.attributes.get('_route') starts with 'came' ? 'active' }}"
-                           href="{{ path('came_index') }}">
+                           href="#came-menu" data-bs-toggle="dropdown" role="button">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <i class="ti ti-stethoscope"></i>
                             </span>
                             <span class="nav-link-title">CAME</span>
                         </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('came.solicitud.index') }}">
+                                <i class="ti ti-calendar-event me-2"></i>Ciclos Educativos
+                            </a>
+                            <a class="dropdown-item" href="{{ path('came.convenios.index') }}">
+                                <i class="ti ti-file-certificate me-2"></i>Convenios
+                            </a>
+                        </div>
                     </li>
                     {% endif %}
 

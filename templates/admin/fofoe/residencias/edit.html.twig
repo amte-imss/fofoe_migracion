@@ -1,0 +1,225 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Modificar residencia #{{ residenciaId }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        border-radius: 5px;
+        background: #f3e8ff;
+        color: #6941c6;
+        padding: .35rem .6rem;
+        font-size: .72rem;
+        font-weight: 700;
+    }
+    .form-section {
+        border-bottom: 1px solid #edf1ef;
+        padding: 1.1rem 1.25rem;
+    }
+    .form-section:last-child { border-bottom: 0; }
+    .form-section-title {
+        display: flex;
+        align-items: center;
+        gap: .55rem;
+        color: #344054;
+        font-size: .82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .form-section-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #e6f4ee;
+        color: var(--imss-green);
+        font-size: 1rem;
+    }
+    .preview-notice {
+        display: flex;
+        align-items: flex-start;
+        gap: .7rem;
+        border: 1px solid #e9d7fe;
+        border-radius: 8px;
+        background: #faf5ff;
+        color: #6941c6;
+        padding: .8rem 1rem;
+        font-size: .82rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Modificar residencia #{{ residenciaId }}</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Vista previa</span>
+            </div>
+            <div class="text-muted">RES-2026-0184 · María Fernanda López</div>
+        </div>
+        <a href="{{ path('admin.fofoe.residencias.index') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-arrow-left me-1"></i>Regresar al listado
+        </a>
+    </div>
+
+    <div class="preview-notice mb-3">
+        <i class="ti ti-info-circle fs-3"></i>
+        <div>
+            <strong>Formulario demostrativo.</strong>
+            Los campos y botones son únicamente para revisar el diseño. No se guardarán cambios.
+        </div>
+    </div>
+
+    <form onsubmit="return false;">
+        <div class="card">
+            <section class="form-section">
+                <div class="form-section-title">
+                    <span class="form-section-icon"><i class="ti ti-info-circle"></i></span>
+                    Datos generales
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Categoría</label>
+                        <select class="form-select"><option selected>Extranjero</option><option>Nacional</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Delegación</label>
+                        <select class="form-select"><option selected>Jalisco</option><option>Nuevo León</option><option>Ciudad de México Sur</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de especialidad</label>
+                        <select class="form-select"><option selected>Especialidad</option><option>Rotación parcial</option></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Especialidad</label>
+                        <input type="text" class="form-control" value="Medicina Interna">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">CLUES</label>
+                        <input type="text" class="form-control" value="JCSSA001234">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Grado</label>
+                        <select class="form-select"><option>R1</option><option selected>R2</option><option>R3</option><option>R4</option></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Sede</label>
+                        <input type="text" class="form-control" value="HGR No. 46">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Sub-sede</label>
+                        <input type="text" class="form-control" value="UMF No. 3">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Nivel de atención</label>
+                        <select class="form-select"><option>Primer nivel</option><option selected>Segundo nivel</option><option>Tercer nivel</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo Delegación/UMAE</label>
+                        <select class="form-select"><option selected>OOAD</option><option>UMAE</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Folio</label>
+                        <input type="text" class="form-control" value="RES-2026-0184">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo</label>
+                        <select class="form-select"><option selected>Ciclo anual</option><option>Rotación</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Ciclo</label>
+                        <input type="text" class="form-control" value="2026-2027">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Residente</label>
+                        <input type="text" class="form-control" value="María Fernanda López">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title">
+                    <span class="form-section-icon"><i class="ti ti-cash"></i></span>
+                    Montos
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Monto</label>
+                        <div class="input-group"><span class="input-group-text">$</span><input type="number" class="form-control" value="42500.00" step="0.01"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Moneda</label>
+                        <select class="form-select"><option selected>MXN</option><option>USD</option><option>EUR</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tasa de cambio</label>
+                        <input type="number" class="form-control" value="1.00" step="0.01">
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title">
+                    <span class="form-section-icon"><i class="ti ti-calendar-event"></i></span>
+                    Fechas y documentación
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha inicio</label>
+                        <input type="date" class="form-control" value="2026-03-01">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha término</label>
+                        <input type="date" class="form-control" value="2027-02-28">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Fecha de oficio</label>
+                        <input type="date" class="form-control" value="2026-02-12">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Oficio de aceptación</label>
+                        <input type="file" class="form-control" accept=".pdf">
+                        <div class="form-hint"><i class="ti ti-file-type-pdf text-danger me-1"></i>Archivo actual: oficio_aceptacion_0184.pdf</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section-title">
+                    <span class="form-section-icon"><i class="ti ti-check-circle"></i></span>
+                    Estado
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Estatus</label>
+                        <select class="form-select"><option selected>Activo</option><option>En revisión</option><option>Concluido</option></select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label d-block">Marcado como eliminado</label>
+                        <label class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox"><span class="form-check-label">Sí</span></label>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label d-block">Es registro de prueba</label>
+                        <label class="form-check form-switch mt-2"><input class="form-check-input" type="checkbox"><span class="form-check-label">Sí</span></label>
+                    </div>
+                </div>
+            </section>
+
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <a href="{{ path('admin.fofoe.residencias.index') }}" class="btn btn-outline-secondary">Cancelar</a>
+                <button type="button" class="btn btn-primary" disabled title="Disponible cuando se implemente el backend">
+                    <i class="ti ti-device-floppy me-1"></i>Guardar cambios
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

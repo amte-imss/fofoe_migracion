@@ -1,0 +1,362 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}CAME - Convenios{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .came-page {
+            padding: 24px 0 56px;
+        }
+
+        .came-toolbar {
+            align-items: end;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: minmax(240px, 1.3fr) minmax(180px, .9fr) minmax(180px, .9fr) minmax(112px, .45fr);
+        }
+
+        .came-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .came-table-card {
+            border: 1px solid #d9e2df;
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(17, 24, 39, .06);
+            overflow: hidden;
+        }
+
+        .came-table-card .card-header {
+            background: #f8faf9;
+            border-bottom: 1px solid #d9e2df;
+        }
+
+        .came-table {
+            margin-bottom: 0;
+            min-width: 1360px;
+        }
+
+        .came-table thead th {
+            background: #fbfcfc;
+            color: #475467;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            padding: 12px 16px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .came-table tbody td {
+            padding: 15px 16px;
+            vertical-align: middle;
+        }
+
+        .came-table tbody tr:hover {
+            background: #f8fbfa;
+        }
+
+        .came-folio {
+            color: #18725f;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .came-folio:hover {
+            color: #0f4f43;
+            text-decoration: underline;
+        }
+
+        .came-main-text {
+            color: #1f2937;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .came-sub-text {
+            color: #667085;
+            font-size: .82rem;
+            line-height: 1.35;
+        }
+
+        .came-date {
+            color: #344054;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .came-badge {
+            align-items: center;
+            border-radius: 999px;
+            display: inline-flex;
+            font-size: .78rem;
+            font-weight: 700;
+            gap: 6px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .came-badge.done {
+            background: #e6f4ee;
+            color: #0f6b43;
+        }
+
+        .came-badge.warning {
+            background: #fff3cd;
+            color: #8a5f00;
+        }
+
+        .came-badge.pending {
+            background: #e8f1ff;
+            color: #1553a7;
+        }
+
+        .came-action-list {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            white-space: nowrap;
+        }
+
+        .came-icon-button {
+            align-items: center;
+            border: 1px solid #cfd8d5;
+            border-radius: 8px;
+            color: #18725f;
+            display: inline-flex;
+            height: 34px;
+            justify-content: center;
+            text-decoration: none;
+            width: 34px;
+        }
+
+        .came-icon-button:hover {
+            background: #eaf5f1;
+            border-color: #9fc7bb;
+            color: #0f4f43;
+        }
+
+        .came-count-select {
+            max-width: 112px;
+        }
+
+        @media (max-width: 1100px) {
+            .came-toolbar {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .came-toolbar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+{% set convenios = [
+    {
+        numero: 'CAME-2026-0184',
+        razonSocial: 'UNIVERSIDAD AUTONOMA DE DURANGO A.C.',
+        institucion: 'UNIVERSIDAD AUTONOMA DE DURANGO',
+        nombreComercial: 'UNIVERSIDAD AUTONOMA DE DURANGO',
+        ciclos: '2025-2026, 2026-2027',
+        nivel: 'Licenciatura',
+        disciplina: 'Enfermeria',
+        carrera: 'Licenciatura en Enfermeria',
+        firma: '12/04/2026',
+        vencimiento: '12/04/2029',
+        carta: '15/04/2026',
+        ota: '15/04/2029',
+        rvoe: '31/12/2028',
+        comaem: 'N/A',
+        estado: 'Activo',
+        badge: 'done'
+    },
+    {
+        numero: 'CAME-2026-0183',
+        razonSocial: 'INSTITUTO SAN RAFAEL A.C.',
+        institucion: 'INSTITUTO SAN RAFAEL',
+        nombreComercial: 'INSTITUTO SAN RAFAEL',
+        ciclos: '2026-2027',
+        nivel: 'Tecnico',
+        disciplina: 'Salud',
+        carrera: 'Tecnico en Enfermeria',
+        firma: '28/03/2026',
+        vencimiento: '28/03/2028',
+        carta: '30/03/2026',
+        ota: '30/03/2028',
+        rvoe: '20/02/2028',
+        comaem: 'N/A',
+        estado: 'En revision',
+        badge: 'warning'
+    },
+    {
+        numero: 'CAME-2026-0182',
+        razonSocial: 'ESCUELA NACIONAL DE SALUD S.A.',
+        institucion: 'ESCUELA NACIONAL DE SALUD',
+        nombreComercial: 'ESCUELA NACIONAL DE SALUD',
+        ciclos: '2025-2026',
+        nivel: 'Posgrado',
+        disciplina: 'Medicina',
+        carrera: 'Especialidad Medica',
+        firma: '15/02/2026',
+        vencimiento: '15/02/2031',
+        carta: '18/02/2026',
+        ota: '18/02/2031',
+        rvoe: '10/12/2030',
+        comaem: '10/12/2030',
+        estado: 'Activo',
+        badge: 'done'
+    },
+    {
+        numero: 'CAME-2025-0179',
+        razonSocial: 'CENTRO UNIVERSITARIO DEL NORTE S.C.',
+        institucion: 'CENTRO UNIVERSITARIO DEL NORTE',
+        nombreComercial: 'CUNORTE',
+        ciclos: '2025-2026',
+        nivel: 'Licenciatura',
+        disciplina: 'Enfermeria',
+        carrera: 'Licenciatura en Enfermeria',
+        firma: '19/11/2025',
+        vencimiento: '19/11/2027',
+        carta: '22/11/2025',
+        ota: '22/11/2027',
+        rvoe: '05/10/2027',
+        comaem: 'N/A',
+        estado: 'Por vencer',
+        badge: 'pending'
+    }
+] %}
+
+<div class="container-xl came-page">
+    <div class="page-header mb-4">
+        <div class="row align-items-center gy-3">
+            <div class="col">
+                <h2 class="page-title mb-1">Convenios OOAD/UMAE</h2>
+                <div class="text-muted">Consulta y seguimiento de convenios registrados para CAME.</div>
+            </div>
+            <div class="col-auto">
+                <div class="came-actions">
+                    <a class="btn btn-outline-primary" href="#">
+                        <i class="ti ti-download"></i>
+                        Exportar
+                    </a>
+                    <a class="btn btn-primary" href="#">
+                        <i class="ti ti-plus"></i>
+                        Crear convenio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="came-toolbar">
+                <div>
+                    <label class="form-label">Buscar convenio</label>
+                    <div class="input-icon">
+                        <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                        <input class="form-control" type="search" placeholder="Numero, institucion o razon social">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Nivel academico</label>
+                    <select class="form-select">
+                        <option selected>Todos</option>
+                        <option>Licenciatura</option>
+                        <option>Tecnico</option>
+                        <option>Posgrado</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Estado</label>
+                    <select class="form-select">
+                        <option selected>Todos</option>
+                        <option>Activo</option>
+                        <option>En revision</option>
+                        <option>Por vencer</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Mostrar</label>
+                    <select class="form-select came-count-select" aria-label="Registros por pagina">
+                        <option>25</option>
+                        <option selected>50</option>
+                        <option>100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card came-table-card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title mb-0">Convenios registrados</h3>
+                <div class="text-muted small">Datos de muestra para validacion visual de la migracion.</div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-vcenter came-table">
+                <thead>
+                    <tr>
+                        <th>Numero Convenio</th>
+                        <th>Razon Social</th>
+                        <th>Institucion</th>
+                        <th>Nombre Comercial</th>
+                        <th>Ciclos Academicos</th>
+                        <th>Nivel o Grado Academico</th>
+                        <th>Disciplina</th>
+                        <th>Carrera</th>
+                        <th>Fecha firma de Convenio</th>
+                        <th>Vencimiento del Convenio</th>
+                        <th>Fecha Carta Compromiso</th>
+                        <th>Vencimiento de OTA</th>
+                        <th>Vencimiento RVOE</th>
+                        <th>Vencimiento COMAEM</th>
+                        <th>Estado</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for convenio in convenios %}
+                        <tr>
+                            <td><a class="came-folio" href="#">{{ convenio.numero }}</a></td>
+                            <td><div class="came-main-text">{{ convenio.razonSocial }}</div></td>
+                            <td><div class="came-main-text">{{ convenio.institucion }}</div></td>
+                            <td><div class="came-sub-text">{{ convenio.nombreComercial }}</div></td>
+                            <td><div class="came-sub-text">{{ convenio.ciclos }}</div></td>
+                            <td>{{ convenio.nivel }}</td>
+                            <td>{{ convenio.disciplina }}</td>
+                            <td><div class="came-sub-text">{{ convenio.carrera }}</div></td>
+                            <td class="came-date">{{ convenio.firma }}</td>
+                            <td class="came-date">{{ convenio.vencimiento }}</td>
+                            <td class="came-date">{{ convenio.carta }}</td>
+                            <td class="came-date">{{ convenio.ota }}</td>
+                            <td class="came-date">{{ convenio.rvoe }}</td>
+                            <td class="came-date">{{ convenio.comaem }}</td>
+                            <td><span class="came-badge {{ convenio.badge }}"><i class="ti ti-circle-filled"></i>{{ convenio.estado }}</span></td>
+                            <td>
+                                <div class="came-action-list">
+                                    <a class="came-icon-button" href="#" title="Modificar" aria-label="Modificar convenio">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
+                                    <a class="came-icon-button" href="#" title="Mas informacion" aria-label="Mas informacion del convenio">
+                                        <i class="ti ti-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Solicitudes CC - Administración FOFOE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cc-table { min-width: 2100px; }
+    .cc-table th { white-space: nowrap; font-size: .7rem; text-transform: uppercase; color: #667085; }
+    .cc-table td { white-space: nowrap; font-size: .8rem; vertical-align: middle; }
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .status-badge { display: inline-flex; align-items: center; border-radius: 20px; padding: .24rem .6rem; font-size: .72rem; font-weight: 700; }
+    .status-review { background: #fff4dc; color: #8a5a00; }
+    .status-valid { background: #e6f4ee; color: #006847; }
+    .status-rejected { background: #fce8e6; color: #b42318; }
+    .bank-reference { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .76rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set solicitudes = [
+    {
+        id: 4092, numero: 'CC-2026-004092', estatus: 'En revisión', statusClass: 'status-review',
+        estatusCame: 'Lugares autorizados', estatusIe: 'Formato FOFOE cargado',
+        referencia: '5500264092001847', monto: 78500, tipoPago: 'Múltiple',
+        pagoMultiple: true, pagoUnico: false, validado: null, oficio: true,
+        aceptacion: true, validacionMontos: null, motivo: 'Pendiente de validación administrativa',
+        formatos: true, solicitados: 24, autorizados: 20, delegacion: 'Jalisco',
+        unidad: 'HGR No. 46', umae: false, display: 'OOAD Jalisco', idDel: '14', test: false
+    },
+    {
+        id: 4091, numero: 'CC-2026-004091', estatus: 'Validada', statusClass: 'status-valid',
+        estatusCame: 'Solicitud autorizada', estatusIe: 'Pago registrado',
+        referencia: '5500264091002981', monto: 126000, tipoPago: 'Único',
+        pagoMultiple: false, pagoUnico: true, validado: true, oficio: true,
+        aceptacion: true, validacionMontos: true, motivo: '',
+        formatos: true, solicitados: 36, autorizados: 36, delegacion: 'Nuevo León',
+        unidad: 'UMAE No. 34', umae: true, display: 'UMAE No. 34', idDel: '134', test: false
+    },
+    {
+        id: 4090, numero: 'CC-2026-004090', estatus: 'Con observaciones', statusClass: 'status-rejected',
+        estatusCame: 'Corrección solicitada', estatusIe: 'Documentación incompleta',
+        referencia: '5500264090003672', monto: 45200, tipoPago: 'Múltiple',
+        pagoMultiple: true, pagoUnico: false, validado: false, oficio: false,
+        aceptacion: false, validacionMontos: false, motivo: 'El monto del oficio no coincide con los campos autorizados',
+        formatos: false, solicitados: 18, autorizados: 14, delegacion: 'Ciudad de México Sur',
+        unidad: 'HGZ No. 32', umae: false, display: 'OOAD CDMX Sur', idDel: '09', test: false
+    }
+] %}
+
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Listado de Solicitudes CC</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">Administración FOFOE</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" onsubmit="return false;">
+                <div class="col-lg-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="search" class="form-control" placeholder="No. solicitud, referencia, delegación o unidad">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Estatus</label>
+                    <select class="form-select"><option>Todos</option><option>En revisión</option><option>Validada</option><option>Con observaciones</option></select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Tipo de pago</label>
+                    <select class="form-select"><option>Todos</option><option>Único</option><option>Múltiple</option></select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Delegación</label>
+                    <select class="form-select"><option>Todas</option><option>Jalisco</option><option>Nuevo León</option><option>Ciudad de México Sur</option></select>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="button" class="btn btn-primary flex-fill"><i class="ti ti-search me-1"></i>Buscar</button>
+                    <button type="reset" class="btn btn-icon btn-outline-secondary" title="Limpiar filtros"><i class="ti ti-x"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table cc-table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>No. Solicitud</th><th>Estatus</th><th>Estatus CAME</th>
+                        <th>Estatus IE</th><th>Referencia bancaria</th><th>Monto</th>
+                        <th>Tipo de pago</th><th>Pago múltiple</th><th>Pago único</th>
+                        <th>Validado</th><th>Oficio adjunto</th><th>Aceptación FOFOE IE</th>
+                        <th>Validación montos</th><th>Motivo</th><th>FOFOE cargados</th>
+                        <th>Campos solicitados</th><th>Campos autorizados</th><th>Delegación</th>
+                        <th>Unidad</th><th>UMAE</th><th>Display Del/UMAE</th><th>ID Del/UMAE</th>
+                        <th>Es test</th><th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for solicitud in solicitudes %}
+                    <tr>
+                        <td class="fw-bold">#{{ solicitud.id }}</td>
+                        <td>{{ solicitud.numero }}</td>
+                        <td><span class="status-badge {{ solicitud.statusClass }}">{{ solicitud.estatus }}</span></td>
+                        <td>{{ solicitud.estatusCame }}</td>
+                        <td>{{ solicitud.estatusIe }}</td>
+                        <td class="bank-reference">{{ solicitud.referencia }}</td>
+                        <td>${{ solicitud.monto|number_format(2, '.', ',') }}</td>
+                        <td>{{ solicitud.tipoPago }}</td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.pagoMultiple ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.pagoMultiple ? 'Sí' : 'No' }}</span></span></td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.pagoUnico ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.pagoUnico ? 'Sí' : 'No' }}</span></span></td>
+                        <td>
+                            {% if solicitud.validado is same as(null) %}
+                                <span class="table-switch is-pending"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" disabled></span><span class="table-switch-label">Pendiente</span></span>
+                            {% else %}
+                                <span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.validado ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.validado ? 'Sí' : 'No' }}</span></span>
+                            {% endif %}
+                        </td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.oficio ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.oficio ? 'Sí' : 'No' }}</span></span></td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.aceptacion ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.aceptacion ? 'Sí' : 'No' }}</span></span></td>
+                        <td>
+                            {% if solicitud.validacionMontos is same as(null) %}
+                                <span class="table-switch is-pending"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" disabled></span><span class="table-switch-label">Pendiente</span></span>
+                            {% else %}
+                                <span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.validacionMontos ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.validacionMontos ? 'Sí' : 'No' }}</span></span>
+                            {% endif %}
+                        </td>
+                        <td title="{{ solicitud.motivo }}">{{ solicitud.motivo ? solicitud.motivo|slice(0, 38) ~ (solicitud.motivo|length > 38 ? '…' : '') : '—' }}</td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.formatos ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.formatos ? 'Sí' : 'No' }}</span></span></td>
+                        <td>{{ solicitud.solicitados }}</td>
+                        <td>{{ solicitud.autorizados }}</td>
+                        <td>{{ solicitud.delegacion }}</td>
+                        <td>{{ solicitud.unidad }}</td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.umae ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.umae ? 'Sí' : 'No' }}</span></span></td>
+                        <td>{{ solicitud.display }}</td>
+                        <td>{{ solicitud.idDel }}</td>
+                        <td><span class="table-switch"><span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ solicitud.test ? 'checked' : '' }} disabled></span><span class="table-switch-label">{{ solicitud.test ? 'Sí' : 'No' }}</span></span></td>
+                        <td>
+                            <a href="{{ path('admin.fofoe.solicitudes_cc.edit', {id: solicitud.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="ti ti-pencil me-1"></i>Modificar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer d-flex align-items-center">
+            <span class="text-muted">Mostrando 3 registros de ejemplo</span>
+            <div class="ms-auto d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled><i class="ti ti-chevron-left"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled><i class="ti ti-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

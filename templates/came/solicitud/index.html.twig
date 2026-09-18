@@ -1,36 +1,302 @@
-{% extends 'layouts/came.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Solicitudes de Campos Clínicos{% endblock %}
+{% block title %}CAME - Ciclos Educativos{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
+{% block extra_css %}
     <style>
-        .wrapper-came {
-            margin-top: 80px;
-            margin-bottom: 80px;
+        .came-page {
+            padding: 24px 0 56px;
+        }
+
+        .came-toolbar {
+            align-items: end;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: minmax(220px, 1.4fr) minmax(180px, .9fr) minmax(160px, .8fr) minmax(110px, .45fr);
+        }
+
+        .came-table-card {
+            border: 1px solid #d9e2df;
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(17, 24, 39, .06);
+            overflow: hidden;
+        }
+
+        .came-table-card .card-header {
+            background: #f8faf9;
+            border-bottom: 1px solid #d9e2df;
+        }
+
+        .came-table {
+            margin-bottom: 0;
+            min-width: 1040px;
+        }
+
+        .came-table thead th {
+            background: #fbfcfc;
+            color: #475467;
+            font-size: .78rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            padding: 12px 16px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .came-table tbody td {
+            padding: 15px 16px;
+            vertical-align: middle;
+        }
+
+        .came-table tbody tr:hover {
+            background: #f8fbfa;
+        }
+
+        .came-folio {
+            color: #18725f;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .came-folio:hover {
+            color: #0f4f43;
+            text-decoration: underline;
+        }
+
+        .came-school {
+            color: #1f2937;
+            font-weight: 700;
+            line-height: 1.35;
+        }
+
+        .came-fields {
+            color: #344054;
+            line-height: 1.45;
+            white-space: nowrap;
+        }
+
+        .came-badge {
+            align-items: center;
+            border-radius: 999px;
+            display: inline-flex;
+            font-size: .78rem;
+            font-weight: 700;
+            gap: 6px;
+            padding: 6px 10px;
+            white-space: nowrap;
+        }
+
+        .came-badge.done {
+            background: #e6f4ee;
+            color: #0f6b43;
+        }
+
+        .came-badge.warning {
+            background: #fff3cd;
+            color: #8a5f00;
+        }
+
+        .came-badge.pending {
+            background: #e8f1ff;
+            color: #1553a7;
+        }
+
+        .came-action {
+            align-items: center;
+            color: #18725f;
+            display: inline-flex;
+            font-weight: 700;
+            gap: 6px;
+            text-decoration: none;
+            white-space: normal;
+        }
+
+        .came-action:hover {
+            color: #0f4f43;
+            text-decoration: underline;
+        }
+
+        .came-action-placeholder {
+            color: #98a2b3;
+        }
+
+        .came-count-select {
+            max-width: 110px;
+        }
+
+        @media (max-width: 1100px) {
+            .came-toolbar {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .came-toolbar {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid wrapper-came">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <h1 style="text-align: center; padding-bottom: 40px">Solicitudes de Campos Clínicos</h1>
-                </div>
+{% set solicitudes = [
+    {
+        numero: 'NS_000764',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '31/03/2026',
+        solicitados: 5,
+        autorizados: 5,
+        estado: 'Finalizada',
+        badge: 'done',
+        accion: ''
+    },
+    {
+        numero: 'NS_000754',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '30/03/2026',
+        solicitados: 5,
+        autorizados: 5,
+        estado: 'Pendiente de validar montos',
+        badge: 'warning',
+        accion: 'Validar Montos'
+    },
+    {
+        numero: 'NS_000751',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '30/03/2026',
+        solicitados: 1,
+        autorizados: 0,
+        estado: 'Pendiente de validar',
+        badge: 'pending',
+        accion: 'Validar'
+    },
+    {
+        numero: 'NS_000445',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '29/01/2026',
+        solicitados: 1,
+        autorizados: 1,
+        estado: 'Solicitud Confirmada',
+        badge: 'done',
+        accion: ''
+    },
+    {
+        numero: 'NS_000441',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '29/01/2026',
+        solicitados: 1,
+        autorizados: 1,
+        estado: 'Solicitud Confirmada',
+        badge: 'done',
+        accion: ''
+    },
+    {
+        numero: 'NS_000027',
+        institucion: 'UNIVERSIDAD AUTÓNOMA DE DURANGO',
+        fecha: '26/09/2025',
+        solicitados: 1,
+        autorizados: 1,
+        estado: 'Montos Validados',
+        badge: 'done',
+        accion: 'Cargar formato(s) FOFOE firmado(s)'
+    }
+] %}
+
+<div class="container-xl came-page">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title mb-1">Ciclos Educativos</h2>
+                <div class="text-muted">Seguimiento de solicitudes de campos clinicos por institucion educativa.</div>
             </div>
-            <div id="solicitudes-table"></div>
         </div>
     </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="came-toolbar">
+                <div>
+                    <label class="form-label">No. de solicitud</label>
+                    <div class="input-icon">
+                        <span class="input-icon-addon"><i class="ti ti-search"></i></span>
+                        <input class="form-control" type="search" placeholder="NS_000754">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Institucion educativa</label>
+                    <input class="form-control" type="search" placeholder="UNIVERSIDAD AUTONOMA DE DURANGO">
+                </div>
+                <div>
+                    <label class="form-label">Fecha</label>
+                    <input class="form-control" type="text" placeholder="dd/mm/aaaa">
+                </div>
+                <div>
+                    <label class="form-label">Mostrar</label>
+                    <select class="form-select came-count-select" aria-label="Registros por pagina">
+                        <option selected>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card came-table-card">
+        <div class="card-header">
+            <div>
+                <h3 class="card-title mb-0">Solicitudes registradas</h3>
+                <div class="text-muted small">Datos de muestra para validacion visual de la migracion.</div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-vcenter came-table">
+                <thead>
+                    <tr>
+                        <th>No. de solicitud</th>
+                        <th>Institucion Educativa</th>
+                        <th>Fecha</th>
+                        <th>No. de campos clinicos</th>
+                        <th>Estado</th>
+                        <th class="text-end">Accion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for solicitud in solicitudes %}
+                        <tr>
+                            <td><a class="came-folio" href="#">{{ solicitud.numero }}</a></td>
+                            <td><div class="came-school">{{ solicitud.institucion }}</div></td>
+                            <td class="text-muted">{{ solicitud.fecha }}</td>
+                            <td class="came-fields">
+                                <span class="d-block">Solicitados: <strong>{{ solicitud.solicitados }}</strong></span>
+                                <span class="d-block">Autorizados: <strong>{{ solicitud.autorizados }}</strong></span>
+                            </td>
+                            <td><span class="came-badge {{ solicitud.badge }}"><i class="ti ti-circle-filled"></i>{{ solicitud.estado }}</span></td>
+                            <td>
+                                <div class="text-end">
+                                    {% if solicitud.accion %}
+                                        <a class="came-action" href="#">
+                                            <i class="ti ti-arrow-right"></i>
+                                            <span>{{ solicitud.accion }}</span>
+                                        </a>
+                                    {% else %}
+                                        <span class="came-action-placeholder">Sin accion</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
+{% block extra_js %}
     <script>
         window.DELEGACION_ID = {{ delegacionId ?? 'null' }};
         window.UNIDAD_ID     = {{ unidadId ?? 'null' }};
         window.IS_DEL_ACTIVA = {{ isDelActiva ? 'true' : 'false' }};
     </script>
-    <script src="{{ asset('build/came_solicitud_index.js') }}"></script>
 {% endblock %}

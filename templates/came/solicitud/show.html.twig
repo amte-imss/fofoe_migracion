@@ -1,0 +1,29 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Detalle de solicitud de Campos Educativos{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title">Detalle de solicitud de Campos Educativos</h2>
+                <div class="text-muted mt-1">Consulta de campos clinicos, convenios, unidades y periodos solicitados.</div>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('came.solicitud.index') }}" class="btn btn-outline-secondary spa-link">
+                    <i class="ti ti-arrow-left me-1"></i> Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div id="solicitud-show-wrapper">
+                <p class="text-muted mb-0">Pantalla base migrada. Pendiente conectar la informacion de detalle.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

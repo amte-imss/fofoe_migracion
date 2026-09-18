@@ -1,0 +1,29 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Validar lugares y campos clinicos{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title">Validar lugares y campos clinicos</h2>
+                <div class="text-muted mt-1">Revision de lugares autorizados y campos clinicos solicitados.</div>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('came.solicitud.index') }}" class="btn btn-outline-secondary spa-link">
+                    <i class="ti ti-arrow-left me-1"></i> Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div id="solicitud-validate-wrapper">
+                <p class="text-muted mb-0">Pantalla base migrada. Pendiente conectar la validacion funcional de lugares.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

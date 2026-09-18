@@ -1,0 +1,239 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Residencias - Administración FOFOE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .residences-table { min-width: 1900px; }
+    .residences-table th {
+        white-space: nowrap;
+        font-size: .7rem;
+        text-transform: uppercase;
+        color: #667085;
+    }
+    .residences-table td {
+        white-space: nowrap;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+    .residence-status {
+        display: inline-flex;
+        align-items: center;
+        gap: .3rem;
+        border-radius: 20px;
+        padding: .24rem .6rem;
+        font-size: .72rem;
+        font-weight: 700;
+    }
+    .status-active { background: #e6f4ee; color: #006847; }
+    .status-review { background: #fff4dc; color: #8a5a00; }
+    .status-finished { background: #e8f0fe; color: #175cd3; }
+    .preview-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        border-radius: 5px;
+        background: #f3e8ff;
+        color: #6941c6;
+        padding: .35rem .6rem;
+        font-size: .72rem;
+        font-weight: 700;
+    }
+    .residence-folio {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: .76rem;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set residencias = [
+    {
+        id: 1284, categoria: 'Extranjero', delegacion: 'Jalisco',
+        tipoEspecialidad: 'Especialidad', especialidad: 'Medicina Interna',
+        clues: 'JCSSA001234', sede: 'HGR No. 46', subsede: 'UMF No. 3',
+        nivelAtencion: 'Segundo nivel', tipoDelegacion: 'OOAD', grado: 'R2',
+        folio: 'RES-2026-0184', tipo: 'Ciclo anual', ciclo: '2026-2027',
+        residente: 'María Fernanda López', monto: 42500, moneda: 'MXN',
+        tasaCambio: 1, estatus: 'Activo', statusClass: 'status-active',
+        fechaInicio: '01/03/2026', fechaTermino: '28/02/2027',
+        oficio: 'oficio_aceptacion_0184.pdf', fechaOficio: '12/02/2026',
+        eliminado: false, test: false
+    },
+    {
+        id: 1283, categoria: 'Extranjero', delegacion: 'Nuevo León',
+        tipoEspecialidad: 'Rotación parcial', especialidad: 'Cardiología',
+        clues: 'NLSSA006542', sede: 'UMAE No. 34', subsede: 'Hospital de Cardiología',
+        nivelAtencion: 'Tercer nivel', tipoDelegacion: 'UMAE', grado: 'R3',
+        folio: 'RES-2026-0183', tipo: 'Rotación', ciclo: '2026',
+        residente: 'Carlos Andrés Gómez', monto: 18750, moneda: 'USD',
+        tasaCambio: 17.42, estatus: 'En revisión', statusClass: 'status-review',
+        fechaInicio: '15/04/2026', fechaTermino: '15/10/2026',
+        oficio: 'oficio_aceptacion_0183.pdf', fechaOficio: '28/03/2026',
+        eliminado: false, test: false
+    },
+    {
+        id: 1282, categoria: 'Nacional', delegacion: 'Ciudad de México Sur',
+        tipoEspecialidad: 'Especialidad', especialidad: 'Pediatría',
+        clues: 'DFSSA009876', sede: 'Hospital de Pediatría CMN Siglo XXI',
+        subsede: 'Sin subsede', nivelAtencion: 'Tercer nivel',
+        tipoDelegacion: 'UMAE', grado: 'R4', folio: 'RES-2025-0912',
+        tipo: 'Ciclo anual', ciclo: '2025-2026',
+        residente: 'Ana Sofía Martínez', monto: 39000, moneda: 'MXN',
+        tasaCambio: 1, estatus: 'Concluido', statusClass: 'status-finished',
+        fechaInicio: '01/03/2025', fechaTermino: '28/02/2026',
+        oficio: 'oficio_aceptacion_0912.pdf', fechaOficio: '10/02/2025',
+        eliminado: false, test: false
+    }
+] %}
+
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Listado de residencias</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">Administración FOFOE</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="ti ti-arrow-left me-1"></i>Volver al inicio
+        </a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" onsubmit="return false;">
+                <div class="col-lg-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="search" class="form-control" placeholder="Folio, residente, especialidad, sede o CLUES">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select">
+                        <option>Todas</option>
+                        <option>Extranjero</option>
+                        <option>Nacional</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Delegación</label>
+                    <select class="form-select">
+                        <option>Todas</option>
+                        <option>Ciudad de México Sur</option>
+                        <option>Jalisco</option>
+                        <option>Nuevo León</option>
+                    </select>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <label class="form-label">Estatus</label>
+                    <select class="form-select">
+                        <option>Todos</option>
+                        <option>Activo</option>
+                        <option>En revisión</option>
+                        <option>Concluido</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="button" class="btn btn-primary flex-fill">
+                        <i class="ti ti-search me-1"></i>Buscar
+                    </button>
+                    <button type="reset" class="btn btn-icon btn-outline-secondary" title="Limpiar filtros">
+                        <i class="ti ti-x"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table residences-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Categoría</th>
+                        <th>Delegación</th>
+                        <th>Tipo de especialidad</th>
+                        <th>Especialidad</th>
+                        <th>CLUES</th>
+                        <th>Sede</th>
+                        <th>Sub-sede</th>
+                        <th>Nivel de atención</th>
+                        <th>Delegación/UMAE</th>
+                        <th>Grado</th>
+                        <th>Folio</th>
+                        <th>Tipo</th>
+                        <th>Ciclo</th>
+                        <th>Residente</th>
+                        <th>Monto</th>
+                        <th>Moneda</th>
+                        <th>Tasa de cambio</th>
+                        <th>Estatus</th>
+                        <th>Fecha inicio</th>
+                        <th>Fecha término</th>
+                        <th>Oficio de aceptación</th>
+                        <th>Fecha oficio</th>
+                        <th>Eliminado</th>
+                        <th>Es test</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for residencia in residencias %}
+                    <tr>
+                        <td class="fw-bold">#{{ residencia.id }}</td>
+                        <td>{{ residencia.categoria }}</td>
+                        <td>{{ residencia.delegacion }}</td>
+                        <td>{{ residencia.tipoEspecialidad }}</td>
+                        <td>{{ residencia.especialidad }}</td>
+                        <td>{{ residencia.clues }}</td>
+                        <td>{{ residencia.sede }}</td>
+                        <td>{{ residencia.subsede }}</td>
+                        <td>{{ residencia.nivelAtencion }}</td>
+                        <td>{{ residencia.tipoDelegacion }}</td>
+                        <td>{{ residencia.grado }}</td>
+                        <td class="residence-folio">{{ residencia.folio }}</td>
+                        <td>{{ residencia.tipo }}</td>
+                        <td>{{ residencia.ciclo }}</td>
+                        <td class="fw-semibold">{{ residencia.residente }}</td>
+                        <td>${{ residencia.monto|number_format(2, '.', ',') }}</td>
+                        <td>{{ residencia.moneda }}</td>
+                        <td>{{ residencia.tasaCambio|number_format(2, '.', ',') }}</td>
+                        <td><span class="residence-status {{ residencia.statusClass }}">{{ residencia.estatus }}</span></td>
+                        <td>{{ residencia.fechaInicio }}</td>
+                        <td>{{ residencia.fechaTermino }}</td>
+                        <td><i class="ti ti-file-type-pdf text-danger me-1"></i>{{ residencia.oficio }}</td>
+                        <td>{{ residencia.fechaOficio }}</td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ residencia.eliminado ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ residencia.eliminado ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="table-switch">
+                                <span class="form-check form-switch"><input class="form-check-input" type="checkbox" {{ residencia.test ? 'checked' : '' }} disabled></span>
+                                <span class="table-switch-label">{{ residencia.test ? 'Sí' : 'No' }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ path('admin.fofoe.residencias.edit', {id: residencia.id}) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="ti ti-pencil me-1"></i>Modificar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer d-flex align-items-center">
+            <span class="text-muted">Mostrando 3 registros de ejemplo</span>
+            <div class="ms-auto d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled><i class="ti ti-chevron-left"></i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" disabled><i class="ti ti-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

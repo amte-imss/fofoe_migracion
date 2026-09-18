@@ -1,0 +1,118 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Archivos de Solicitud de Ciclos Educativos{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-badge { display: inline-flex; align-items: center; gap: .35rem; border-radius: 5px; background: #f3e8ff; color: #6941c6; padding: .35rem .6rem; font-size: .72rem; font-weight: 700; }
+    .data-label { color: #667085; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+    .data-value { color: #1f2933; font-size: .9rem; font-weight: 600; margin-top: .2rem; }
+    .clinical-fields-table { min-width: 1250px; }
+    .clinical-fields-table th { white-space: nowrap; font-size: .7rem; text-transform: uppercase; color: #667085; }
+    .clinical-fields-table td { white-space: nowrap; font-size: .8rem; vertical-align: middle; }
+    .document-name { display: inline-flex; align-items: center; gap: .35rem; color: #344054; font-size: .78rem; }
+</style>
+{% endblock %}
+
+{% block body %}
+{% set campos = [
+    {id: 7812, inicio: '01/08/2026', fin: '31/01/2027', unidad: 'HGR No. 46', lugares: 12, referencia: '5500264092001847', monto: 47100, archivo: 'formato_fofoe_7812.pdf'},
+    {id: 7813, inicio: '01/08/2026', fin: '31/01/2027', unidad: 'UMF No. 3', lugares: 8, referencia: '5500264092001848', monto: 31400, archivo: 'formato_fofoe_7813.pdf'}
+] %}
+
+<div class="container-xl py-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h2 mb-0">Archivos de Solicitud de Ciclos Educativos</h1>
+                <span class="preview-badge"><i class="ti ti-layout"></i>Datos de muestra</span>
+            </div>
+            <div class="text-muted">Oficio de montos y formatos FOFOE por campo clínico</div>
+        </div>
+        <a href="{{ path('app_dashboard') }}" class="btn btn-outline-secondary"><i class="ti ti-arrow-left me-1"></i>Volver al inicio</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <form class="row g-3 align-items-end" onsubmit="return false;">
+                <div class="col-md-8 col-lg-5">
+                    <label class="form-label">ID de la solicitud</label>
+                    <input type="number" class="form-control" value="4092" min="1" placeholder="Captura el ID de la solicitud">
+                </div>
+                <div class="col-md-4 col-lg-2">
+                    <button type="button" class="btn btn-primary w-100"><i class="ti ti-search me-1"></i>Buscar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><h2 class="card-title">Información de la solicitud</h2></div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-2"><div class="data-label">ID</div><div class="data-value">#4092</div></div>
+                <div class="col-md-3"><div class="data-label">No. solicitud</div><div class="data-value">CC-2026-004092</div></div>
+                <div class="col-md-3"><div class="data-label">Referencia bancaria</div><div class="data-value font-monospace">5500264092001847</div></div>
+                <div class="col-md-2"><div class="data-label">Fecha</div><div class="data-value">14/05/2026</div></div>
+                <div class="col-md-2"><div class="data-label">Monto</div><div class="data-value">$78,500.00</div></div>
+                <div class="col-md-3"><div class="data-label">Validado</div><div class="data-value">Pendiente</div></div>
+                <div class="col-md-3"><div class="data-label">Oficio de montos</div><div class="data-value">Pendiente de validación</div></div>
+                <div class="col-md-3"><div class="data-label">Campus</div><div class="data-value">Universidad de Guadalajara</div></div>
+                <div class="col-md-3"><div class="data-label">Observaciones</div><div class="data-value">Pendiente de revisión administrativa.</div></div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row g-3 align-items-end">
+                <div class="col-lg-5">
+                    <label class="form-label">Oficio de montos actual</label>
+                    <div class="document-name"><i class="ti ti-file-type-pdf text-danger"></i>oficio_montos_4092.pdf</div>
+                </div>
+                <div class="col-lg-5">
+                    <label class="form-label">Reemplazar oficio de montos</label>
+                    <input type="file" class="form-control" accept=".pdf" disabled>
+                </div>
+                <div class="col-lg-2 d-flex gap-2">
+                    <button type="button" class="btn btn-outline-primary btn-icon" disabled title="Ver oficio"><i class="ti ti-eye"></i></button>
+                    <button type="button" class="btn btn-primary flex-fill" disabled title="Disponible cuando se implemente el backend"><i class="ti ti-upload me-1"></i>Reemplazar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><h2 class="card-title">Campos Clínicos</h2></div>
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table clinical-fields-table">
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Fecha inicial</th><th>Fecha final</th><th>Unidad</th>
+                        <th>Lugares autorizados</th><th>Referencia bancaria</th><th>Monto</th>
+                        <th>Formato FOFOE</th><th>Reemplazar archivo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for campo in campos %}
+                    <tr>
+                        <td class="fw-bold">#{{ campo.id }}</td>
+                        <td>{{ campo.inicio }}</td>
+                        <td>{{ campo.fin }}</td>
+                        <td>{{ campo.unidad }}</td>
+                        <td>{{ campo.lugares }}</td>
+                        <td class="font-monospace">{{ campo.referencia }}</td>
+                        <td>${{ campo.monto|number_format(2, '.', ',') }}</td>
+                        <td><span class="document-name"><i class="ti ti-file-type-pdf text-danger"></i>{{ campo.archivo }}</span></td>
+                        <td>
+                            <div class="d-flex gap-2" style="min-width:330px;">
+                                <button type="button" class="btn btn-sm btn-outline-primary" disabled><i class="ti ti-eye me-1"></i>Ver</button>
+                                <input type="file" class="form-control form-control-sm" accept=".pdf" disabled>
+                                <button type="button" class="btn btn-sm btn-primary" disabled><i class="ti ti-upload"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

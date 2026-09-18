@@ -1,0 +1,36 @@
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Validacion de montos{% endblock %}
+
+{% block body %}
+<div class="container-xl py-4">
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                <h2 class="page-title">Validacion de montos de inscripcion y colegiatura</h2>
+                <div class="text-muted mt-1">Revision de montos, alumnos y formatos FOFOE de los campos solicitados.</div>
+            </div>
+            <div class="col-auto">
+                <a href="{{ path('came.solicitud.index') }}" class="btn btn-outline-secondary spa-link">
+                    <i class="ti ti-arrow-left me-1"></i> Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-warning">
+        <div class="d-flex">
+            <div><i class="ti ti-alert-triangle me-2"></i></div>
+            <div>Debe revisar montos de inscripcion, colegiatura, listado de alumnos y formatos FOFOE antes de continuar.</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div id="solicitud-valida-montos-wrapper">
+                <p class="text-muted mb-0">Pantalla base migrada. Pendiente conectar la validacion funcional de montos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
