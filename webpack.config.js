@@ -67,6 +67,14 @@ Encore
     .addStyleEntry('progress-bar',  './assets/js/components/ProgressBar/ProgressBar.css')
     .addStyleEntry('enfermeria.create.styles', './assets/css/enfermeria/create.scss')
 
+    // POSGRADO
+    .addEntry('posgrado.residentes-imss.index', './assets/js/posgrado/ResidentesExIMSS/ListaResidentes/index.js')
+    .addEntry('posgrado.residentes-imss.detalle', './assets/js/posgrado/ResidentesExIMSS/DetalleResidente/index.js')
+    .addEntry('posgrado.residentes-noimss.index', './assets/js/posgrado/ResidentesExNoIMSS/ListaResidentes/index.js')
+    .addEntry('posgrado.residentes-noimss.detalle', './assets/js/posgrado/ResidentesExNoIMSS/DetalleResidente/index.js')
+    .addEntry('posgrado.residentes-imss.create', './assets/js/posgrado/ResidentesExIMSS/NuevoResidente/create.js')
+    .addEntry('posgrado.residentes-noimss.create', './assets/js/posgrado/ResidentesExNoIMSS/NuevoResidente/create.js')
+
     // ── Imágenes ─────────────────────────────────────────────────────────────
     .copyFiles({ from: './assets/images', to: 'images/[path][name].[ext]' })
 

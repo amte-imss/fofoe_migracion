@@ -56,12 +56,13 @@ class ResidenteExtranjeroController extends PosgradoController
         ) {
             return $this->redirectToRoute('came.solicitud.index');
         }
-
+/*
         $residentesCargaUrl = $this->generateUrl('easyadmin', [
             'entity' => 'ResidenciaExImss',
             'action' => 'list',
         ]);
-
+*/
+        $residentesCargaUrl = '';
         $template = $tipoResidente === self::TIPO_RESIDENTE_IMSS
             ? 'posgrado/residentes_ex_imss/index.html.twig'
             : 'posgrado/residentes_ex_no_imss/index.html.twig';

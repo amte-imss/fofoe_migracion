@@ -195,3 +195,47 @@ export const compareDates = (dateIni, dateFin) => {
 
     return dateFin.getDay() - dateFin.getDay();
 }
+
+export const getLastPago = (pagos) => {
+    let lastPago = pagos.length > 0 ? pagos[0] : null
+    pagos.forEach(pago => lastPago = pago.id > lastPago.id ? pago : lastPago)
+    return lastPago
+}
+
+export const getEstatusPago = (lastPago, totalPagos = 1) => {
+    if (!lastPago.fechaPago && totalPagos === 1) {
+        return ESTATUS_PAGO.SIN_REGISTRO
+    }
+
+    if (!lastPago.fechaPago && totalPagos > 1) {
+        return ESTATUS_PAGO.INCORRECTO
+    }
+
+    if (lastPago.fechaPago && lastPago.validado === null) {
+        return ESTATUS_PAGO.EN_VALIDACION
+    }
+
+    if (lastPago.validado === true) {
+        return ESTATUS_PAGO.VALIDADO
+    }
+
+    return ''
+}
+
+export const toOrdinalFormat = (num) => {
+    let ordinal = num !== null ? num.toString() : '';
+    const ordinales = ['', 'Primero', 'Segundo', 'Tercero', 'Cuarto',
+        'Quinto', 'Sexto', 'Séptimo', 'Octavo', 'Noveno', 'Décimo']
+    if (num > 0 && num < 11) {
+        ordinal = ordinales[num]
+    }
+
+    return ordinal
+}
+
+export const toSelectArray = (data, config = {value: 'value', name: 'name'}) => {
+    return data.map(item => {
+        return {value: item[config.value], label: item[config.name]}
+    })
+}
+
