@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../../components/Loader/Loader";
 import Swal from 'sweetalert2'
 import 'sweetalert2/src/sweetalert2.scss'
@@ -351,8 +351,8 @@ const FormRechazo =  ({onClose, onSubmit}) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
-        <ShowPage pago={window.Pago}/>,
-        document.getElementById('wrapper-page')
-    )
+    const root = createRoot(document.getElementById('wrapper-page'));
+    root.render(
+        <ShowPage pago={window.Pago}/>
+    );
 })

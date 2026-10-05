@@ -2,29 +2,43 @@
 
 namespace App\Controller\Fofoe\Enfermeria;
 
+use App\Controller\DIEControllerController;
 use App\Entity\Enfermeria\Alumno;
 use App\Entity\Pago;
-use App\Repository\PagoRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Twig\Environment;
 
-/**
- * Controlador FOFOE — Validación y rechazo de pagos de Escuelas de Enfermería.
- */
 #[Route('/fofoe/pagos')]
-class PagoController extends AbstractController
+class PagoController extends DIEControllerController
 {
     /**
-     * GET /fofoe/pagos/enfermeria/solicitud
-     * Listado FOFOE de pagos de enfermería filtrado por estado.
+     * Payment status received from the frontend:
+     * 1 = validated (moves to invoice pending or validated)
+     * any other value = rejected
      */
+    private const STATUS_APPROVED = 1;
+
+    public function __construct(
+        protected EntityManagerInterface $em,
+        private readonly MailerInterface $mailer,
+        protected RequestStack $requestStack,
+        protected SerializerInterface $serializer,
+        private readonly Environment $twig,
+        #[Autowire('%mailer_sender%')]
+        private readonly string $mailerSender,
+    ) {
+        parent::__construct($this->requestStack, $this->em, $this->serializer);
+    }
+
     #[Route('/enfermeria/solicitud', name: 'fofoe.pago.enfermeria.index', methods: ['GET'])]
     public function index(Request $request): Response
     {
@@ -33,83 +47,65 @@ class PagoController extends AbstractController
         ]);
     }
 
-    /**
-     * POST /fofoe/pagos/enfermeria/solicitud/{id}/{status}
-     * Actualiza el estado del pago: 1 = validar, 0 = rechazar.
-     */
-    #[Route('/enfermeria/solicitud/{id}/{status}', name: 'fofoe.pago.enfermeria.update', methods: ['POST'])]
-    public function updateStatusPago(
-        int                    $id,
-        int                    $status,
-        Request                $request,
-        EntityManagerInterface $em,
-        MailerInterface        $mailer
-    ): JsonResponse {
-        /** @var Pago $pago */
-        $pago      = $em->getRepository(Pago::class)->find($id);
+    #[Route(
+        '/enfermeria/solicitud/{id}/{status}',
+        name: 'fofoe.pago.enfermeria.update.pago',
+        requirements: ['id' => '\d+', 'status' => '\d+'],
+        methods: ['POST']
+    )]
+    public function updateStatusPago(Request $request, int $id, int $status): JsonResponse
+    {
+        $pago = $this->em->getRepository(Pago::class)->find($id);
+
         if (!$pago) {
-            return new JsonResponse(['status' => false, 'message' => 'Pago no encontrado.'], Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException(sprintf('Payment %d not found.', $id));
         }
 
-        /** @var Alumno $alumno */
-        $alumno = $pago->getEscuelaEnfermeriaSolicitud();
+        /** @var Alumno $solicitud */
+        $solicitud = $pago->getEscuelaEnfermeriaSolicitud();
 
-        if ($status === 1) {
-            // Validar pago
-            if ($pago->isRequiereFactura()) {
-                $alumno->setStatus(Alumno::STATUS_INVOICE_PENDING);
-            } else {
-                $alumno->setStatus(Alumno::STATUS_VALIDATED);
-            }
-            $alumno->setHasDiferencia(false);
-            $alumno->setMontoDiferencia(0);
+        if ($status === self::STATUS_APPROVED) {
+            $solicitud->setStatus(
+                $pago->isRequiereFactura() ? Alumno::STATUS_INVOICE_PENDING : Alumno::STATUS_VALIDATED
+            );
+            $solicitud->setHasDiferencia(false);
+            $solicitud->setMontoDiferencia(0);
             $pago->setValidado(true);
         } else {
-            // Rechazar pago
-            $observaciones   = $request->request->get('observaciones', '');
-            $hasDiferencia   = (bool) $request->request->get('has_diferencia', false);
-            $montoDiferencia = (float) $request->request->get('monto_diferencia', 0);
+            $observaciones = $request->request->get('observaciones', '');
+            $hasDiferencia = $request->request->get('has_diferencia', '');
+            $montoDiferencia = $request->request->get('monto_diferencia', '');
 
-            if ($hasDiferencia) {
-                $alumno->setHasDiferencia(true);
-                $alumno->setMontoDiferencia($montoDiferencia);
-                $alumno->setStatus(Alumno::STATUS_REJECTED);
+            if (!empty($hasDiferencia)) {
+                $solicitud->setHasDiferencia(true);
+                $solicitud->setMontoDiferencia($montoDiferencia);
+                $solicitud->setStatus(Alumno::STATUS_REJECTED);
             } else {
-                $alumno->setStatus(Alumno::STATUS_REJECTED_DOCUMENTACION);
+                $solicitud->setStatus(Alumno::STATUS_REJECTED_DOCUMENTACION);
             }
+
             $pago->setValidado(false);
             $pago->setObservaciones($observaciones);
         }
 
-        $em->persist($pago);
-        $em->persist($alumno);
-        $em->flush();
+        $this->em->flush();
 
-        try {
-            $this->sendUpdatePagoEmail($mailer, $alumno, $status);
-        } catch (\Throwable $e) {
-            // No bloquear flujo si falla el correo
-        }
+        $this->sendMail($solicitud, $status);
 
-        return new JsonResponse(['status' => true]);
+        return $this->json(['status' => true]);
     }
 
-    // -------------------------------------------------------------------------
-
-    private function sendUpdatePagoEmail(MailerInterface $mailer, Alumno $alumno, int $status): void
+    private function sendMail(Alumno $solicitud, int $status): void
     {
-        $from = $this->getParameter('mailer_sender');
-
-        $email = (new TemplatedEmail())
-            ->from(new Address($from))
-            ->to(new Address($alumno->getEmail()))
-            ->subject('Sistema de Administración del FOFOE — Información sobre su pago')
-            ->htmlTemplate('emails/fofoe/enfermeria/update_pago.html.twig')
-            ->context([
-                'alumno' => $alumno,
+        $email = (new Email())
+            ->from($this->mailerSender)
+            ->to($solicitud->getEmail())
+            ->subject('Sistema de Administración del FOFOE - Información sobre su pago')
+            ->html($this->twig->render('emails/fofoe/enfermeria/update_pago.html.twig', [
+                'alumno' => $solicitud,
                 'status' => $status,
-            ]);
+            ]));
 
-        $mailer->send($email);
+        $this->mailer->send($email);
     }
 }

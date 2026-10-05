@@ -2,275 +2,190 @@
 
 namespace App\Entity\Enfermeria;
 
+use App\Annotation\Auditable;
 use App\Entity\Pago;
+use App\Repository\Enfermeria\AlumnoRepository;
 use Carbon\Carbon;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[Vich\Uploadable]
-#[ORM\Entity(repositoryClass: \App\Repository\Enfermeria\AlumnoRepository::class)]
 #[ORM\Table(name: 'lote_alumno_escuela_enf')]
-class Alumno implements UserInterface, \Stringable
+#[ORM\Entity(repositoryClass: AlumnoRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[Auditable]
+#[Vich\Uploadable]
+class Alumno implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const STATUS_INICIO = '';
+    public const STATUS_EN_ESPERA_PAGO = 'wait_payment';
+    public const STATUS_ESPERA_VALIDACION = 'wait_validation';
+    public const STATUS_VALIDATED = 'validated';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_INVOICE_PENDING = 'invoice_pending';
+    public const STATUS_REJECTED_DOCUMENTACION = 'rejected_doc';
 
-    const STATUS_INICIO = '';
-    const STATUS_EN_ESPERA_PAGO = 'wait_payment';
-    const STATUS_ESPERA_VALIDACION = 'wait_validation';
-
-    const STATUS_VALIDATED = 'validated';
-
-    const STATUS_REJECTED = 'rejected';
-
-    const STATUS_INVOICE_PENDING = 'invoice_pending';
-
-    const STATUS_REJECTED_DOCUMENTACION = 'rejected_doc';
-
-    /**
-     * @var int
-     */
     #[ORM\Column(type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    protected $id;
+    protected ?int $id = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 255, nullable: false)]
-    private $nombre;
+    private ?string $nombre = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 255, nullable: false)]
-    private $email;
+    private ?string $email = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 10, nullable: false)]
-    private $tipo;
+    private ?string $tipo = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 18, nullable: false)]
-    private $curp;
+    private ?string $curp = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 20, nullable: false)]
-    private $status;
+    private string $status = '';
 
-    /**
-     * @var float
-     */
     #[ORM\Column(type: 'float', nullable: true)]
-    private $promedio;
+    private ?float $promedio = null;
 
-    /**
-     * @var float
-     */
     #[ORM\Column(type: 'float', nullable: true)]
-    private $monto;
+    private ?float $monto = null;
 
-    /**
-     * @var Solicitud
-     */
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Enfermeria\Solicitud::class, inversedBy: 'alumnos', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: Solicitud::class, inversedBy: 'alumnos', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'lote_id', referencedColumnName: 'id')]
-    private $solicitud;
+    private ?Solicitud $solicitud = null;
 
-    #[ORM\OneToMany(targetEntity: \App\Entity\Pago::class, mappedBy: 'escuelaEnfermeriaSolicitud', cascade: ['persist'])]
+    /** @var Collection<int, Pago> */
+    #[ORM\OneToMany(targetEntity: Pago::class, mappedBy: 'escuelaEnfermeriaSolicitud', cascade: ['persist'])]
     #[ORM\OrderBy(['id' => 'ASC'])]
-    private $pagos;
+    private Collection $pagos;
 
-
-    /**
-     * @var string
-     */
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    protected $cedulaIdentificacion;
+    protected ?string $cedulaIdentificacion = null;
 
     #[Vich\UploadableField(mapping: 'alumno_enfermeria_cedula', fileNameProperty: 'cedulaIdentificacion')]
-    private $cedulaFile;
+    private ?File $cedulaFile = null;
 
-    /**
-     * @var float
-     */
     #[ORM\Column(type: 'float', nullable: true)]
-    private $montoDiferencia;
+    private ?float $montoDiferencia = null;
 
-    /**
-     * @var bool
-     */
     #[ORM\Column(type: 'boolean', nullable: true)]
-    private $hasDiferencia;
+    private ?bool $hasDiferencia = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $createdAt = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private ?\DateTimeInterface $updatedAt = null;
 
     public function __construct()
     {
         $this->status = '';
         $this->pagos = new ArrayCollection();
+        $this->createdAt = Carbon::now();
+        $this->updatedAt = Carbon::now();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    public function getIdFormatted()
+    public function getIdFormatted(): string
     {
-        return str_pad($this->id, 10, '0', STR_PAD_LEFT);
+        return str_pad((string) $this->id, 10, '0', STR_PAD_LEFT);
     }
 
-    /**
-     * @return string
-     */
-    public function getNombre()
+    public function getNombre(): ?string
     {
         return $this->nombre;
     }
 
-    /**
-     * @param string $nombre
-     */
-    public function setNombre($nombre)
+    public function setNombre(string $nombre): void
     {
         $this->nombre = $nombre;
     }
 
-    /**
-     * @return string
-     */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     */
-    public function setEmail($email)
+    public function setEmail(string $email): void
     {
         $this->email = $email;
     }
 
-    /**
-     * @return string
-     */
-    public function getTipo()
+    public function getTipo(): ?string
     {
         return $this->tipo;
     }
 
-    /**
-     * @param string $tipo
-     */
-    public function setTipo($tipo)
+    public function setTipo(string $tipo): void
     {
         $this->tipo = $tipo;
     }
 
-    /**
-     * @return string
-     */
-    public function getCurp()
+    public function getCurp(): ?string
     {
         return $this->curp;
     }
 
-    /**
-     * @param string $curp
-     */
-    public function setCurp($curp)
+    public function setCurp(string $curp): void
     {
         $this->curp = $curp;
     }
 
-    /**
-     * @return string
-     */
-    public function getStatus()
+    public function getStatus(): string
     {
         return $this->status;
     }
 
-    /**
-     * @param string $status
-     */
-    public function setStatus($status)
+    public function setStatus(?string $status): void
     {
         $this->status = ($status === null) ? '' : (string) $status;
     }
 
-    /**
-     * @return float
-     */
-    public function getPromedio()
+    public function getPromedio(): ?float
     {
         return $this->promedio;
     }
 
-    /**
-     * @param float $promedio
-     */
-    public function setPromedio($promedio)
+    public function setPromedio(?float $promedio): void
     {
         $this->promedio = $promedio;
     }
 
-    /**
-     * @return float
-     */
-    public function getMonto()
+    public function getMonto(): ?float
     {
         return $this->monto;
     }
 
-    /**
-     * @param float $monto
-     */
-    public function setMonto($monto)
+    public function setMonto(?float $monto): void
     {
         $this->monto = $monto;
     }
 
-    /**
-     * @return Solicitud
-     */
-    public function getSolicitud()
+    public function getSolicitud(): ?Solicitud
     {
         return $this->solicitud;
     }
 
-    /**
-     * @param mixed $solicitud
-     */
-    public function setSolicitud($solicitud)
+    public function setSolicitud(?Solicitud $solicitud): void
     {
         $this->solicitud = $solicitud;
     }
 
-    public function getStatusFormatted()
+    public function getStatusFormatted(): string
     {
         $statusValues = [
             self::STATUS_INICIO => 'Inicio',
@@ -279,43 +194,30 @@ class Alumno implements UserInterface, \Stringable
             self::STATUS_VALIDATED => 'Válidado por FOFOE',
             self::STATUS_REJECTED => 'No valido para FOFOE',
             self::STATUS_REJECTED_DOCUMENTACION => 'No valido para FOFOE por documentación',
-            self::STATUS_INVOICE_PENDING => 'Por facturar'
+            self::STATUS_INVOICE_PENDING => 'Por facturar',
         ];
-        return $statusValues[$this->status] ?? $this->status ?? 'Sin estado';
+
+        return $statusValues[$this->status] ?: '';
     }
 
-    /**
-     * @return Collection
-     */
-    public function getPagos()
+    /** @return Collection<int, Pago> */
+    public function getPagos(): Collection
     {
         return $this->pagos;
     }
 
-    /**
-     * @return Pago|null
-     */
-    public function getPago()
+    public function getPago(): ?Pago
     {
-        $result = null;
         $pagos = $this->getPagos();
-        if (count($pagos) > 0) {
-            $result = $pagos[0];
-        }
-        return $result;
+
+        return count($pagos) > 0 ? $pagos[0] : null;
     }
 
-    /**
-     * @return Pago|null
-     */
-    public function getLastPago()
+    public function getLastPago(): ?Pago
     {
-        $result = null;
         $pagos = $this->getPagos();
-        if (count($pagos) > 0) {
-            $result = $pagos->last();
-        }
-        return $result;
+
+        return count($pagos) > 0 ? $pagos->last() : null;
     }
 
     public function getRoles(): array
@@ -340,72 +242,46 @@ class Alumno implements UserInterface, \Stringable
 
     public function eraseCredentials(): void
     {
-        // TODO: Implement eraseCredentials() method.
     }
 
-    /**
-     * @param string $cedulaIdentificacion
-     * @return Alumno
-     */
-    public function setCedulaIdentificacion($cedulaIdentificacion)
+    public function setCedulaIdentificacion(?string $cedulaIdentificacion): self
     {
         $this->cedulaIdentificacion = $cedulaIdentificacion;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getCedulaIdentificacion()
+    public function getCedulaIdentificacion(): ?string
     {
         return $this->cedulaIdentificacion;
     }
 
-    /**
-     * @return File
-     */
-    public function getCedulaFile()
+    public function getCedulaFile(): ?File
     {
         return $this->cedulaFile;
     }
 
-    /**
-     * @param File $cedulaFile
-     */
-    public function setCedulaFile($cedulaFile = null)
+    public function setCedulaFile(?File $cedulaFile = null): void
     {
         $this->cedulaFile = $cedulaFile;
     }
 
-    /**
-     * @return float
-     */
-    public function getMontoDiferencia()
+    public function getMontoDiferencia(): ?float
     {
         return $this->montoDiferencia;
     }
 
-    /**
-     * @param float $montoDiferencia
-     */
-    public function setMontoDiferencia($montoDiferencia)
+    public function setMontoDiferencia(?float $montoDiferencia): void
     {
         $this->montoDiferencia = $montoDiferencia;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasDiferencia()
+    public function hasDiferencia(): ?bool
     {
         return $this->hasDiferencia;
     }
 
-    /**
-     * @param bool $hasDiferencia
-     */
-    public function setHasDiferencia($hasDiferencia)
+    public function setHasDiferencia(?bool $hasDiferencia): void
     {
         $this->hasDiferencia = $hasDiferencia;
     }
@@ -413,23 +289,47 @@ class Alumno implements UserInterface, \Stringable
     public function __serialize(): array
     {
         return [
-            'id'    => $this->id,
+            'id' => $this->id,
             'email' => $this->email,
-            'curp'  => $this->curp,
+            'curp' => $this->curp,
         ];
     }
 
     public function __unserialize(array $data): void
     {
-        $this->id    = $data['id'];
+        $this->id = $data['id'];
         $this->email = $data['email'];
-        $this->curp  = $data['curp'];
+        $this->curp = $data['curp'];
     }
 
     public function __toString(): string
     {
-        return $this->getId() .' - '. $this->getNombre() . ' (' . $this->getCurp() . ')';
+        return $this->getId() . ' - ' . $this->getNombre() . ' (' . $this->getCurp() . ')';
     }
 
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
 
+    public function setCreatedAt(\DateTimeInterface $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue(): void
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
 }

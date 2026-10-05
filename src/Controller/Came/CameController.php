@@ -35,6 +35,8 @@ class CameController extends DIEControllerController
             default => '',
         };
 
+        print_r($user->getRoles());
+
         return $this->render('came/menu.html.twig', [
             'usuario'                    => $user,
             'isUserDelegacionActivated' => $this->isUserDelegacionActivated(),

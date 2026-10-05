@@ -1,5 +1,5 @@
 import React from "react";
-import {createRoot} from "react-dom/client";
+import ReactDOM from "react-dom";
 import Loader from "../../components/Loader/Loader";
 import '../styles/enfermeria-alumno.css';
 import {getSchemeAndHttpHost} from "../../utils";
@@ -80,12 +80,10 @@ function EnfermeriaAlumnoIndex({usuario}) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    const rootElement = document.getElementById('wrapper-page');
-    const root = createRoot(rootElement);
-    root.render(
+    ReactDOM.render(
         <EnfermeriaAlumnoIndex
             usuario={window.Usuario}
-        />
-    );
+        />,
+        document.getElementById('wrapper-page')
+    )
 })

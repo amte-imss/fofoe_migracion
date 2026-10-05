@@ -1,77 +1,31 @@
-{% extends 'layouts/app.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}FOFOE — Solicitudes de Enfermería{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('fofoe.enfermeria.index') }}
+{% endblock %}
 
 {% block body %}
-<div class="page-header">
-    <div class="row align-items-center">
-        <div class="col">
-            <h2 class="page-title">Solicitudes de Enfermería</h2>
-            <div class="text-muted mt-1">Total: {{ total }}</div>
+    {{ render(controller('App\\Controller\\Fofoe\\FofoeController::menu')) }}
+
+    <div class="section-md">
+        <div class="container-fluid">
+            <div class="container">
+                <h1 class="text-bold text-center mb-20">Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+{% endblock %}
 
-<div class="card">
-    <div class="card-header">
-        <form method="GET" class="d-flex gap-2">
-            <input type="text" name="q" class="form-control" placeholder="Buscar por escuela o unidad…" value="{{ q }}">
-            <button type="submit" class="btn btn-secondary">Buscar</button>
-            {% if q %}
-                <a href="{{ path('fofoe.enfermeria.index') }}" class="btn btn-ghost-secondary">Limpiar</a>
-            {% endif %}
-        </form>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-vcenter card-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Escuela de Enfermería</th>
-                    <th>Unidad</th>
-                    <th>Periodo</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
-                    <th>Alumnos</th>
-                    <th>Creado</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for s in solicitudes %}
-                <tr>
-                    <td>{{ s.id }}</td>
-                    <td>{{ s.unidad ? s.unidad.nombreEnfermeria : '—' }}</td>
-                    <td>{{ s.unidad ? s.unidad.nombre : '—' }}</td>
-                    <td>{{ s.periodoFormatted }}</td>
-                    <td>{{ s.fechaInicioFormatted }}</td>
-                    <td>{{ s.fechaFinFormatted ?? '—' }}</td>
-                    <td>{{ s.alumnos|length }}</td>
-                    <td>{{ s.createdAt ? s.createdAt|date('d/m/Y H:i') : '—' }}</td>
-                    <td>
-                        <a href="{{ path('enfermeria.solicitud.show', {id: s.id}) }}" class="btn btn-sm btn-outline-primary">
-                            <i class="ti ti-eye"></i> Ver
-                        </a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr><td colspan="9" class="text-center text-muted py-4">Sin resultados.</td></tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% if total > perPage %}
-    <div class="card-footer d-flex align-items-center">
-        <p class="m-0 text-muted">Página {{ page }} de {{ (total / perPage)|round(0, 'ceil') }}</p>
-        <ul class="pagination m-0 ms-auto">
-            {% if page > 1 %}
-            <li class="page-item"><a class="page-link" href="{{ path('fofoe.enfermeria.index', {page: page - 1, q: q}) }}">«</a></li>
-            {% endif %}
-            {% if page * perPage < total %}
-            <li class="page-item"><a class="page-link" href="{{ path('fofoe.enfermeria.index', {page: page + 1, q: q}) }}">»</a></li>
-            {% endif %}
-        </ul>
-    </div>
-    {% endif %}
-</div>
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.STATUS_PAGO = '{{ statusPago|default('')|e('js') }}';
+    </script>
+    {{ encore_entry_script_tags('fofoe.enfermeria.index') }}
 {% endblock %}

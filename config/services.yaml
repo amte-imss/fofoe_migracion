@@ -289,3 +289,14 @@ services:
     App\Service\ProcesadorValidarPago:
         arguments:
             $sender: '%mailer_sender%'   # ajusta al parámetro/valor real de tu remitente
+
+    App\Vich\Naming\AlumnoEnfermeriaDirectoryNamer: ~
+    App\Vich\Naming\CedulaNamer: ~
+
+    app.directory_namer.alumno_enfermeria:
+        alias: App\Vich\Naming\AlumnoEnfermeriaDirectoryNamer
+        public: true
+
+    App\Controller\Enfermeria\SolicitudController:
+        arguments:
+            $mailerSender: '%mailer_sender%'

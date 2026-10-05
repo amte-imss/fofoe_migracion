@@ -1,64 +1,94 @@
-{% extends 'layouts/ie.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Acceso — Escuelas de Enfermería IMSS{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('build/loader.css') }}">
+    <link rel="stylesheet" href="{{ asset('build/enfermeria-alumno.login.css') }}">
+    <style>
+        .wrapper-page {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
 
-{% block submenu %}{% endblock %}
-{% block menu_bar %}{% endblock %}
+        #captcha {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<div class="section-md">
-    <div class="container-fluid">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="text-center mb-4">
-                        <h1 class="text-bold">Licenciatura en Escuelas de Enfermería</h1>
-                        <h3>{{ solicitud.unidad.nombreEnfermeria }}</h3>
-                        <p><strong>Tipo:</strong> {{ solicitud.periodo | capitalize }} &nbsp;|&nbsp;
-                           <strong>Periodo:</strong> {{ solicitud.fechaInicioFormatted }} — {{ solicitud.fechaFinFormatted }}</p>
-                    </div>
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Bienvenido</h1>
+                <h2 class="text-bold text-center mb-20">Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h2>
+                <h2 class="text-bold text-center mb-20">{{ solicitud.unidad.nombreEnfermeria }}</h2>
+                <h3 class="text-bold text-center mb-20">Tipo: {{ solicitud.periodo | capitalize }}</h3>
+                <h3 class="text-bold text-center mb-20">Periodo: {{ solicitud.fechaInicioFormatted }}
+                    - {{ solicitud.fechaFinFormatted }}</h3>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" style="display: initial;">
+                                <form id="form-login-enf" class="form" action="#" method="post">
+                                    <div class="form-group">
+                                        <label for="f-username">Usuario</label>
+                                        <input type="text" required=""
+                                               id="f-username"
+                                               class="form-control form__input"
+                                               name="alumno_login[curp]">
+                                        <span class="help-block form__error f-username-error"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="password">Email</label>
+                                        <input
+                                            required
+                                            type="email" class="form-control  form__input" id="password"
+                                            name="alumno_login[email]">
+                                        <span class="help-block form__error password-error "></span>
+                                    </div>
+                                    <div class="captcha-before"></div>
+                                    <div class="row mt-20">
+                                        <div class="col-md-12">
+                                            <label for="accept_agreement">
+                                                <input class=" form__input"
+                                                       id="f-agreement"
+                                                       type="checkbox"
+                                                       style="margin-right: 10px;"
+                                                       name="accept_agreement"
+                                                       required="">
+                                                ACEPTO LAS <a href="https://educast.imss.gob.mx/sys/fofoe/aviso-privacidad" target="_blank">POLÍTICAS DE PAGO DE CUOTAS DE RECUPERACIÓN AL FOFOE</a>
+                                            </label>
+                                            <div class="form__error f-agreement-error"></div>
+                                        </div>
+                                    </div>
 
-                    {% if error_login %}
-                        <div class="alert alert-danger">{{ error_login }}</div>
-                    {% endif %}
-                    {% if error_captcha %}
-                        <div class="alert alert-warning">El código captcha no coincide. Intenta de nuevo.</div>
-                    {% endif %}
-
-                    <form id="form-login-enf" method="post"
-                          action="{{ path('enfermeria_alumno.login', {solicitudId: solicitud.id}) }}">
-
-                        <div class="form-group">
-                            <label for="f-curp">Usuario (CURP)</label>
-                            <input type="text" id="f-curp" name="alumno_login[curp]"
-                                   class="form-control" required autofocus>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="f-email">Email</label>
-                            <input type="email" id="f-email" name="alumno_login[email]"
-                                   class="form-control" required>
-                        </div>
-
-                        {# Captcha deshabilitado temporalmente #}
-
-                        <div class="form-group">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" id="f-agreement" required>
-                                    Acepto las
-                                    <a href="https://educast.imss.gob.mx/sys/fofoe/aviso-privacidad" target="_blank">
-                                        Políticas de Pago de Cuotas de Recuperación al FOFOE
-                                    </a>
-                                </label>
+                                    <div class="row mt-20">
+                                        <div class="col-md-12">
+                                            <input type="submit" class="btn btn-success btn-block form__submit"
+                                                   value="Ingresar"/>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-
-                        <button type="submit" class="btn btn-success btn-block btn-lg">Ingresar</button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.Solicitud = {{ solicitud | json_encode | raw }};
+        window.SolicitudId = {{ solicitud.id }};
+        window.Login_Errors = {{ errors | json_encode | raw }};
+        window.Captcha_Errors = {{ error_captcha | json_encode | raw }};
+        window.Login_Errors_Credentials = '{{ error_login }}';
+    </script>
+    <script src="{{ asset('build/enfermeria-alumno.login.js') }}"></script>
 {% endblock %}
