@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import {getSchemeAndHttpHost} from "../../utils";
 import Loader from "../../components/Loader/Loader";
 import apiConvenio from "../convenioadmin/api/ApiConvenio";
@@ -253,8 +253,6 @@ export default function IndexPage({usuario}) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.querySelector('.react')).render(
 		<IndexPage usuario={window.Usuario}/>,
-		document.querySelector('.react')
-	)
-});
+	)});

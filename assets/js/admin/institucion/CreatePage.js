@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../components/Loader/Loader";
 import InstitucionForm from "./components/InstitucionForm";
 import useFormInstitucion from "./hooks/useFormInstitucion";
@@ -32,8 +32,6 @@ function CreatePage({}) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.querySelector('.react')).render(
 		<CreatePage/>,
-		document.querySelector('.react')
-	)
-});
+	)});

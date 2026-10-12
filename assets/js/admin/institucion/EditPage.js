@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../components/Loader/Loader";
 import InstitucionForm from "./components/InstitucionForm";
 import useFormInstitucion from "./hooks/useFormInstitucion";
@@ -34,8 +34,6 @@ function EditPage({institucion, hasCedula}) {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.querySelector('.react')).render(
 		<EditPage institucion={window.Institucion} hasCedula={window.InstitucionHasCedula}/>,
-		document.querySelector('.react')
-	)
-});
+	)});

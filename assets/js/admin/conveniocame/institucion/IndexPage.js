@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import {getFormErrors, getSchemeAndHttpHost} from "../../../utils";
 import Loader from "../../../components/Loader/Loader";
 import ReactPaginate from "react-paginate";
@@ -399,8 +399,6 @@ function NombreConvenio({usuarioOOAD, instituto}) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
+    createRoot(document.querySelector('.react')).render(
         <IndexPage usuarioOOAD={window.USUARIO_OOAD}/>,
-        document.querySelector('.react')
-    )
-});
+    )});

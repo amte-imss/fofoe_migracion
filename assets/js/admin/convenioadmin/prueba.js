@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from "react-dom/client";
 import Select from 'react-select';
 import makeAnaimated from 'react-select/animated';
 import { useState } from 'react';
@@ -534,8 +534,7 @@ function handleCheckboxChange(selectedOption) {
 }*/}
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
+    createRoot(document.querySelector('.react')).render(
         <NewComponent />,
-        document.querySelector('.react')
-    );
+    )
 });

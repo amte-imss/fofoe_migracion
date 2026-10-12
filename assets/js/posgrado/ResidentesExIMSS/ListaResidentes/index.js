@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import ReactPaginate from "react-paginate";
 import {getEstatusPago, getLastPago, getSchemeAndHttpHost, toOrdinalFormat} from "../../../utils";
 import Loader from "../../../components/Loader/Loader";
@@ -138,10 +138,8 @@ const ListaResidentes = ({metadata}) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('residentes-table')).render(
     <ListaResidentes
       metadata={window.META}
     />,
-    document.getElementById('residentes-table')
-  )
-})
+  )})

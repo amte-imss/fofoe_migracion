@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import {getSchemeAndHttpHost} from "../../utils";
 import Loader from "../../components/Loader/Loader";
 import ReactPaginate from "react-paginate";
@@ -230,8 +230,6 @@ export default function IndexPage({isConveniosObserver = false}) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
+    createRoot(document.querySelector('.react')).render(
         <IndexPage isConveniosObserver={window.IS_CONVENIOS_OBSERVER}/>,
-        document.querySelector('.react')
-    )
-});
+    )});

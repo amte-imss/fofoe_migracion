@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../../components/Loader/Loader";
 import {getSchemeAndHttpHost} from "../../../utils";
 import Popup from "../../../components/Popup/Popup";
@@ -200,8 +200,6 @@ export default function IndexPage() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    ReactDOM.render(
+    createRoot(document.querySelector('.react')).render(
         <IndexPage/>,
-        document.querySelector('.react')
-    )
-});
+    )});

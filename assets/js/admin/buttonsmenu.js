@@ -1,11 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import ButtonsMenu from '../admin/convenioadmin/components/ButtonsMenu';
 
 
 document.addEventListener('DOMContentLoaded', function() {
-	ReactDOM.render(
+	createRoot(document.getElementById('searcher-buttons-conve')).render(
 	  <ButtonsMenu />,
-	  document.getElementById('searcher-buttons-conve')
-	);
+	)
   });

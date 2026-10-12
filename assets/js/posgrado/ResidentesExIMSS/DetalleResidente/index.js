@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import DatosGeneralesResidente from "../../components/DatosGeneralesResidente";
 import {
   dateFormat,
@@ -151,10 +151,8 @@ const DetalleResidente = ({residente}) => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('residente-show-wrapper')).render(
     <DetalleResidente
       residente={window.RESIDENTE_PROP}
     />,
-    document.getElementById('residente-show-wrapper')
-  )
-})
+  )})

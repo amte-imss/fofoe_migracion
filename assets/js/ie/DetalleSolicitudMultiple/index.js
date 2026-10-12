@@ -1,20 +1,18 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import './styles.scss'
 import DetalleSolicitudMultiple from "./Detalle";
 import Expediente from "./Expediente";
 
 document.addEventListener('DOMContentLoaded',  () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('detalle-solicitud-multiple-component')).render(
     <DetalleSolicitudMultiple
       solicitud={window.SOLICITUD_PROP}
     />,
-    document.getElementById('detalle-solicitud-multiple-component')
   )
-  ReactDOM.render(
+  createRoot(document.getElementById('expediente-solicitud-multiple-component')).render(
     <Expediente
       solicitud={window.SOLICITUD_PROP}
     />,
-    document.getElementById('expediente-solicitud-multiple-component')
   )
 })

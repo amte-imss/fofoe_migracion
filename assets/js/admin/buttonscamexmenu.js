@@ -1,14 +1,13 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import ButtonsCamexMenu from '../admin/convenioadmin/components/ButtonsCamexMenu';
 
 
 document.addEventListener('DOMContentLoaded', function () {
 	const node = document.getElementById('searcher-buttons');
 	if (node) {
-		ReactDOM.render(
+		createRoot(node).render(
 			<ButtonsCamexMenu/>,
-			node
 		);
 	}
 });

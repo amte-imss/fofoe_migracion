@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import ConvenioForm from "../convenioadmin/components/ConvenioForm";
 import useFormConvenio from "../convenioadmin/hooks/useFormConvenio";
 import Loader from "../../components/Loader/Loader";
@@ -70,11 +70,9 @@ function EditPage({maxDateAllowed, convenio, usuario}) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.querySelector('.react')).render(
 		<EditPage
 			usuario={window.Usuario}
 			maxDateAllowed={window.MAX_DATE_ALLOWED}
 			convenio={window.Convenio}/>,
-		document.querySelector('.react')
-	)
-});
+	)});

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import Loader from "../../components/Loader/Loader";
 import ReactPaginate from "react-paginate";
 import './index.scss';
@@ -232,12 +232,12 @@ const PagoIndex = (props) => {
 document.addEventListener('DOMContentLoaded', () => {
     const indexDom = document.getElementById('fofoe-wrapper-index');
     if (indexDom) {
-        ReactDOM.render(
+        createRoot(indexDom).render(
             <PagoIndex
                 pagos={window.PAGOS}
                 meta={window.META}
                 years={window.YEARS}
-            />, indexDom
+            />
         )
     }
 })

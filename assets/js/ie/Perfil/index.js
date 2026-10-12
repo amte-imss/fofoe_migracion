@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import ListConvenios from "../../components/ListConvenios";
 import Swal from "sweetalert2";
 import {getSchemeAndHttpHost} from "../../utils";
@@ -250,19 +250,16 @@ const ValidarInfo = (
 export default ValidarInfo
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('perfil-component')).render(
     <ValidarInfo
       institucion={window.INSTITUCION_PROP}
       errores={window.ERRORS}
       action={window.ACTION}
     />,
-    document.getElementById('perfil-component')
   )
-
-  ReactDOM.render(
+  createRoot(document.getElementById('lista-convenio-component')).render(
     <ListConvenios
       convenios={window.CONVENIOS_PROP}
     />,
-    document.getElementById('lista-convenio-component')
   )
 })

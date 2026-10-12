@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import camelcaseKeys from 'camelcase-keys'
 import { SOLICITUD } from "../../constants";
 import {getSchemeAndHttpHost} from "../../utils";
@@ -181,10 +181,9 @@ const Registrar = (
 }
 
 
-ReactDOM.render(
+createRoot(document.getElementById('registrar-component')).render(
   <Registrar
     institucion={window.RFC_PROP}
     solicitud={window.SOLICITUD_PROP}
   />,
-  document.getElementById('registrar-component')
-);
+)

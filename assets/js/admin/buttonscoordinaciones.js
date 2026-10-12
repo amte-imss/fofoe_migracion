@@ -1,11 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import ButtonsCoordinaciones from '../admin/convenioadmin/components/ButtonsCoordinaciones';
 
 
 document.addEventListener('DOMContentLoaded', function() {
-	ReactDOM.render(
+	createRoot(document.getElementById('searcher-buttons-coordinacion')).render(
 	  <ButtonsCoordinaciones />,
-	  document.getElementById('searcher-buttons-coordinacion')
-	);
+	)
   });
