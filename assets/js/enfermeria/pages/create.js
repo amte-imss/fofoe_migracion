@@ -167,7 +167,7 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
         ).then((alertResult) => {
             if (alertResult.isConfirmed) {
                 if(asCame) {
-                    window.location.href = getSchemeAndHttpHost(`/enfermeria`);
+                    window.location.href = getSchemeAndHttpHost(`/enfermeria/`);
                 } else{
                     window.location.href = getSchemeAndHttpHost('/');
                 }

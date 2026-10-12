@@ -43,7 +43,7 @@
                         </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                        <a href="{{ path('app_profile') }}" class="dropdown-item">Mi perfil</a>
+                        <a href="#" class="dropdown-item">Mi perfil</a>
                         <a href="{{ path('app_logout') }}" class="dropdown-item text-danger">Cerrar sesión</a>
                     </div>
                 </div>
@@ -76,24 +76,24 @@
                             <span class="nav-link-title">FOFOE</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('fofoe_solicitudes') }}">
+                            <a class="dropdown-item" href="{{ path('fofoe.solicitud.index') }}">
                                 <i class="ti ti-list me-2"></i>Solicitudes
                             </a>
-                            <a class="dropdown-item" href="{{ path('fofoe_pagos') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-cash me-2"></i>Pagos
                             </a>
                             {% if is_granted('ROLE_FOFOE_VALIDAR_PAGO') %}
-                            <a class="dropdown-item" href="{{ path('fofoe_validar_pago') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-circle-check me-2"></i>Validar Pago
                             </a>
                             {% endif %}
                             {% if is_granted('ROLE_FOFOE_REPORTE_INGS') %}
-                            <a class="dropdown-item" href="{{ path('fofoe_reporte_ingresos') }}">
+                            <a class="dropdown-item" href="{{ path('fofoe.reporte_ingresos') }}">
                                 <i class="ti ti-chart-bar me-2"></i>Reporte Ingresos
                             </a>
                             {% endif %}
                             {% if is_granted('ROLE_FOFOE_REPORTE_OP') %}
-                            <a class="dropdown-item" href="{{ path('fofoe_reporte_oportunidad') }}">
+                            <a class="dropdown-item" href="{{ path('fofoe.reporte_oportunidad') }}">
                                 <i class="ti ti-report-analytics me-2"></i>Oportunidad de Pago
                             </a>
                             {% endif %}
@@ -102,7 +102,7 @@
                     {% endif %}
 
                     {# ===== POSGRADO ===== #}
-                    {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_SUPER') %}
+                    {% if is_granted('ROLE_POSGRADO') or is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_JDES') or is_granted('ROLE_JDES_MINUS') or is_granted('ROLE_SUPER') %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'posgrado' ? 'active' }}"
                            href="#posgrado-menu" data-bs-toggle="dropdown" role="button">
@@ -112,21 +112,18 @@
                             <span class="nav-link-title">Posgrado</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('posgrado_residentes') }}">
-                                <i class="ti ti-users me-2"></i>Residentes
+                            <a class="dropdown-item" href="{{ path('posgrado.residentes-imss.index', {tipo: 'imss'}) }}">
+                                <i class="ti ti-user-plus me-2"></i>Alumnos extranjeros en Ciclo académico anual
                             </a>
-                            <a class="dropdown-item" href="{{ path('posgrado_residencias') }}">
-                                <i class="ti ti-building-hospital me-2"></i>Residencias
-                            </a>
-                            <a class="dropdown-item" href="{{ path('posgrado_documentos') }}">
-                                <i class="ti ti-file-text me-2"></i>Documentos
+                            <a class="dropdown-item" href="{{ path('posgrado.residentes-imss.index', {tipo: 'no_imss'}) }}">
+                                <i class="ti ti-user-check me-2"></i>Alumnos extranjeros rotación parcial de especialidad
                             </a>
                         </div>
                     </li>
                     {% endif %}
 
                     {# ===== ENFERMERÍA ===== #}
-                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_SUPER') %}
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_SUPER') %}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle {{ app.request.attributes.get('_route') starts with 'enfermeria' ? 'active' }}"
                            href="#enfermeria-menu" data-bs-toggle="dropdown" role="button">
@@ -136,11 +133,8 @@
                             <span class="nav-link-title">Enfermería</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('enfermeria_solicitudes') }}">
-                                <i class="ti ti-list me-2"></i>Solicitudes
-                            </a>
-                            <a class="dropdown-item" href="{{ path('enfermeria_alumnos') }}">
-                                <i class="ti ti-user-check me-2"></i>Alumnos
+                            <a class="dropdown-item" href="{{ path('enfermeria.index') }}">
+                                <i class="ti ti-school me-2"></i>Escuelas de Enfermería
                             </a>
                         </div>
                     </li>
@@ -157,13 +151,13 @@
                             <span class="nav-link-title">Convenios</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('convenios_list') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-list me-2"></i>Listado
                             </a>
-                            <a class="dropdown-item" href="{{ path('convenios_especiales') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-star me-2"></i>Especiales
                             </a>
-                            <a class="dropdown-item" href="{{ path('instituciones_list') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-building me-2"></i>Instituciones
                             </a>
                         </div>
@@ -171,15 +165,23 @@
                     {% endif %}
 
                     {# ===== CAME ===== #}
-                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_JDES') or is_granted('ROLE_SUPER') %}
-                    <li class="nav-item">
+                    {% if is_granted('ROLE_CAME') or is_granted('ROLE_CAME_MINUS') or is_granted('ROLE_JDES') or is_granted('ROLE_JDES_MINUS') or is_granted('ROLE_SUPER') %}
+                    <li class="nav-item dropdown">
                         <a class="nav-link {{ app.request.attributes.get('_route') starts with 'came' ? 'active' }}"
-                           href="{{ path('came_index') }}">
+                           href="#came-menu" data-bs-toggle="dropdown" role="button">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <i class="ti ti-stethoscope"></i>
                             </span>
                             <span class="nav-link-title">CAME</span>
                         </a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="{{ path('came.solicitud.index') }}">
+                                <i class="ti ti-calendar-event me-2"></i>Ciclos Educativos
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="ti ti-file-certificate me-2"></i>Convenios
+                            </a>
+                        </div>
                     </li>
                     {% endif %}
 
@@ -187,7 +189,7 @@
                     {% if is_granted('ROLE_SUPER') %}
                     <li class="nav-item">
                         <a class="nav-link {{ app.request.attributes.get('_route') starts with 'edu_per' ? 'active' }}"
-                           href="{{ path('edu_per_index') }}">
+                           href="#">
                             <span class="nav-link-icon d-md-none d-lg-inline-block">
                                 <i class="ti ti-book"></i>
                             </span>
@@ -207,16 +209,16 @@
                             <span class="nav-link-title">Administración</span>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="{{ path('admin_usuarios') }}">
+                            <a class="dropdown-item" href="{{ path('admin.usuarios.index') }}">
                                 <i class="ti ti-users me-2"></i>Usuarios
                             </a>
-                            <a class="dropdown-item" href="{{ path('admin_delegaciones') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-map-pin me-2"></i>Delegaciones
                             </a>
-                            <a class="dropdown-item" href="{{ path('admin_disciplinas') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-category me-2"></i>Disciplinas
                             </a>
-                            <a class="dropdown-item" href="{{ path('admin_config') }}">
+                            <a class="dropdown-item" href="#">
                                 <i class="ti ti-adjustments me-2"></i>Configuración
                             </a>
                         </div>

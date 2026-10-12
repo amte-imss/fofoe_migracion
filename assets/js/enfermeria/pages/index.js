@@ -60,7 +60,7 @@ function EnfermeriaIndex() {
 								</div>
 								<div className="col-md-2 mt-20">
 									<div className="form-group">
-										<a href={getSchemeAndHttpHost("/enfermeria/solicitud/create")} className="form-control btn btn-primary">Nuevo</a>
+										<a href={getSchemeAndHttpHost("/enfermeria/solicitud/create")} className="form-control btn btn-primary">Nueva Solicitud</a>
 									</div>
 								</div>
 							</div>
