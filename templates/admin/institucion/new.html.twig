@@ -1,0 +1,46 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block title %}Nueva Institución{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('admin.institucion.create') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('admin.institucion.create') }}
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-11 content">
+        <div class="row" style="margin-left: 2%; margin-top: 3%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6"><h3>Creación de Nueva Institución</h3></div>
+                            <div class="col-md-6">
+                                <a class="btn btn-secondary" href="{{ url('admin.institucion.index') }}">Regresar a la Lista de Instituciones</a>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+
+                        {{ include('admin/institucion/_form.html.twig') }}
+
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

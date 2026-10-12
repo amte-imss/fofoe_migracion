@@ -1,0 +1,59 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block title %}Edición de Convenio Especial{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loader') }}
+    {{ encore_entry_link_tags('admin.convenio-especial.edit') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.Convenio = {{ convenio|json_encode|raw }};
+        window.MAX_DATE_ALLOWED = {{ maxDateAllowed|json_encode|raw }};
+        window.Usuario = {{ usuarioJson|json_encode|raw }};
+        window.MotivosColaboracion = {{ motivosColaboracion|json_encode|raw }};
+        window.NivelesAcademicos = {{ nivelesAcademicos|json_encode|raw }};
+        window.Poblaciones = {{ poblaciones|json_encode|raw }};
+        window.Recursos = {{ recursos|json_encode|raw }};
+    </script>
+    {{ encore_entry_script_tags('admin.convenio-especial.edit') }}
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-11 content">
+        <div class="row" style="margin-left: 2%; margin-top: 3%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Edición del convenio Especial {{ convenio.nombre }}</h3>
+                                <h4>{{ convenio.fuica }}</h4>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-secondary" href="{{ url('admin.convenios-especiales.index') }}">Regresar a la Lista de Convenios Especiales</a>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+
+                        {{ include('admin/convenio-especial/_form.html.twig') }}
+
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

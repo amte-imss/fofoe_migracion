@@ -304,16 +304,6 @@ class ConvenioEspecialController extends DIEControllerController
         return $response;
     }
 
-    /**
-     * Replacement for the removed Request::get(): query string first, then POST body.
-     */
-    private function input(Request $request, string $key, mixed $default = null): mixed
-    {
-        return $request->query->has($key)
-            ? $request->query->get($key)
-            : $request->request->get($key, $default);
-    }
-
     private function attachDelegations(ConvenioEspecial $agreement, array $params): void
     {
         $delegationRepository = $this->em->getRepository(Delegacion::class);

@@ -1,0 +1,242 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block body %}
+    <div class="jumbotron" style="width: 90%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <a class="btn btn-primary" href="{{ url('admin.convenios-especiales.index', {'page': 1}) }}" title="Lista de Convenios">
+                        Regresar a la lista de convenios especiales
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container cstmContainer">
+            <h1 class="display-10">Convenio {{ convenio.nombre }}</h1>
+            <h3>Información de convenio especial</h3>
+
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">R.F.C. de Convenio</span>
+                        <p class="textValueShowConvenio">{{ convenio.rfc ?: 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Razón Social</span>
+                        <p class="textValueShowConvenio">{{ convenio.razonSocial ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre Comercial</span>
+                        <p class="textValueShowConvenio">{{ convenio.nombre }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Institución</span>
+                        <p class="textValueShowConvenio">{{ convenio.institucion.nombre ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">OOAD</span>
+                        <p class="textValueShowConvenio">{{ convenio.convenioDelegacionesFormatted }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Sector</span>
+                        <p class="textValueShowConvenio">{{ convenio.sector }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Tipo</span>
+                        <p class="textValueShowConvenio">{{ convenio.tipo }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Objetivo de la Colaboración</span>
+                        <p class="textValueShowConvenio">{{ convenio.objetivoColaboracion ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nivel o Grado Académico</span>
+                        <p class="textValueShowConvenio">{{ convenio.nivelAcademico.nombre ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if 'otro' in (convenio.nivelAcademico.nombre ?? '')|lower %}
+                <div class="row">
+                    <div class="col-md-12" style="text-align: justify;">
+                        <div class="well">
+                            <span class="textLabelShowConvenio">Descripción de OTRO Nivel o Grado Académico</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Motivo Colaboración</span>
+                        <p class="textValueShowConvenio">{{ convenio.motivoColaboracion.nombre ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Recurso</span>
+                        <p class="textValueShowConvenio">{{ convenio.recurso.nombre ?? '' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Población</span>
+                        <p class="textValueShowConvenio">{{ convenio.poblacion.nombre ?? '' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Fecha de Firma</span>
+                        <p class="textValueShowConvenio">{{ convenio.fechaFirma ? convenio.fechaFirma|date('d-m-Y') : 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Vigencia (años)</span>
+                        <p class="textValueShowConvenio">{{ convenio.vigenciaText ? convenio.vigenciaText|replace({'year': 'año'}) : 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Fecha de Vigencia de Convenio</span>
+                        <p class="textValueShowConvenio">{{ convenio.fechaVenceConvenio ? convenio.fechaVenceConvenio|date('d-m-Y') : 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">FUICA</span>
+                        <p class="textValueShowConvenio">{{ convenio.fuica ?: 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Número de Convenio</span>
+                        <p class="textValueShowConvenio">{{ convenio.numero ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">¿Es CAME?</span>
+                        <p class="textValueShowConvenio">{{ convenio.isCamex ? 'Si' : 'No' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Tipo Convenio CAME por DEFAULT</span>
+                        <p class="textValueShowConvenio">{{ convenio.tipoCame ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12"><h2>Firmantes</h2></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6"><h3>Por el IMSS</h3></div>
+                <div class="col-md-6"><h3>Por la Institución Educativa</h3></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Cargo</span>
+                        <p class="textValueShowConvenio">{{ convenio.cargoFirmaIdFirst.nombre ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Cargo</span>
+                        <p class="textValueShowConvenio">{{ convenio.cargoEmiteSignfirst ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre</span>
+                        <p class="textValueShowConvenio">{{ convenio.recibeSignfirst ?: 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre</span>
+                        <p class="textValueShowConvenio">{{ convenio.nombreEmiteSignfirst ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Cargo</span>
+                        <p class="textValueShowConvenio">{{ convenio.cargoFirmaIdSecond.nombre ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Cargo</span>
+                        <p class="textValueShowConvenio">{{ convenio.cargoEmiteSignsecond ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre</span>
+                        <p class="textValueShowConvenio">{{ convenio.recibeSignsecond ?: 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre</span>
+                        <p class="textValueShowConvenio">{{ convenio.nombreEmiteSignsecond ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="margin-top: 6%;">
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <a class="btn btn-primary" href="{{ url('admin.convenios-especiales.index', {'page': 1}) }}" title="Lista de Convenios">
+                        Regresar a la lista de convenios especiales
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

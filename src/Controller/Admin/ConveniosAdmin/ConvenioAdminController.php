@@ -766,16 +766,6 @@ class ConvenioAdminController extends DIEControllerController
         return new JsonResponse(['status' => true, 'message' => 'Convenio actualizado con éxito']);
     }
 
-    /**
-     * Replacement for the removed Request::get(): query string first, then POST body.
-     */
-    private function input(Request $request, string $key, mixed $default = null): mixed
-    {
-        return $request->query->has($key)
-            ? $request->query->get($key)
-            : $request->request->get($key, $default);
-    }
-
     private function applyFlags(Convenio $agreement, array $params): void
     {
         $agreement->setCartaIntencion((bool) ($params['cartaIntencion'] ?? false));

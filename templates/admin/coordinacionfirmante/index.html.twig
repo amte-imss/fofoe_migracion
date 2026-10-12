@@ -1,0 +1,176 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block title %}Coordinaciones Firmantes{% endblock %}
+
+{% block body %}
+    {# Content #}
+    <div class="col-md-11 content">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Coordinaciones Firmantes de Convenios</h3>
+            </div>
+            <div id="searcher-buttons" class="col-md-12 d-none"></div>
+            <div id="searcher-buttons-conve" class="col-md-12 d-none"></div>
+            <div id="searcher-buttons-coordinacion" class="col-md-12" style="padding-left: 55%;"></div>
+
+            <div class="row mt-3 mb-3">
+                {% if not is_convenios_observer %}
+                    <div class="col-md-3 mr-btn-headerConAdmin-admin">
+                        <a class="btn btn-primary btn-block action-new butonConve" style="width: 100%;"
+                           href="{{ url('admin.coordfirmante.coordfirmante.new') }}" target="_self">Crear Coordinación Firmante</a>
+                    </div>
+                {% endif %}
+                <div class="col-md-5 mr-btn-headerConAdmin-admin">
+                    <a class="btn btn-primary btn-block action-new butonConve" style="width: 100%;"
+                       href="{{ url('admin.coordfirm.export') }}" target="_self">Exportar Coordinaciones Firmantes</a>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                {% if message|trim is not empty %}
+                    <div id="errorMessageDivCoord" class="styleErrorMessageCoord">
+                        <span>{{ message }}</span>
+                    </div>
+                {% endif %}
+
+                {% if coordinaciones %}
+                    <div class="row w-100">
+                        <div class="table-responsive scrollListViewTable col-md-12">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Número de Coordinación Firmante</th>
+                                    <th>Nombre</th>
+                                    <th>¿Está Activa?</th>
+                                    <th>¿Ha sido borrada?</th>
+                                    <th>Fecha de Creación</th>
+                                    <th>Fecha de Modificación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for coordinacion in coordinaciones %}
+                                    <tr>
+                                        <td>{{ coordinacion.id }}</td>
+                                        <td>{{ coordinacion.nombre }}</td>
+                                        <td>
+                                            {% if coordinacion.activa %}
+                                                <label class="colorTextTrue">Si</label>
+                                            {% else %}
+                                                <label class="colorTextFalse">No</label>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if coordinacion.borrado %}
+                                                <label class="colorTextFalse">Si</label>
+                                            {% else %}
+                                                <label class="colorTextTrue">No</label>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ coordinacion.fechaCreacion ? coordinacion.fechaCreacion|date('d-m-Y') : '' }}</td>
+                                        <td>{{ coordinacion.fechaModificacion ? coordinacion.fechaModificacion|date('d-m-Y') : '' }}</td>
+                                        <td>
+                                            {% if not is_convenios_observer %}
+                                                <div class="p-1">
+                                                    {{ include('admin/coordinacionfirmante/_delete_form.html.twig') }}
+                                                </div>
+                                                <div class="p-1">
+                                                    <a class="btn btn-primary" style="background-color: #137474;"
+                                                       href="{{ url('admin.coordfirmante.coordfirmante.edit', {'id': coordinacion.id}) }}" target="_self">
+                                                        Modificar
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {% set paginationParams = {'orderBy': orderBy, 'orderDirection': orderDirectionP, 'coordinacionToSearch': coordinacionToSearch} %}
+                    <div class="toolbar toolbar-products toolbar-bottom" style="margin-top: 2%;">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <span>Mostrando {{ minLimit }} - {{ maxLimit }} de {{ totalRegistros }} Registros</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <nav aria-label="Paginación" class="text-right">
+                                        <ul class="pagination list-pagination-paginator first-page">
+                                            {% if not isTheLFirstPage %}
+                                                <li class="page-item">
+                                                    <a class="page-link" style="color: #137474 !important;"
+                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': 1})) }}" title="Primera">
+                                                        <span>&laquo; Primera</span>
+                                                    </a>
+                                                </li>
+                                                <li class="item pages-item-previous">
+                                                    <a class="page-link" style="color: #137474 !important;"
+                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': anterior})) }}" title="Anterior">
+                                                        <span>&laquo; Anterior</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            {% if not isTheLastPage %}
+                                                <li class="item pages-item-next">
+                                                    <a class="page-link" style="color: #137474 !important;"
+                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': siguiente})) }}" title="Siguiente">
+                                                        <span>Siguiente &raquo;</span>
+                                                    </a>
+                                                </li>
+                                                <li class="item pages-item-next">
+                                                    <a class="page-link" style="color: #137474 !important;"
+                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': totalPaginas})) }}" title="Última">
+                                                        <span>Última &raquo;</span>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="jumbotron">
+                        <div class="container">
+                            {% if criterioDeBusqueda|trim is not empty %}
+                                <h1 class="display-10">No Existen Registros con los Criterios de Búsqueda Indicados</h1>
+                                <h3 class="lead">Tu Criterio de Búsqueda: {{ criterioDeBusqueda }}</h3>
+                                <div class="row">
+                                    <div class="col-md-6" style="text-align: justify;">
+                                        <h2>Para regresar a la lista de Coordinaciones Firmantes:</h2>
+                                        <span>
+                                            Haz click
+                                            <a class="page-link" href="{{ url('admin.coordfirmante.coordfirmante.index', {'page': 1}) }}" title="Lista de Coordinaciones Firmantes">Aquí</a>
+                                        </span>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <h1 class="display-10">No Existen Registros de Coordinaciones Firmantes por el Momento</h1>
+                                <div class="row">
+                                    <div class="col-md-6" style="text-align: justify;">
+                                        <h2>Puedes iniciar una lista de Coordinaciones Firmantes dando click:</h2>
+                                        <span>
+                                            <a class="page-link" href="{{ url('admin.coordfirmante.coordfirmante.new') }}" title="Crear Coordinación Firmante">Aquí</a>
+                                        </span>
+                                        <span>O en el botón de CREAR COORDINACIÓN ubicado en la esquina superior derecha de esta pantalla.</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.IS_CONVENIOS_OBSERVER = {{ is_convenios_observer|default(false)|json_encode }};
+    </script>
+{% endblock %}
