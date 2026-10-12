@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Información de Colaboraciones Académicas de la Coordinación de Educación en Salud (SICACES){% endblock %}</title>
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" media="all">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:200,300,400,600,700">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+        {{ encore_entry_link_tags('only-convenios-styling') }}
+        <style>
+            body {
+                display: flex;
+                height: 100vh;
+                margin: 0;
+            }
+
+            .container-fluid {
+                display: flex;
+                flex-grow: 1;
+                flex-direction: column;
+            }
+
+            .row {
+                flex-grow: 1;
+                display: flex;
+                margin: 0;
+            }
+
+            .leftSideBarMenu {
+                background: url('{{ asset('build/images/fondo_menu_lateral.png') }}') no-repeat;
+                background-size: cover;
+                background-position: center;
+                max-height: 2100px;
+                overflow-y: auto;
+            }
+
+            .leftSideBarMenu a {
+                display: flex;
+                align-items: center;
+                padding: 15px;
+                font-size: 1.1rem;
+                text-decoration: none;
+                color: white;
+            }
+
+            .leftSideBarMenu a:hover {
+                background-color: rgba(29, 75, 64, 0.7);
+            }
+
+            .leftSideBarMenu i {
+                margin-right: 10px;
+            }
+
+            .bg-topBarHeader {
+                background-color: #006400;
+                padding: 10px 20px;
+            }
+
+            .bg-topBarHeaderUser button {
+                background-color: #006400;
+                border: none;
+            }
+
+            .bg-topBarHeaderUser button:hover {
+                background-color: #004d00;
+            }
+
+            .dropdown-menu a {
+                color: #006400 !important;
+            }
+
+            .logout-button {
+                background-color: #006400 !important;
+                color: white !important;
+            }
+
+            .logout-button:hover {
+                background-color: #004d00 !important;
+            }
+
+            .content {
+                flex-grow: 1;
+            }
+
+            .custom-padding {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+        </style>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            window.SCHEMA_AND_HTTP_HOST = {{ url('homepage')|trim('/', side: 'right')|json_encode|raw }};
+        </script>
+    {% endblock %}
+</head>
+<body>
+<div class="container-fluid p-0">
+    <div class="row no-gutters">
+        {% block navBar %}
+            {# Top bar #}
+            <div class="custom-padding col-md-12 bg-topBarHeader d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div>
+                        <img src="{{ asset('build/images/logo_principal.png') }}" alt="Logo" style="max-height: 50px;">
+                    </div>
+                    <h3 class="text-white ml-3">Gestión de Convenios</h3>
+                </div>
+                <div style="margin-left: -30px;">
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDrop2" type="button" class="btn btn-danger dropdown-toggle"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ app.user }}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
+                            {# <a class="dropdown-item" href="{{ url('logout') }}">Cerrar sesión</a> #}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Sidebar #}
+            <div class="col-md-2 col-sm-3 col-4 leftSideBarMenu">
+                <div class="row no-gutters flex-column">
+                    {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') or is_granted('ROLE_CONVENIOS_OBSERVER') %}
+                        <a class="d-block" href="{{ url('admin.conveniosadmin.conveniosadmin.index', {'page': 1}) }}">
+                            <i class="fa fa-file"></i> Convenios
+                        </a>
+                        <a class="d-block" href="{{ url('admin.convenios-especiales.index', {'page': 1}) }}">
+                            <i class="fa fa-file"></i> Convenios Especiales
+                        </a>
+                        {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
+                            <a class="d-block" href="{{ url('admin.coordfirmante.coordfirmante.index', {'page': 1}) }}">
+                                <i class="fa fa-users"></i> Catálogo Coordinación Firmante
+                            </a>
+                            <a class="d-block" href="{{ url('disciplina_index', {'page': 1}) }}">
+                                <i class="fa fa-book"></i> Catálogo de Disciplinas
+                            </a>
+                        {% endif %}
+                        <a class="d-block" href="{{ url('admin.institucion.index') }}">
+                            <i class="fa fa-book"></i> Instituciones Educativas
+                        </a>
+                    {% endif %}
+                    {% if is_granted('ROLE_SUPER') %}
+                        <a class="w-100 d-block font-weight-bold text-white px-3 py-2" href="{{ url('admin') }}">
+                            Herramientas de Administración
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endblock %}
+        <div class="col-md-10 col-sm-9 col-8 content">
+            {% block body %}{% endblock %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

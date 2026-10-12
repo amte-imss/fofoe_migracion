@@ -3,6 +3,7 @@
 namespace App\Form\Type\RegistraCampoClinico;
 
 use App\Entity\CampoClinico;
+use App\Form\Type\Institucion\Type\RegistraCampoClinico\TrabajadorBecadoType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;

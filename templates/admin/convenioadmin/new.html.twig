@@ -1,0 +1,51 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block title %}Nuevo Convenio{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loader') }}
+    {{ encore_entry_link_tags('admin.convenio.create') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.MAX_DATE_ALLOWED = {{ maxDateAllowed|json_encode|raw }};
+        window.Usuario = {{ usuarioJson|json_encode|raw }};
+    </script>
+    {{ encore_entry_script_tags('admin.convenio.create') }}
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-11 content">
+        <div class="row" style="margin-left: 2%; margin-top: 3%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6"><h3>Creación de Nuevo Convenio</h3></div>
+                            <div class="col-md-6">
+                                <a class="btn btn-secondary" href="{{ url('admin.conveniosadmin.conveniosadmin.index', {'page': 1}) }}">Regresar a la Lista de Convenios</a>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+
+                        {{ include('admin/convenioadmin/_form.html.twig') }}
+
+                        <div class="row">
+                            <div class="col-md-7 text-danger">
+                                * Campos Requeridos
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

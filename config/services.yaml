@@ -28,6 +28,7 @@ parameters:
     alumno_enfermeria_dir:          '%private_dir%/alumno_enfermeria'
     residente_dir: '%kernel.project_dir%/public/uploads/residentes'
     edu_per_dir: '%kernel.project_dir%/public/uploads/edu_per'
+    app.institution_uploads_dir: '%kernel.project_dir%/public/uploads/instituciones'
 
 services:
     # default configuration for services in *this* file

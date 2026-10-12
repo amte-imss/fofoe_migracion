@@ -4,7 +4,7 @@ namespace App\Controller\Fofoe;
 
 use App\Controller\DIEControllerController;
 use App\Entity\Pago;
-use App\Form\Type\ValidacionDePago\ValidacionPagoType;
+use App\Form\Type\Institucion\Type\ValidacionDePago\ValidacionPagoType;
 use App\ObjectValues\PagoId;
 use App\Repository\Fofoe\ValidacionDePago\DetallePago;
 use App\Repository\PagoRepositoryInterface;

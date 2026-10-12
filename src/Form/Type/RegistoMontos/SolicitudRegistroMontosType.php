@@ -4,6 +4,7 @@ namespace App\Form\Type\RegistoMontos;
 
 use App\Entity\CampoClinico;
 use App\Entity\Solicitud;
+use App\Form\Type\Institucion\Type\RegistoMontos\CampoClinicoRegistroMontosType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -7,7 +7,7 @@ use App\Entity\CampoClinico;
 use App\Entity\Institucion;
 use App\Entity\Solicitud;
 use App\Entity\SolicitudInterface;
-use App\Form\Type\RegistraCampoClinico\CampoClinicoType;
+use App\Form\Type\Institucion\Type\RegistraCampoClinico\CampoClinicoType;
 use App\ObjectValues\SolicitudId;
 use App\Repository\IE\DetalleSolicitudMultiple\DetalleSolicitudMultiple;
 use App\Repository\SolicitudRepositoryInterface;

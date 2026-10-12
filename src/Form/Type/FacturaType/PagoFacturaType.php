@@ -3,7 +3,7 @@
 namespace App\Form\Type\FacturaType;
 
 use App\Entity\Pago;
-use App\Form\Type\FacturaType;
+use App\Form\Type\Institucion\Type\FacturaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

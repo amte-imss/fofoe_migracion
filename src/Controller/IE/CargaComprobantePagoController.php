@@ -7,7 +7,7 @@ use App\Entity\CampoClinico;
 use App\Entity\Institucion;
 use App\Entity\Pago;
 use App\Entity\Solicitud;
-use App\Form\Type\ComprobantePagoType\ComprobantePagoType;
+use App\Form\Type\Institucion\Type\ComprobantePagoType\ComprobantePagoType;
 use App\Repository\CampoClinicoRepository;
 use App\Repository\PagoRepositoryInterface;
 use App\Service\InstitucionManager;

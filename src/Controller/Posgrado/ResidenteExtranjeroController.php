@@ -8,7 +8,7 @@ use App\Entity\Especialidad;
 use App\Entity\Pais;
 use App\Entity\Posgrado\Residencia;
 use App\Entity\Posgrado\Residente;
-use App\Form\Type\Posgrado\ResidenteExtranjeroNoIMSSType;
+use App\Form\Type\Institucion\Type\Posgrado\ResidenteExtranjeroNoIMSSType;
 use App\Repository\Posgrado\ResidenciaRepositoryInterface;
 use App\Repository\Posgrado\ResidenteRepositoryInterface;
 use App\Service\Posgrado\ResidenciaExNoImssManagerInterface;

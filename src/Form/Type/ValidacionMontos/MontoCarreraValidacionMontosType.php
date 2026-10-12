@@ -3,6 +3,7 @@
 namespace App\Form\Type\ValidacionMontos;
 
 use App\Entity\MontoCarrera;
+use App\Form\Type\Institucion\Type\ValidacionMontos\DescuentoMontoType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
