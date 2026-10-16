@@ -5,7 +5,7 @@ namespace App\Controller\Came;
 use App\Controller\DIEControllerController;
 use App\Entity\Solicitud;
 use App\Entity\SolicitudInterface;
-use App\Form\Type\Institucion\Type\Came\ValidarSolicitudCC\ValidarSolicitudCCType;
+use App\Form\Type\Came\ValidarSolicitudCC\ValidarSolicitudCCType;
 use App\Service\SolicitudManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

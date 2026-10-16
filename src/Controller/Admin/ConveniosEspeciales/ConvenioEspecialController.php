@@ -10,7 +10,7 @@ use App\Entity\MotivoColaboracion;
 use App\Entity\NivelAcademicoEspecial;
 use App\Entity\Poblacion;
 use App\Entity\Recurso;
-use App\Form\Type\Institucion\Type\Convenios\ConvenioEspecialType;
+use App\Form\Type\Convenios\ConvenioEspecialType;
 use App\Normalizer\ConvenioEspecialNormalizer;
 use App\Normalizer\UsuarioNormalizer;
 use App\Repository\ConvenioEspecialRepository;

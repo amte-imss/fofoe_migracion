@@ -3,7 +3,6 @@
 namespace App\Form\Type\Admin\Posgrado;
 
 use App\Entity\Posgrado\Residente;
-use App\Form\Type\Institucion\Type\Admin\Posgrado\UsuarioResidenteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

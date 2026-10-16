@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\EnfermeriaAlumno;
+namespace App\Form\Type\EnfermeriaAlumno;
 
 use App\Entity\Pago;
 use Symfony\Component\Form\AbstractType;

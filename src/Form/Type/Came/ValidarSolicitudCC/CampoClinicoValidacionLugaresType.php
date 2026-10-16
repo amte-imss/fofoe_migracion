@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\Came\ValidarSolicitudCC;
+namespace App\Form\Type\Came\ValidarSolicitudCC;
 
 use App\Entity\CampoClinico;
 use Symfony\Component\Form\AbstractType;

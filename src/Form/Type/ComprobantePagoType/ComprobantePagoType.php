@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\ComprobantePagoType;
+namespace App\Form\Type\ComprobantePagoType;
 
 use App\Entity\Institucion;
 use App\Entity\Pago;

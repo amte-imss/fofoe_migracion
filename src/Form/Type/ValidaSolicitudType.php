@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type;
+namespace App\Form\Type;
 
 use App\Entity\Solicitud;
 use Symfony\Component\Form\AbstractType;

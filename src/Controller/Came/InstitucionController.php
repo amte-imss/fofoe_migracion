@@ -4,7 +4,7 @@ namespace App\Controller\Came;
 
 use App\Controller\DIEControllerController;
 use App\Entity\Institucion;
-use App\Form\Type\Institucion\Type\InstitucionType;
+use App\Form\Type\InstitucionType;
 use App\Service\InstitucionManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

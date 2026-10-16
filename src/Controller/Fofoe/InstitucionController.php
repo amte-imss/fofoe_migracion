@@ -6,7 +6,7 @@ use App\Controller\DIEControllerController;
 use App\Entity\Institucion;
 use App\Entity\SolicitudInterface;
 use App\Entity\Usuario;
-use App\Form\Type\Institucion\Type\InstitucionType;
+use App\Form\Type\InstitucionType;
 use App\Normalizer\InstitucionPerfilNormalizerInterface;
 use App\Repository\ConvenioRepositoryInterface;
 use App\Repository\InstitucionRepositoryInterface;

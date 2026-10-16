@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\RegistoMontos;
+namespace App\Form\Type\ValidacionMontos;
 
-use App\Entity\CampoClinico;
-use App\Form\Type\Institucion\Type\ValidacionMontos\MontoCarreraValidacionMontosType;
+use App\Entity\DescuentoMonto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CampoClinicoRegistroMontosType extends AbstractType
+class DescuentoMontoType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('montoCarrera', MontoCarreraValidacionMontosType::class);
+        $builder
+            ->add('numAlumnos')
+            ->add('descuentoInscripcion')
+            ->add('descuentoColegiatura');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class'      => CampoClinico::class,
+            'data_class'      => DescuentoMonto::class,
             'csrf_protection' => false,
         ]);
     }

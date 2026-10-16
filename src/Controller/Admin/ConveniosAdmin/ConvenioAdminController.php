@@ -11,7 +11,7 @@ use App\Entity\ConvenioEliminado;
 use App\Entity\Delegacion;
 use App\Event\ConvenioEvent;
 use App\Form\ConvenioAdminType;
-use App\Form\Type\Institucion\Type\Convenios\CargaConveniosType;
+use App\Form\Type\Convenios\CargaConveniosType;
 use App\Normalizer\ConvenioNormalizer;
 use App\Normalizer\UsuarioNormalizer;
 use App\Repository\CarreraRepository;

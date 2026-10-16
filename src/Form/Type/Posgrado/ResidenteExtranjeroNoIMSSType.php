@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\Posgrado;
+namespace App\Form\Type\Posgrado;
 
 use App\Entity\Posgrado\Residencia;
 use App\Entity\Posgrado\ResidenciaInterface;
-use App\Form\Type\Institucion\Type\Admin\Posgrado\ResidenteType;
+use App\Form\Type\Admin\Posgrado\ResidenteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;

@@ -3,7 +3,6 @@
 namespace App\Form\Type\ComprobantePagoType;
 
 use App\Entity\Solicitud;
-use App\Form\Type\Institucion\Type\ComprobantePagoType\PagoComprobanteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;

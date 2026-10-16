@@ -13,7 +13,7 @@ use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
 #[ORM\Entity(repositoryClass: \App\Repository\ConvenioEspecialRepository::class)]
 #[Assert\GroupSequenceProvider]
-#[ORM\Table(name: 'convenio_especial')]
+#[ORM\Table(name: 'convenio')]
 class ConvenioEspecial implements GroupSequenceProviderInterface, \Stringable
 {
     const SECTOR_PUBLICO = "Público";

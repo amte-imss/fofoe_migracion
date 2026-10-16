@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\Convenios;
+namespace App\Form\Type\Convenios;
 
 use App\Entity\Convenio;
 use Symfony\Component\Form\AbstractType;

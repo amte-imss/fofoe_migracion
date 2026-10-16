@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form\Type\Institucion\Type\ValidacionDePago;
+namespace App\Form\Type\ValidacionDePago;
 
 use App\Entity\Pago;
 use Symfony\Component\Form\AbstractType;

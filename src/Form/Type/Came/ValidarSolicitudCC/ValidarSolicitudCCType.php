@@ -4,7 +4,6 @@ namespace App\Form\Type\Came\ValidarSolicitudCC;
 
 use App\Entity\CampoClinico;
 use App\Entity\Solicitud;
-use App\Form\Type\Institucion\Type\Came\ValidarSolicitudCC\CampoClinicoValidacionLugaresType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

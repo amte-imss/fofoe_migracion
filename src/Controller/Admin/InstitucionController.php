@@ -4,7 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Controller\DIEControllerController;
 use App\Entity\Institucion;
-use App\Form\Type\Institucion\Type\Admin\InstitucionType;
+use App\Form\Type\Admin\InstitucionType;
 use App\Repository\InstitucionRepositoryInterface;
 use App\Service\Export\InstitucionExportService;
 use Doctrine\ORM\EntityManagerInterface;
