@@ -78,16 +78,20 @@ class SolicitudController extends DIEControllerController
         ]);
     }
 
-    #[Route('/create', methods: ['GET'], name: 'enfermeria.solicitud.create')]
+    #[Route("/create", methods: ["GET"], name: "enfermeria.solicitud.create")]
     public function create(Request $request): Response
     {
-        $configuracionGlobalRepository = $this->em->getRepository(ConfiguracionGlobal::class);
-        $config = $configuracionGlobalRepository->findOneBy(['clave' => ConfiguracionGlobal::POSGRADO_CAME]);
+        $user = $this->getUser();
+        $directRoles = $user ? $user->getRoles() : [];
+        $asCame = in_array("ROLE_CAME_MINUS", $directRoles, true)
+            || in_array("ROLE_JDES_MINUS", $directRoles, true)
+            || in_array("ROLE_CAME", $directRoles, true)
+            || in_array("ROLE_JDES", $directRoles, true);
 
-        return $this->render('enfermeria/create.html.twig', [
-            'escuelaId' => $this->getUserUnidadId() ?: '',
-            'asCame' => $config->getValor(),
-            'ooad' => $this->getUserDelegacionId(),
+        return $this->render("enfermeria/create.html.twig", [
+            "escuelaId" => $asCame ? "" : ($this->getUserUnidadId() ?: ""),
+            "asCame" => $asCame,
+            "ooad" => $this->getUserDelegacionId() ?: "",
         ]);
     }
 
