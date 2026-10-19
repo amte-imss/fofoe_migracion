@@ -74,6 +74,8 @@ Encore
     .addEntry('posgrado.residentes-noimss.detalle', './assets/js/posgrado/ResidentesExNoIMSS/DetalleResidente/index.js')
     .addEntry('posgrado.residentes-imss.create', './assets/js/posgrado/ResidentesExIMSS/NuevoResidente/create.js')
     .addEntry('posgrado.residentes-noimss.create', './assets/js/posgrado/ResidentesExNoIMSS/NuevoResidente/create.js')
+    .addEntry('residente.perfil', './assets/js/residente/Inicio/index.js')
+    .addEntry('residente.carga-comprobante-pago', './assets/js/residente/CargaComprobantePago/index.js')
 
     //CONVENIOS
     .addEntry('admin.buttonsmenu','./assets/js/admin/buttonsmenu.js')

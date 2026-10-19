@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loader') }}
+    <style>
+        .iframe {
+            border: 1px solid lightgray;
+            width: 100%;
+            height: 50vh;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Residente\\ResidenteExtranjeroController::menu')) }}
+
+    <div class="section-md">
+        <div class="container-fluid">
+            <div class="container">
+                <h1 class="text-bold text-center">Carga de comprobante de pago</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="cargar-de-comprobante-de-pago-component"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% set json_flags = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
+    <script>
+        window.RESIDENCIA_PROPS = {{ residencia|json_encode(json_flags)|raw }};
+        window.ERRORS_PROPS = {{ errors|json_encode(json_flags)|raw }};
+        window.MONTO_A_PAGAR = {{ montoAPagar|json_encode(json_flags)|raw }};
+    </script>
+    {{ encore_entry_script_tags('residente.carga-comprobante-pago') }}
+{% endblock %}

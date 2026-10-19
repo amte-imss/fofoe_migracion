@@ -281,6 +281,16 @@ services:
         tags:
             -   name: doctrine.event_subscriber
 
+    App\Service\ProcesadorValidarPagoInterface:
+        alias: App\Service\ProcesadorValidarPago
+
+    App\Service\Fofoe\ValidarPagoPosgradoInterface:
+        alias: App\Service\Fofoe\ValidarPagoPosgrado
+
+    App\Service\Fofoe\ValidarPagoPosgrado:
+        arguments:
+            $sender: '%mailer_sender%'
+
     # Alias de interfaces → implementación concreta
     App\Calculator\ComprobantePagoCalculatorInterface:
         alias: App\Calculator\ComprobantePagoCalculator
@@ -296,6 +306,10 @@ services:
 
     app.directory_namer.alumno_enfermeria:
         alias: App\Vich\Naming\AlumnoEnfermeriaDirectoryNamer
+        public: true
+
+    app.directory_namer.residente:
+        class: App\Vich\Naming\ResidenteDirectoryNamer
         public: true
 
     App\Controller\Enfermeria\SolicitudController:
