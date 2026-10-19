@@ -19,7 +19,7 @@ function EnfermeriaShow({solicitud, qr}){
 				<Loader show={isLoading} />
 				<div className="container">
 					<div id="die-area">
-						<div className="row">
+						<div className={'row mb-30 mt-30'}>
 							<div className="col-md-4">
 								<strong>Tipo de periodo:</strong> {solicitud.periodoFormatted}
 							</div>
@@ -30,10 +30,10 @@ function EnfermeriaShow({solicitud, qr}){
 								<strong>Fecha Fin:</strong> {solicitud.fechaFinFormatted}
 							</div>
 						</div>
-						<div className={'row mb-15 mt-15'}>
-							<div className="col-md-12">
+						<div className={'row mb-30 mt-30'}>
+							<div className="col-md-12 text-center">
 								<h2>QR Generar referencia</h2>
-								<img src={`${qr}`} alt="R"/>
+								<img src={`${qr}`} alt="QR para generar referencia"/>
 								<div>
 									<a href={getSchemeAndHttpHost() + `/enfermeria-alumno/login/${solicitud.id}`}>{getSchemeAndHttpHost() + `/enfermeria-alumno/login/${solicitud.id}`}</a>
 									<a href={getSchemeAndHttpHost() + `/enfermeria/solicitud/${solicitud.id}/export`}

@@ -136,8 +136,16 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
         inputValues['solicitud[fechaFin]']    = event.target['fechaFin'].value;
         inputValues['solicitud[periodo]']     = event.target['solicitud[periodo]'].value;
         inputValues['solicitud[unidad]']      = event.target['solicitud[unidad]'].value;
-        api.storeSolicitud(objectToFormData(inputValues)).then(({data}) => {
-            return storeAlumnos(data.id);
+        api.storeSolicitud(objectToFormData(inputValues)).then((response) => {
+            return storeAlumnos(response.data.id);
+        }).catch(() => {
+            setShowPopup(false);
+            Swal.fire({
+                title: 'Error al registrar la solicitud',
+                text: 'Revisa que la información capturada sea correcta e intenta nuevamente.',
+                icon: 'error',
+                confirmButtonText: 'Aceptar'
+            });
         }).finally(() => {
             setIsLoading(false);
         });
