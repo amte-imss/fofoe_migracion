@@ -1,11 +1,10 @@
 import React, {Fragment} from 'react';
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import {
   getActionNameByInstitucionEducativa, getSchemeAndHttpHost,
   isActionDisabledByInstitucionEducativa
 } from "../../utils"
 import { SOLICITUD } from "../../constants"
-import {createRoot} from "react-dom/client";
 const DEFAULT_DOCUMENT_VALUE = '-'
 const DEFAULT_DOCUMENT = 'Archivo pendiente de carga'
 

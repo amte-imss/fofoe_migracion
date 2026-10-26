@@ -1,0 +1,55 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% block title %}Detalle de Institución{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loader') }}
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-11 content">
+        <div class="row" style="margin-left: 2%; margin-top: 3%;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3>Detalle de la institución {{ institucion.razonSocial }}</h3>
+                                <h4>{{ institucion.rfc }}</h4>
+                            </div>
+                            <div class="col-md-6">
+                                <a class="btn btn-secondary" href="{{ url('admin.institucion.index') }}">Regresar a la Lista de Instituciones</a>
+                            </div>
+                        </div>
+                        <br>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Correo: </strong>{{ institucion.correo }}</p>
+                                <p><strong>OOAD: </strong>{{ institucion.delegacion.nombre ?? '' }}</p>
+                                <p>
+                                    <strong>Sitio WEB: </strong>
+                                    {% if institucion.sitioWeb starts with 'http://' or institucion.sitioWeb starts with 'https://' %}
+                                        <a href="{{ institucion.sitioWeb }}" target="_blank" rel="noopener noreferrer">{{ institucion.sitioWeb }}</a>
+                                    {% else %}
+                                        {{ institucion.sitioWeb }}
+                                    {% endif %}
+                                </p>
+                                <p><strong>Dirección: </strong>{{ institucion.direccion }}</p>
+                                <p><strong>Fax: </strong>{{ institucion.fax }}</p>
+                                <p><strong>Extensión: </strong>{{ institucion.extension }}</p>
+                                <p><strong>Teléfono: </strong>{{ institucion.telefono }}</p>
+                                {% if hasCedula %}
+                                    <p>
+                                        <a href="{{ path('name.institucion.cedula', {'id': institucion.id}) }}" class="btn btn-block btn-primary" target="_blank">Ver cédula</a>
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../../components/Loader/Loader";
 import {FormValidator} from "../../../components/FormValidator/FormValidator";
 import InputFile from "../../../components/InputFile/InputFile";
@@ -148,8 +148,6 @@ function EnfermeriaCreate(){
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.getElementById('wrapper-page')).render(
 		<EnfermeriaCreate/>,
-		document.getElementById('wrapper-page')
-	)
-});
+	)});

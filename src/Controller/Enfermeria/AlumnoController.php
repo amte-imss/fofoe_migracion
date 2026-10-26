@@ -8,8 +8,8 @@ use App\Entity\Enfermeria\Solicitud;
 use App\Entity\Factura;
 use App\Entity\Pago;
 use App\Entity\Usuario;
-use App\Form\Type\EnfermeriaAlumno\AlumnoLoginType;
 use App\Form\Type\EnfermeriaAlumno\ComprobantePagoType;
+use App\Form\Type\EnfermeriaAlumno\AlumnoLoginType;
 use App\Repository\PagoRepositoryInterface;
 use App\Service\GeneradorRefenciaBancaria2025;
 use App\Service\UploaderComprobantePagoInterface;
@@ -17,6 +17,8 @@ use Carbon\Carbon;
 use Doctrine\DBAL\Driver\PDO\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Snappy\Pdf;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -25,15 +27,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Twig\Environment;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 
 #[Route('/enfermeria-alumno')]

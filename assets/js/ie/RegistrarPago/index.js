@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import {getSchemeAndHttpHost} from "../../utils";
 
 const Registrar = (
@@ -164,10 +164,9 @@ const Registrar = (
 }
 
 
-ReactDOM.render(
+createRoot(document.getElementById('cargar-comprobante-component')).render(
   <Registrar
     institucion={window.RFC_PROP}
     solicitud={window.SOLICITUD_PROP}
   />,
-  document.getElementById('cargar-comprobante-component')
-);
+)

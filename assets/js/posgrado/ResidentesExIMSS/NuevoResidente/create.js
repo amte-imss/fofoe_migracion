@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import React from "react";
 import {FormValidator} from "../../../components/FormValidator/FormValidator";
 
@@ -204,9 +204,7 @@ const FormResidente = () => {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.getElementById('residentes-area')).render(
 		<FormResidente
 		/>,
-		document.getElementById('residentes-area')
-	)
-})
+	)})

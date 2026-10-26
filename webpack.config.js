@@ -74,6 +74,38 @@ Encore
     .addEntry('posgrado.residentes-noimss.detalle', './assets/js/posgrado/ResidentesExNoIMSS/DetalleResidente/index.js')
     .addEntry('posgrado.residentes-imss.create', './assets/js/posgrado/ResidentesExIMSS/NuevoResidente/create.js')
     .addEntry('posgrado.residentes-noimss.create', './assets/js/posgrado/ResidentesExNoIMSS/NuevoResidente/create.js')
+    .addEntry('residente.perfil', './assets/js/residente/Inicio/index.js')
+    .addEntry('residente.carga-comprobante-pago', './assets/js/residente/CargaComprobantePago/index.js')
+
+    //CONVENIOS
+    .addEntry('admin.buttonsmenu','./assets/js/admin/buttonsmenu.js')
+    .addEntry('admin.buttonscamexmenu','./assets/js/admin/buttonscamexmenu.js')
+    .addEntry('admin.buttonscoordinaciones','./assets/js/admin/buttonscoordinaciones.js')
+    .addEntry('admin.conveniosFunctions','./assets/js/admin/convenioadmin/conveniosFunctions.js')
+    .addEntry('admin.conveniosOnLoadFunctions','./assets/js/admin/convenioadmin/conveniosOnLoadFunctions.js')
+    .addEntry('admin.conveniosCameFunctions','./assets/js/admin/convenioadmin/conveniosCameFunctions.js')
+    .addEntry('convenios.jquery','./node_modules/jquery/src/jquery.js')
+    .addStyleEntry('only-convenios-styling', './assets/css/convenioadmin.css')
+    .addEntry('admin.buttonsdisciplinas','./assets/js/admin/buttonsdisciplinas.js')
+
+    .addEntry('admin.convenio.prueba','./assets/js/admin/convenioadmin/prueba.js')
+    .addEntry('admin.convenio.create','./assets/js/admin/convenioadmin/CreatePage.js')
+    .addEntry('admin.convenio.edit','./assets/js/admin/convenioadmin/EditPage.js')
+    .addEntry('admin.convenio.index','./assets/js/admin/convenioadmin/IndexPage.js')
+
+    .addEntry('admin.convenio-especial.create','./assets/js/admin/convenio-especial/CreatePage.js')
+    .addEntry('admin.convenio-especial.edit','./assets/js/admin/convenio-especial/EditPage.js')
+    .addEntry('admin.convenio-especial.index','./assets/js/admin/convenio-especial/IndexPage.js')
+
+    .addEntry('admin.came.convenio.create','./assets/js/admin/conveniocame/CreatePage.js')
+    .addEntry('admin.came.convenio.edit','./assets/js/admin/conveniocame/EditPage.js')
+    .addEntry('admin.came.convenio.index','./assets/js/admin/conveniocame/IndexPage.js')
+
+    .addEntry('admin.institucion.index','./assets/js/admin/institucion/IndexPage.js')
+    .addEntry('admin.institucion.create','./assets/js/admin/institucion/CreatePage.js')
+    .addEntry('admin.institucion.edit','./assets/js/admin/institucion/EditPage.js')
+
+    .addEntry('admin.came.institucion.index','./assets/js/admin/conveniocame/institucion/IndexPage.js')
 
     // ── Imágenes ─────────────────────────────────────────────────────────────
     .copyFiles({ from: './assets/images', to: 'images/[path][name].[ext]' })

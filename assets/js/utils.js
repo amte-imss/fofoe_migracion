@@ -239,3 +239,13 @@ export const toSelectArray = (data, config = {value: 'value', name: 'name'}) => 
     })
 }
 
+export const getInputValues = (form) => {
+    const result = {};
+    //console.log(form.elements)
+    for (const element in form.elements) {
+        if (!!form.elements[element].name) {
+            result[form.elements[element].name] = form.elements[element].value;
+        }
+    }
+    return result;
+}

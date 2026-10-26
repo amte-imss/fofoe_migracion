@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../../components/Loader/Loader";
 
 function EnfermeriaIndex() {
@@ -81,8 +81,6 @@ function EnfermeriaIndex() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.getElementById('wrapper-page')).render(
 		<EnfermeriaIndex/>,
-		document.getElementById('wrapper-page')
-	)
-})
+	)})

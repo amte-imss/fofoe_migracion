@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import Loader from "../../components/Loader/Loader";
 import ReactPaginate from "react-paginate";
 import './index.scss';
@@ -230,11 +230,11 @@ const SolicitudIndex = (props) => {
 document.addEventListener('DOMContentLoaded', () => {
     const indexDom = document.getElementById('fofoe-wrapper-index');
     if (indexDom) {
-        ReactDOM.render(
+        createRoot(indexDom).render(
             <SolicitudIndex
                 solicitudes={window.SOLICITUDES}
                 meta={window.META}
-            />, indexDom
+            />
         )
     }
 })

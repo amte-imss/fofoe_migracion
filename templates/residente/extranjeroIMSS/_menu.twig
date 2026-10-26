@@ -1,0 +1,84 @@
+<style>
+    .residente-menu {
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .residente-menu__image {
+        width: 60px;
+        height: 60px;
+        flex-shrink: 0;
+    }
+
+    .residente-menu__content {
+        margin-left: 20px;
+        height: 60px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+    }
+
+    .residente__submenu {
+        padding: 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .residente__submenu > * {
+        margin-right: 15px;
+    }
+
+    .residente__submenu > *:last-child {
+        margin-left: auto;
+    }
+</style>
+
+{% set usuario = residente.usuario %}
+
+<div class="container-fluid" style="background-color: whitesmoke;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="residente__submenu">
+                    <a href="{{ path('residente.perfil') }}">Inicio</a>
+                    <a href="{{ logout_path() }}">Cerrar sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid page-cut">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="residente-menu">
+                    {# Generic avatar placeholder, inlined to avoid external requests #}
+                    <svg class="residente-menu__image" viewBox="0 0 60 60" role="img" aria-hidden="true">
+                        <circle cx="30" cy="30" r="30" fill="#d6d6d6"/>
+                        <circle cx="30" cy="23" r="11" fill="#ffffff"/>
+                        <path d="M10 52c3-10 11-15 20-15s17 5 20 15a30 30 0 0 1-40 0z" fill="#ffffff"/>
+                    </svg>
+                    <div class="residente-menu__content">
+                        <p class="text-bold">Residente Extranjero</p>
+                        <p>{{ usuario.nombre }} {{ usuario.apellidoPaterno }} {{ usuario.apellidoMaterno }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        {% for label, messages in app.flashes(['success', 'danger']) %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} text-center">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>

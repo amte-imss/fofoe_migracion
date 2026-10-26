@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import {dateFormat, getSchemeAndHttpHost, moneyFormat} from "../../utils";
 import Cleave from "cleave.js/react";
 import {FormValidator} from "../../components/FormValidator/FormValidator";
@@ -366,11 +366,9 @@ const DatosSolicitud = ({solicitud, usuario}) => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.getElementById('wrapper-page')).render(
 		<EnfermeriaAlumnoCargaComprobante
 			usuario={window.Usuario}
 			solicitud={window.Usuario.solicitud}
 		/>,
-		document.getElementById('wrapper-page')
-	)
-})
+	)})

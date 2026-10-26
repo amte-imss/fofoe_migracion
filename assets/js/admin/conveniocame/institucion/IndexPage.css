@@ -1,0 +1,8 @@
+.popup__footer-actions_flex {
+    display: flex;
+    gap: 20px;
+}
+
+.popup__footer-actions_flex .btn {
+    margin: 0;
+}

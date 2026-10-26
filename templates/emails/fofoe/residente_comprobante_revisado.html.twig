@@ -1,0 +1,32 @@
+{% extends 'emails/base.html.twig' %}
+
+{% block preheader %}
+    <span class="preheader">Se actualizó el estado de validación de tu pago.</span>
+{% endblock %}
+
+{% block body %}
+    {% set homepage_url = url('homepage') %}
+
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+
+            <p>{{ usuario.nombre }} {{ usuario.apellidoPaterno }} {{ usuario.apellidoMaterno }}</p>
+            <p>Presente</p>
+            <p>En seguimiento al comprobante registrado para la referencia <strong>{{ residencia.folio }}</strong>,
+                se le notifica que se ha actualizado el estado de la validación del pago.</p>
+            <p>Por favor ingrese al sistema para dar seguimiento, y en su caso pueda continuar
+                con el proceso.</p>
+
+            <p class="text-center"><a href="{{ homepage_url }}">{{ homepage_url }}</a></p>
+
+            <p>Sin otro particular, reciba un cordial saludo.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

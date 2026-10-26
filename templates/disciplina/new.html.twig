@@ -1,0 +1,26 @@
+{% extends 'react_design/disciplinas-base.html.twig' %}
+
+{% block title %}Disciplinas{% endblock %}
+
+{% block body %}
+    <div class="col-md-11 content">
+        <div class="row" style="margin-left: 2%; margin-top: 3%;">
+            <div class="col-md-12">
+                <h3>Crear Disciplina</h3>
+            </div>
+            <div class="container containerCstmWidth">
+                <div class="row rowCstmWidth">
+                    <div class="col-md-12">
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        {{ form_end(form) }}
+                        <div class="col-md-7" style="margin-top: -3%; margin-left: 15%;">
+                            <a href="{{ url('disciplina_index', {'page': 1}) }}">Regresar a la Lista de Disciplinas</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
