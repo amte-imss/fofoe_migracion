@@ -1,0 +1,210 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block content_title %}Carga unitaria - Residentes Extranjeros IMSS{% endblock %}
+
+{% block main %}
+    {% set index_url = ea_url()
+        .setController('App\\Controller\\Admin\\Posgrado\\ResidenciaExImssCrudController')
+        .setAction('index') %}
+
+    {% if succeeded %}
+        <div class="alert alert-success">
+            <i class="fa fa-check-circle"></i>
+            Registro guardado exitosamente: <strong>{{ data.nombre }} {{ data.curp }}</strong>
+        </div>
+    {% elseif errors is not empty %}
+        <div class="alert alert-danger">
+            <i class="fa fa-times-circle"></i>
+            <strong>Error:</strong> El folio de residencia ya está registrado en el sistema: {{ errors|first }}
+        </div>
+    {% elseif exception %}
+        <div class="alert alert-danger">
+            <i class="fa fa-times-circle"></i>
+            <strong>Se presentó un error:</strong> {{ exception }}
+        </div>
+    {% endif %}
+
+    {{ form_start(form, {attr: {id: 'single-upload-form'}}) }}
+    {{ form_errors(form) }}
+
+    {# Hidden fields filled from the catalog selects below #}
+    {{ form_widget(form.especialidad, {attr: {'data-sync': 'specialty'}}) }}
+    {{ form_widget(form.ooad, {attr: {'data-sync': 'delegation'}}) }}
+    {{ form_widget(form.sedeAcademica, {attr: {'data-sync': 'campus'}}) }}
+    {{ form_widget(form.subsede, {attr: {'data-sync': 'subCampus'}}) }}
+    {{ form_widget(form.delegacionUmae, {attr: {'data-sync': 'umae'}}) }}
+    {{ form_widget(form.nacionalidad, {attr: {'data-sync': 'country'}}) }}
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fa fa-id-card"></i> Datos de la Residencia</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">{{ form_row(form.ciclo) }}</div>
+                <div class="col-md-2">{{ form_row(form.grado) }}</div>
+                <div class="col-md-6">{{ form_row(form.tipoEspecialidad) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required" for="select-specialty">Especialidad</label>
+                    <select id="select-specialty" class="form-select" data-source="specialty" required>
+                        <option value="">Seleccionar especialidad...</option>
+                        {% for specialty in specialties %}
+                            <option value="{{ specialty.nombre }}">{{ specialty.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required" for="select-delegation">OOAD</label>
+                    <select id="select-delegation" class="form-select" data-source="delegation" required>
+                        <option value="">Seleccionar OOAD...</option>
+                        {% for delegation in delegations %}
+                            <option value="{{ delegation.nombre }}" data-id="{{ delegation.id }}">{{ delegation.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required" for="select-campus">Sede Académica</label>
+                    <select id="select-campus" class="form-select" data-source="campus" required disabled>
+                        <option value="">Selecciona primero una OOAD...</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label" for="select-sub-campus">Subsede</label>
+                    <select id="select-sub-campus" class="form-select" data-source="subCampus" disabled>
+                        <option value="">Selecciona primero una OOAD...</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3" id="umae-column" hidden>
+                    <label class="form-label" for="select-umae">UMAE</label>
+                    <select id="select-umae" class="form-select" data-source="umae" disabled>
+                        <option value="">Selecciona primero una OOAD...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fa fa-user"></i> Datos del Residente</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">{{ form_row(form.nombre) }}</div>
+                <div class="col-md-4">{{ form_row(form.apellidoPaterno) }}</div>
+                <div class="col-md-4">{{ form_row(form.apellidoMaterno) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">{{ form_row(form.curp) }}</div>
+                <div class="col-md-4">{{ form_row(form.folioImss) }}</div>
+                <div class="col-md-3">{{ form_row(form.genero) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header"><i class="fa fa-envelope"></i> Contacto y Documentos</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label required" for="select-country">Nacionalidad</label>
+                    <select id="select-country" class="form-select" data-source="country" required>
+                        <option value="">Seleccionar país...</option>
+                        {% for country in countries %}
+                            <option value="{{ country.nombre }}">{{ country.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">{{ form_row(form.pasaporte) }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">{{ form_row(form.correo) }}</div>
+                <div class="col-md-3">{{ form_row(form.celular) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
+        <button type="submit" class="btn btn-primary">Registrar Residente</button>
+        <a class="btn btn-secondary" href="{{ index_url }}">Volver al listado</a>
+    </div>
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('single-upload-form');
+            const hidden = (key) => form.querySelector(`[data-sync="${key}"]`);
+            const select = (key) => form.querySelector(`[data-source="${key}"]`);
+            const umaeColumn = document.getElementById('umae-column');
+            const delegationSelect = select('delegation');
+
+            // Keep each hidden form field in sync with its visible catalog select
+            form.querySelectorAll('[data-source]').forEach((element) => {
+                element.addEventListener('change', () => {
+                    hidden(element.dataset.source).value = element.value;
+                });
+            });
+
+            const fillOptions = (element, placeholder, units) => {
+                element.replaceChildren(
+                    new Option(placeholder, ''),
+                    ...units.map((unit) => new Option(unit.nombre, unit.nombre)),
+                );
+            };
+
+            const resetUnits = (placeholder) => {
+                ['campus', 'subCampus', 'umae'].forEach((key) => {
+                    fillOptions(select(key), placeholder, []);
+                    select(key).disabled = true;
+                    hidden(key).value = '';
+                });
+                umaeColumn.hidden = true;
+            };
+
+            const loadUnits = async (delegationId, selected = {}) => {
+                resetUnits(delegationId ? 'Cargando unidades...' : 'Selecciona primero una OOAD...');
+                if (!delegationId) {
+                    return;
+                }
+
+                const response = await fetch(`/api/unidad/delegacion/${delegationId}`);
+                const units = (await response.json()).data ?? [];
+                const umaes = units.filter((unit) => unit.esUmae === true);
+
+                fillOptions(select('campus'), 'Seleccionar sede...', units);
+                fillOptions(select('subCampus'), 'Sin subsede', units);
+                fillOptions(select('umae'), 'Seleccionar UMAE...', umaes);
+                select('campus').disabled = false;
+                select('subCampus').disabled = false;
+                select('umae').disabled = umaes.length === 0;
+                umaeColumn.hidden = umaes.length === 0;
+
+                Object.entries(selected).forEach(([key, value]) => {
+                    select(key).value = value;
+                    hidden(key).value = select(key).value;
+                });
+            };
+
+            delegationSelect.addEventListener('change', () => {
+                loadUnits(delegationSelect.selectedOptions[0]?.dataset.id);
+            });
+
+            // Restore visible selects after a failed submission (hidden fields keep the submitted values)
+            ['specialty', 'country', 'delegation'].forEach((key) => {
+                select(key).value = hidden(key).value;
+            });
+
+            if (hidden('delegation').value) {
+                loadUnits(delegationSelect.selectedOptions[0]?.dataset.id, {
+                    campus: hidden('campus').value,
+                    subCampus: hidden('subCampus').value,
+                    umae: hidden('umae').value,
+                });
+            }
+        });
+    </script>
+{% endblock %}

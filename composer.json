@@ -11,7 +11,7 @@
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
-        "easycorp/easyadmin-bundle": "^5.0",
+        "easycorp/easyadmin-bundle": "^5.7",
         "endroid/qr-code": "^6.1",
         "gregwar/captcha": "^1.3",
         "gregwar/captcha-bundle": "^2.5",

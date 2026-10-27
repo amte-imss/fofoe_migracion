@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .wrapper-came {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% set back_url = path('posgrado.residentes-imss.index', {tipo: 'imss'}) %}
+
+    {{ render(controller('App\\Controller\\Posgrado\\PosgradoController::menu')) }}
+    <div class="container-fluid wrapper-came">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{{ back_url }}">Regresar</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 style="text-align: center; padding-bottom: 40px">Alumnos extranjeros en Ciclo académico anual</h1>
+                </div>
+            </div>
+            <div id="residente-show-wrapper"></div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{{ back_url }}">Regresar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% set residente_json = residente|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP')) %}
+    <script>
+        window.RESIDENTE_PROP = {{ residente_json|raw }};
+        window.RESIDENTE = {{ residente_json|raw }};
+    </script>
+    {{ encore_entry_script_tags('posgrado.residentes-imss.detalle') }}
+{% endblock %}

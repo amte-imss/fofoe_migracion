@@ -56,13 +56,9 @@ class ResidenteExtranjeroController extends PosgradoController
         ) {
             return $this->redirectToRoute('came.solicitud.index');
         }
-/*
-        $residentesCargaUrl = $this->generateUrl('easyadmin', [
-            'entity' => 'ResidenciaExImss',
-            'action' => 'list',
-        ]);
-*/
-        $residentesCargaUrl = '';
+
+        $residentsUploadUrl = $this->generateUrl('admin_posgrado_residencia_ex_imss_carga');
+        $residentsUnicadUrl = $this->generateUrl('admin_posgrado_residencia_ex_imss_carga_unitaria');
         $template = $tipoResidente === self::TIPO_RESIDENTE_IMSS
             ? 'posgrado/residentes_ex_imss/index.html.twig'
             : 'posgrado/residentes_ex_no_imss/index.html.twig';
@@ -70,7 +66,8 @@ class ResidenteExtranjeroController extends PosgradoController
         return $this->render($template, [
             'residentes'         => $residentes,
             'tipoResidentes'     => $tipoResidente,
-            'residentesCargaUrl' => $residentesCargaUrl,
+            'residentesCargaMasivaUrl' => $residentsUploadUrl,
+            'residentesCargaUnicaUrl' => $residentsUnicadUrl,
             'posgrado_came'      => $config->getValor(),
             'meta'               => [
                 'total'          => count($residentes),
