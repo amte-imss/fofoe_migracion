@@ -20,7 +20,7 @@ class ResumenPagosController extends DIEControllerController
         Request $request
     ): Response {
         $years       = $referenciaRepository->getYears();
-        $currentYear = $request->get('year', Carbon::now()->year);
+        $currentYear = $request->request->get('year', Carbon::now()->year);
 
         return $this->render('fofoe/inicio/index.html.twig', [
             'years' => $years,

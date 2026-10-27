@@ -5,9 +5,9 @@ namespace App\Form\Type\RegistraCampoClinico;
 use App\Entity\CampoClinico;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class CampoClinicoType extends AbstractType
 {

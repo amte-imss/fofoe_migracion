@@ -23,12 +23,12 @@
 {% endblock %}
 
 {% block javascripts %}
-    {{ parent() }}
-    {{ encore_entry_script_tags('fofoe.registrar.factura') }}
     <script>
         window.INSTITUCION_PROP = {{ institucion | json_encode | raw }};
         window.SOLICITUD_PROP   = {{ solicitud   | json_encode | raw }};
         window.PAGOS_PROP       = {{ pagos       | json_encode | raw }};
         window.ERRORS_PROPS     = {{ errors      | json_encode | raw }};
     </script>
+    {{ parent() }}
+    {{ encore_entry_script_tags('fofoe.registrar.factura') }}
 {% endblock %}

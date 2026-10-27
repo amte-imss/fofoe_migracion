@@ -10,6 +10,11 @@ security:
                 class: App\Entity\Usuario
                 property: matricula
 
+        alumno_enfermeria_provider:
+            entity:
+                class: App\Entity\Enfermeria\Alumno
+                property: curp
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,6 +23,12 @@ security:
         qr:
             pattern: ^/qrcode
             security: false
+
+        enfermeria_alumno:
+            pattern: ^/enfermeria-alumno
+            provider: alumno_enfermeria_provider
+            lazy: true
+            custom_authenticator: App\Security\EnfermeriaAlumnoAuthenticator
 
         main:
             lazy: true

@@ -2,343 +2,239 @@
 
 namespace App\Controller\Enfermeria;
 
+use App\Controller\DIEControllerController;
 use App\Entity\ConfiguracionGlobal;
 use App\Entity\Enfermeria\Alumno;
 use App\Entity\Enfermeria\Solicitud;
-use App\Form\Enfermeria\AlumnoType;
-use App\Form\Enfermeria\SolicitudType;
-use App\Repository\Enfermeria\SolicitudRepository;
-use App\Service\GeneradorRefenciaBancaria2025;
-use Carbon\Carbon;
+use App\Entity\Usuario;
+use App\Form\Type\Enfermeria\AlumnoType;
+use App\Form\Type\Enfermeria\SolicitudType;
+use App\Repository\ConfiguracionGlobalRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
+use Twig\Environment;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\Writer\PngWriter;
 
 #[Route('/enfermeria/solicitud')]
-class SolicitudController extends AbstractController
+class SolicitudController extends DIEControllerController
 {
-    /**
-     * GET /enfermeria/solicitud/api
-     * Lista de solicitudes (JSON) filtradas por año para el panel de la escuela.
-     */
-    #[Route('/api', name: 'enfermeria.solicitud.api', methods: ['GET'])]
-    public function apiIndex(
-        SolicitudRepository    $solicitudRepository,
-        EntityManagerInterface $em,
-        Request                $request
-    ): JsonResponse {
-        $user    = $this->getUser();
-        $query   = $request->query->get('query');
+    private const DEFAULT_PERPAGE = 10;
 
-        /** @var ConfiguracionGlobal|null $config */
-        $config = $em->getRepository(ConfiguracionGlobal::class)
-            ->findOneBy(['clave' => ConfiguracionGlobal::POSGRADO_CAME]);
+    public function __construct(
+        protected RequestStack $requestStack,
+        protected EntityManagerInterface $em,
+        protected SerializerInterface $serializer,
+        #[Autowire('%mailer_sender%')]
+        private readonly string $mailerSender,
+    ) {
+        parent::__construct($requestStack, $em, $serializer);
+    }
 
-        $asCame = $config && $config->getValor();
+    #[Route('/api', methods: ['GET'], name: 'enfermeria.simulacion.index')]
+    public function index(Request $request): JsonResponse
+    {
+        $solicitudRepository = $this->em->getRepository(Solicitud::class);
+        $configuracionGlobalRepository = $this->em->getRepository(ConfiguracionGlobal::class);
+        $config = $configuracionGlobalRepository->findOneBy(['clave' => ConfiguracionGlobal::POSGRADO_CAME]);
 
-        // Determinar escuela o delegación según rol y sesión
-        if ($asCame && ($this->isGranted('ROLE_CAME_MINUS') || $this->isGranted('ROLE_JDES_MINUS'))) {
-            $session     = $request->getSession();
-            $delSesion   = $session->get('user_delegacion');
-            $unidSesion  = $session->get('user_unidad');
-            $isDelActiva = !empty($delSesion) || empty($unidSesion);
+        $perPage = $request->query->get('perPage', self::DEFAULT_PERPAGE);
+        $page = $request->query->get('page', 1);
+        $total = 10;
 
-            $delegacionId = null;
-            if ($isDelActiva && method_exists($user, 'getDelegaciones')) {
-                $delegaciones = $user->getDelegaciones();
-                if (!empty($delSesion)) {
-                    foreach ($delegaciones as $d) {
-                        if ((string) $d->getId() === (string) $delSesion) { $delegacionId = $d->getId(); break; }
-                    }
-                } elseif (!$delegaciones->isEmpty()) {
-                    $delegacionId = $delegaciones->first()->getId();
-                }
-            }
-            $data = $solicitudRepository->findByYearAndOOAD($query, $delegacionId);
+        $query = $request->query->get('query');
+        if ($config->getValor() == 0) {
+            $data = $solicitudRepository->findByYear($query, $this->getUserUnidadId());
         } else {
-            $escuelaId = null;
-            if (method_exists($user, 'getUnidades') && count($user->getUnidades()) > 0) {
-                $escuelaId = $user->getUnidades()[0]->getId();
-            }
-            $data = $solicitudRepository->findByYear($query, $escuelaId);
-        }
-
-        // El React espera: data = [ [ {solicitud}, totalAlumnos ], ... ]
-        // donde item[0] = solicitud, item.totalAlumnos = count
-        $result = [];
-        foreach ($data as $row) {
-            /** @var Solicitud $solicitud */
-            $solicitud    = is_array($row) ? $row[0] : $row;
-            $totalAlumnos = is_array($row) ? (int)($row['totalAlumnos'] ?? 0) : 0;
-
-            $result[] = [
-                [
-                    'id'                   => $solicitud->getId(),
-                    'periodo'              => $solicitud->getPeriodo(),
-                    'periodoFormatted'     => $solicitud->getPeriodoFormatted(),
-                    'createdAtFormatted'   => $solicitud->getCreatedAtFormatted(),
-                    'fechaInicioFormatted' => $solicitud->getFechaInicioFormatted(),
-                    'fechaFinFormatted'    => $solicitud->getFechaFinFormatted(),
-                    'unidad' => $solicitud->getUnidad() ? [
-                        'id'               => $solicitud->getUnidad()->getId(),
-                        'nombre'           => $solicitud->getUnidad()->getNombre(),
-                        'nombreEnfermeria' => method_exists($solicitud->getUnidad(), 'getNombreEnfermeria')
-                            ? $solicitud->getUnidad()->getNombreEnfermeria() : $solicitud->getUnidad()->getNombre(),
-                    ] : null,
-                ],
-                'totalAlumnos' => $totalAlumnos,
-            ];
+            $data = $solicitudRepository->findByYearAndOOAD($query, $this->getUserDelegacionId());
         }
 
         return new JsonResponse([
-            'data' => $result,
+            'meta' => [
+                'perPage' => $perPage,
+                'page' => $page,
+                'total' => $total,
+            ],
+            'data' => $this->serializer->normalize(
+                $data,
+                'json',
+                [
+                    'attributes' => [
+                        'id', 'periodo', 'createdAtFormatted', 'fechaInicioFormatted',
+                        'fechaFinFormatted', 'periodoFormatted', 'unidad' => ['id', 'nombre', 'claveUnidad', 'nombreEnfermeria'],
+                    ],
+                ]
+            ),
         ]);
     }
 
-    /**
-     * GET /enfermeria/solicitud/create
-     * Vista de creación de una nueva solicitud (escuela).
-     */
-    #[Route('/create', name: 'enfermeria.solicitud.create.view', methods: ['GET'])]
-    public function createView(EntityManagerInterface $em): Response
+    #[Route('/create', methods: ['GET'], name: 'enfermeria.solicitud.create')]
+    public function create(Request $request): Response
     {
-        $config = $em->getRepository(ConfiguracionGlobal::class)
-            ->findOneBy(['clave' => ConfiguracionGlobal::POSGRADO_CAME]);
-
-        $user = $this->getUser();
-        $escuelaId = null;
-        $ooadId    = null;
-
-        if (method_exists($user, 'getUnidades') && count($user->getUnidades()) > 0) {
-            $escuelaId = $user->getUnidades()[0]->getId();
-        }
-        if (method_exists($user, 'getDelegaciones') && !$user->getDelegaciones()->isEmpty()) {
-            $ooadId = $user->getDelegaciones()->first()->getId();
-        } elseif (method_exists($user, 'getDelegacionInstitucion') && $user->getDelegacionInstitucion()) {
-            $ooadId = $user->getDelegacionInstitucion()->getId();
-        }
+        $configuracionGlobalRepository = $this->em->getRepository(ConfiguracionGlobal::class);
+        $config = $configuracionGlobalRepository->findOneBy(['clave' => ConfiguracionGlobal::POSGRADO_CAME]);
 
         return $this->render('enfermeria/create.html.twig', [
-            'escuelaId' => $escuelaId ?? '',
-            'asCame'    => $config ? (int) $config->getValor() : 0,
-            'ooad'      => $ooadId ?? '',
+            'escuelaId' => $this->getUserUnidadId() ?: '',
+            'asCame' => $config->getValor(),
+            'ooad' => $this->getUserDelegacionId(),
         ]);
     }
 
-    /**
-     * POST /enfermeria/solicitud/api
-     * Guarda una nueva solicitud (lote).
-     */
-    #[Route('/api', name: 'enfermeria.solicitud.store', methods: ['POST'])]
-    public function store(Request $request, EntityManagerInterface $em): JsonResponse
+    #[Route('/{id}', methods: ['GET'], name: 'enfermeria.solicitud.show')]
+    public function show(Request $request, int $id): Response
     {
-        $form = $this->createForm(SolicitudType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Solicitud $solicitud */
-            $solicitud = $form->getData();
-            $em->persist($solicitud);
-            $em->flush();
-
-            return new JsonResponse([
-                'status' => true,
-                'data'   => ['id' => $solicitud->getId()],
-            ]);
-        }
-
-        return new JsonResponse([
-            'status'  => false,
-            'message' => 'Error al crear la solicitud.',
-            'errors'  => $this->getFormErrors($form),
-        ], Response::HTTP_BAD_REQUEST);
-    }
-
-    /**
-     * POST /enfermeria/solicitud/alumno/api
-     * Registra un alumno en un lote y le envía correo de bienvenida.
-     */
-    #[Route('/alumno/api', name: 'enfermeria.solicitud.alumno.store', methods: ['POST'])]
-    public function storeAlumno(
-        Request                $request,
-        EntityManagerInterface $em,
-        MailerInterface        $mailer,
-        \Psr\Log\LoggerInterface $logger
-    ): JsonResponse {
-        $form = $this->createForm(AlumnoType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            /** @var Alumno $alumno */
-            $alumno = $form->getData();
-
-            // Asignar monto según tipo de alumno desde ConfiguracionGlobal
-            $monto = $em->getRepository(ConfiguracionGlobal::class)
-                ->findMontoEF($alumno->getTipo());
-            if ($monto) {
-                $alumno->setMonto((float) $monto->getValor());
-            }
-
-            $em->persist($alumno);
-            $em->flush();
-
-            // Recargar para tener relaciones completas
-            $alumno = $em->getRepository(Alumno::class)->find($alumno->getId());
-
-            try {
-                $this->sendBienvenidaEmail($mailer, $alumno);
-            } catch (\Throwable $e) {
-                $logger->error('[MAIL ERROR] ' . $e->getMessage(), ['exception' => $e]);
-            }
-
-            return new JsonResponse([
-                'status' => true,
-                'data'   => ['id' => $alumno->getId()],
-            ]);
-        }
-
-        return new JsonResponse([
-            'status'  => false,
-            'message' => 'Error al registrar el alumno.',
-            'errors'  => $this->getFormErrors($form),
-        ], Response::HTTP_BAD_REQUEST);
-    }
-
-    /**
-     * GET /enfermeria/solicitud/{id}
-     * Detalle de una solicitud (QR + lista de alumnos).
-     */
-    #[Route('/{id}', name: 'enfermeria.solicitud.show', methods: ['GET'])]
-    public function show(
-        int                    $id,
-        EntityManagerInterface $em
-    ): Response {
-        // Admin: redirigir a la vista de edición admin
-        if ($this->isGranted('ROLE_ADM_FOFOE') || $this->isGranted('ROLE_SUPER')) {
-            return $this->redirectToRoute('admin.enfermeria.solicitud.show', ['id' => $id]);
-        }
-
-        $solicitud = $em->getRepository(Solicitud::class)->find($id);
+        $solicitudRepository = $this->em->getRepository(Solicitud::class);
+        $solicitud = $solicitudRepository->find($id);
         if (!$solicitud) {
-            throw $this->createNotFoundException('Solicitud no encontrada.');
+            return $this->httpErrorResponse('Not Found', Response::HTTP_NOT_FOUND);
         }
 
-        // Generar URL para el login del alumno
-        $loginUrl = $this->generateUrl(
-            'enfermeria_alumno.login',
-            ['solicitudId' => $solicitud->getId()],
-            UrlGeneratorInterface::ABSOLUTE_URL
+        $options['extension'] = 'png';
+        $url = $this->generateUrl('enfermeria-alumno.login', ['solicitudId' => $solicitud->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $solicitudData = $this->serializer->normalize(
+            $solicitud,
+            'json',
+            [
+                'attributes' => [
+                    'id', 'periodo', 'fechaInicioFormatted', 'fechaFinFormatted', 'periodoFormatted',
+                    'alumnos' => ['id', 'nombre', 'email', 'promedio', 'tipo', 'curp', 'monto', 'status', 'statusFormatted'],
+                ],
+            ]
         );
 
-        // Preparar datos de alumnos
-        $alumnos = [];
-        foreach ($solicitud->getAlumnos() as $alumno) {
-            $alumnos[] = [
-                'id'              => $alumno->getId(),
-                'nombre'          => $alumno->getNombre(),
-                'email'           => $alumno->getEmail(),
-                'curp'            => $alumno->getCurp(),
-                'tipo'            => $alumno->getTipo(),
-                'monto'           => $alumno->getMonto(),
-                'status'          => $alumno->getStatus(),
-                'statusFormatted' => $alumno->getStatusFormatted(),
-                'promedio'        => $alumno->getPromedio(),
-            ];
-        }
-
-        $solicitudData = [
-            'id'               => $solicitud->getId(),
-            'periodo'          => $solicitud->getPeriodo(),
-            'periodoFormatted' => $solicitud->getPeriodoFormatted(),
-            'fechaInicioFormatted' => $solicitud->getFechaInicioFormatted(),
-            'fechaFinFormatted'    => $solicitud->getFechaFinFormatted(),
-            'alumnos'              => $alumnos,
-        ];
+        $result = (new Builder(
+            writer: new PngWriter(),
+            data: $url,
+            encoding: new Encoding('UTF-8'),
+            size: 300,
+            margin: 10,
+        ))->build();
 
         return $this->render('enfermeria/show.html.twig', [
-            'solicitud'   => $solicitudData,
-            'qr'          => '',
-            'loginUrl'    => $loginUrl,
-            'solicitudId' => $solicitud->getId(),
+            'solicitud' => $solicitudData,
+            'qr' => $result->getDataUri(),
         ]);
     }
 
-    /**
-     * GET /enfermeria/solicitud/{id}/export
-     * Exportar alumnos del lote a CSV.
-     */
-    #[Route('/{id}/export', name: 'enfermeria.solicitud.export', methods: ['GET'])]
-    public function exportCsv(int $id, EntityManagerInterface $em): Response
+    #[Route('/api', methods: ['POST'], name: 'enfermeria.solicitud.store')]
+    public function store(Request $request): JsonResponse
     {
-        $solicitud = $em->getRepository(Solicitud::class)->find($id);
+        /** @var Usuario $user */
+        $user = $this->getUser();
+        $formulario = $this->createForm(SolicitudType::class);
+        $formulario->handleRequest($request);
+
+        if ($formulario->isSubmitted() && $formulario->isValid()) {
+            /** @var Solicitud $data */
+            $data = $formulario->getData();
+            $this->em->persist($data);
+            $this->em->flush();
+
+            return new JsonResponse([
+                'status' => true,
+                'data' => $this->serializer->normalize($data, 'json', [
+                    'attributes' => ['id'],
+                ]),
+            ]);
+        }
+
+        return new JsonResponse([
+            'status' => false,
+            'message' => 'Error',
+            'errors' => $this->getFormErrors($formulario),
+        ], 400);
+    }
+
+    #[Route('/alumno/api', methods: ['POST'], name: 'enfermeria.solicitud.alumno.store')]
+    public function storeAlumno(MailerInterface $mailer, Environment $templating, Request $request): JsonResponse
+    {
+        $formulario = $this->createForm(AlumnoType::class);
+        $formulario->handleRequest($request);
+
+        /** @var ConfiguracionGlobalRepository $configuracionGlobalRepository */
+        $configuracionGlobalRepository = $this->em->getRepository(ConfiguracionGlobal::class);
+
+        if ($formulario->isSubmitted() && $formulario->isValid()) {
+            /** @var Alumno $data */
+            $data = $formulario->getData();
+            $monto = $configuracionGlobalRepository->findMontoEF($data->getTipo());
+            $data->setMonto((float) $monto->getValor());
+            $this->em->persist($data);
+            $this->em->flush();
+
+            $alumnoRepository = $this->em->getRepository(Alumno::class);
+            $alumno = $alumnoRepository->find($data->getId());
+            try {
+                $this->sendMail($mailer, $templating, $alumno, $alumno->getSolicitud());
+            } catch (\Exception) {
+            }
+
+            return new JsonResponse([
+                'status' => true,
+                'data' => $this->serializer->normalize($data, 'json', [
+                    'attributes' => ['id'],
+                ]),
+            ]);
+        }
+
+        return new JsonResponse([
+            'status' => false,
+            'message' => 'Error',
+            'errors' => $this->getFormErrors($formulario),
+        ], 400);
+    }
+
+    #[Route('/{id}/export', methods: ['GET'], name: 'enfermeria.solicitud.export')]
+    public function export(Request $request, int $id): Response
+    {
+        $solicitudRepository = $this->em->getRepository(Solicitud::class);
+        $solicitud = $solicitudRepository->find($id);
         if (!$solicitud) {
-            throw $this->createNotFoundException('Solicitud no encontrada.');
+            return $this->httpErrorResponse('Not Found', Response::HTTP_NOT_FOUND);
         }
 
         $content = "CURP,NOMBRE,EMAIL,TIPO ALUMNO,MONTO,ESTADO PROCESO\n";
         foreach ($solicitud->getAlumnos() as $alumno) {
-            $content .= sprintf(
-                "%s,%s,%s,%s,%s,%s\n",
-                $alumno->getCurp(),
-                $alumno->getNombre(),
-                $alumno->getEmail(),
-                $alumno->getTipo(),
-                $alumno->getMonto(),
-                $alumno->getStatusFormatted()
-            );
+            $content .= "{$alumno->getCurp()},{$alumno->getNombre()},{$alumno->getEmail()},{$alumno->getTipo()},{$alumno->getMonto()},{$alumno->getStatusFormatted()}\n";
         }
 
-        return new Response($content, Response::HTTP_OK, [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="alumnos_lote_' . $id . '.csv"',
+        return new Response($content, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="alumnos.csv"',
         ]);
     }
 
-    // -------------------------------------------------------------------------
-
-    private function sendBienvenidaEmail(MailerInterface $mailer, Alumno $alumno): void
+    private function sendMail(MailerInterface $mailer, Environment $templating, Alumno $alumno, Solicitud $solicitud): void
     {
-        $from = $this->getParameter('mailer_sender');
+        $html = $templating->render('emails/enfermeria/alumno_bienvenida.html.twig', [
+            'alumno' => $alumno,
+            'solicitud' => $solicitud,
+        ]);
 
-        $email = (new TemplatedEmail())
-            ->from(new Address($from))
-            ->to(new Address($alumno->getEmail()))
-            ->subject('Sistema de Administración del FOFOE — Credenciales de acceso')
-            ->htmlTemplate('emails/enfermeria/alumno_bienvenida.html.twig')
-            ->context([
-                'alumno'    => $alumno,
-                'solicitud' => $alumno->getSolicitud(),
-            ]);
-
+        $email = (new Email())
+            ->from($this->mailerSender)
+            ->to($alumno->getEmail())
+            ->subject('Sistema de Administración del FOFOE -  Credenciales de acceso')
+            ->html($html);
         $mailer->send($email);
 
-        // Copia interna
-        $emailCopia = (new TemplatedEmail())
-            ->from(new Address($from))
+        $emailCopia = (new Email())
+            ->from($this->mailerSender)
             ->to('zurgcom@gmail.com', 'eliarteaga1977@gmail.com')
-            ->subject('Sistema de Administración del FOFOE — Credenciales de acceso (copia)')
-            ->htmlTemplate('emails/enfermeria/alumno_bienvenida.html.twig')
-            ->context([
-                'alumno'    => $alumno,
-                'solicitud' => $alumno->getSolicitud(),
-            ]);
-
+            ->subject('Sistema de Administración del FOFOE -  Credenciales de acceso')
+            ->html($html);
         $mailer->send($emailCopia);
-    }
-
-    private function getFormErrors($form): array
-    {
-        $errors = [];
-        foreach ($form->getErrors(true) as $error) {
-            $errors[] = $error->getMessage();
-        }
-        return $errors;
     }
 }

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('posgrado.residentes-noimss.index') }}
+    <style>
+        .wrapper-came {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Posgrado\\PosgradoController::menu')) }}
+    <div class="container-fluid wrapper-came">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 style="text-align: center; padding-bottom: 40px">Alumnos extranjeros rotación parcial de especialidad</h1>
+                </div>
+            </div>
+            <div id="residentes-table"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.RESIDENTES = {{ residentes|json_encode(constant('JSON_HEX_TAG'))|raw }};
+        window.META = {{ meta|json_encode(constant('JSON_HEX_TAG'))|raw }};
+    </script>
+    {{ encore_entry_script_tags('posgrado.residentes-noimss.index') }}
+{% endblock %}

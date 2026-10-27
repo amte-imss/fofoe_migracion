@@ -11,9 +11,9 @@ use App\Exception\CouldNotFindSolicitud;
 use App\Exception\Posgrado\CouldFindUserRelationWithResidente;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -25,6 +25,16 @@ abstract class DIEControllerController extends AbstractController
         protected EntityManagerInterface $em,
         protected SerializerInterface $serializer,
     ) {}
+
+    /**
+     * Replacement for the removed Request::get(): query string first, then POST body.
+     */
+    protected function input(Request $request, string $key, mixed $default = null): mixed
+    {
+        return $request->query->has($key)
+            ? $request->query->get($key)
+            : $request->request->get($key, $default);
+    }
 
     protected function getFormErrors(FormInterface $form, bool $deepGlobal = false, bool $deepField = false): array
     {

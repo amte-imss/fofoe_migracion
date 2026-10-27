@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from "react-dom";
+import {createRoot} from "react-dom/client";
 import {dateFormat, getSchemeAndHttpHost, moneyFormat} from "../../utils";
 import Cleave from "cleave.js/react";
 import {FormValidator} from "../../components/FormValidator/FormValidator";
@@ -150,6 +150,17 @@ const FormCargaComprobante = ({solicitud, usuario}) => {
 								id='comprobante_pago_comprobantePagoFile'
 								name='comprobante_pago[comprobantePagoFile]'
 								className='form-control'
+								onChange={(e) => {
+									const file = e.target.files[0];
+									if (file && file.type !== 'application/pdf') {
+										Swal.fire({
+											icon: 'warning',
+											title: 'Archivo no válido',
+											text: 'Solo se permiten archivos PDF.',
+										});
+										e.target.value = ''; // limpia el input
+									}
+								}}
 								required={true}
 							/>
 							<p className="text-danger">{errors['comprobante_pago[comprobantePagoFile]']}</p>
@@ -366,11 +377,11 @@ const DatosSolicitud = ({solicitud, usuario}) => {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
-		<EnfermeriaAlumnoCargaComprobante
-			usuario={window.Usuario}
-			solicitud={window.Usuario.solicitud}
-		/>,
-		document.getElementById('wrapper-page')
-	)
-})
+    const rootElement = createRoot(document.getElementById('wrapper-page'));
+    rootElement.render(
+        <EnfermeriaAlumnoCargaComprobante
+            usuario={window.Usuario}
+            solicitud={window.Usuario.solicitud}
+        />
+    );
+});

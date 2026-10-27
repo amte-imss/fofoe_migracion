@@ -1,5 +1,5 @@
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from "react-dom/client";
 import {getSchemeAndHttpHost} from "../utils";
 import Loader from "../components/Loader/Loader";
 import FormValidator from "../components/FormValidator/FormValidatorVanilla";
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const loginDom = document.getElementById('content-wrapper-login');
 
 	if (loginDom) {
-		ReactDOM.render(
+		createRoot(loginDom).render(
 			<CustomLogin
 				error={window.ERROR}
 				path_login={window.PATH_LOGIN}
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				tipo={window.TIPO}
 				url_img={window.URL_IMG}
 				captcha={window.CAPTCHA}
-			/>, loginDom
+			/>
 		)
 	}
 })

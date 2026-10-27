@@ -15,4 +15,5 @@ interface SolicitudInterface
     const CARGANDO_COMPROBANTES = 'Cargando comprobantes';
     const EN_VALIDACION_FOFOE = 'En validación FOFOE';
     const CREDENCIALES_GENERADAS = 'Credenciales generadas';
+    const CANCELADA = 'Cancelada';
 }

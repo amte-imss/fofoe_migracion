@@ -18,7 +18,6 @@ use App\Repository\CampoClinicoRepositoryInterface;
 use App\Repository\IE\DetalleSolicitud\DetalleSolicitud;
 use App\Repository\IE\SeleccionarFormaPago\ListaCamposClinicosAutorizados\CamposClinicos;
 use App\Repository\SolicitudRepositoryInterface;
-use App\Service\CampoClinicoManagerInterface;
 use App\Service\GeneradorReferenciaBancariaZIPInterface;
 use App\Service\ProcesadorFormaPagoInterface;
 use App\Service\SolicitudManagerInterface;

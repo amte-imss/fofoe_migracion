@@ -1,0 +1,52 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block content_title %}Carga masiva - Residentes Extranjeros IMSS{% endblock %}
+
+{% block main %}
+    {% set index_url = ea_url()
+        .setController('App\\Controller\\Admin\\Posgrado\\ResidenciaExImssCrudController')
+        .setAction('index') %}
+
+    {% if data is not empty %}
+        <div class="alert alert-success">Se agregaron {{ data|length }} registros.</div>
+    {% elseif errors is not empty %}
+        <div class="alert alert-danger">
+            <strong>Error al procesar la carga:</strong>
+            se encontraron {{ errors|length }} folios de residencias ya registrados en el sistema.
+            <p class="mb-0 mt-2">{{ errors|join(', ') }}</p>
+        </div>
+    {% elseif exception %}
+        <div class="alert alert-danger"><strong>Se presentó un error:</strong> {{ exception }}</div>
+    {% endif %}
+
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
+    <div class="row">
+        <div class="col-md-4">{{ form_row(form.ciclo) }}</div>
+        <div class="col-md-8">{{ form_row(form.submitFile) }}</div>
+    </div>
+    <div class="d-flex gap-2 mb-4">
+        <button type="submit" class="btn btn-primary">Cargar Residentes Extranjeros IMSS</button>
+        <a class="btn btn-secondary" href="{{ index_url }}">Volver al listado</a>
+    </div>
+    {{ form_end(form) }}
+
+    {% if data is empty %}
+        <div class="card">
+            <div class="card-header">Consideraciones para carga de residencias</div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li>Se deberá utilizar un archivo Excel (.xlsx).</li>
+                    <li>
+                        La primera fila del archivo deberá contener un encabezado con las siguientes columnas:
+                        OOAD, TIPO_ESPECIALIDAD, ESPECIALIDAD, SEDE_ACADEMICA, SUBSEDE, DELEGACION/UMAE, GRADO,
+                        CURP, FOLIO IMSS, GENERO, AP_PATERNO, AP_MATERNO, NOMBRE, NACIONALIDAD, PASAPORTE,
+                        CORREO, CELULAR.
+                    </li>
+                    <li>Cualquier otra columna será ignorada.</li>
+                </ol>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

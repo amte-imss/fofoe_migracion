@@ -1,7 +1,6 @@
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import React from "react";
 import FormularioSolicitud from "./FormularioSolicitud";
-import {createRoot} from "react-dom/client";
 
 document.addEventListener('DOMContentLoaded', () => {
     createRoot(document.getElementById('registro-component')).render(

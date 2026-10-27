@@ -1,0 +1,67 @@
+{% extends 'react_design/disciplinas-base.html.twig' %}
+
+{% block title %}Disciplinas{% endblock %}
+
+{% block body %}
+    <div class="jumbotron">
+        <div class="container cstmContainer">
+            <h1 class="display-10">Disciplina {{ disciplina.nombre }}</h1>
+            <h3 class="lead">Información de Disciplina</h3>
+
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Nombre de Disciplina</span>
+                        <p class="textValueShowConvenio">{{ disciplina.nombre }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Descripción de Disciplina</span>
+                        <p class="textValueShowConvenio">{{ disciplina.descripcion ?: 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">¿Está Activa?</span>
+                        <p class="textValueShowConvenio">{{ disciplina.activa ? 'Si' : 'No' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">¿Está Borrada?</span>
+                        <p class="textValueShowConvenio">{{ disciplina.borrado ? 'Si' : 'No' }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Fecha de Creación</span>
+                        <p class="textValueShowConvenio">{{ disciplina.fechaCreacion ? disciplina.fechaCreacion|date('Y-m-d') : 'N/A' }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: justify;">
+                    <div class="well">
+                        <span class="textLabelShowConvenio">Fecha de Modificación</span>
+                        <p class="textValueShowConvenio">{{ disciplina.fechaModificacion ? disciplina.fechaModificacion|date('Y-m-d') : 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container" style="margin-top: 6%;">
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <h3>Para regresar a la lista de Disciplinas:</h3>
+                    <span>
+                        Haz click
+                        <a class="page-link" href="{{ url('disciplina_index', {'page': 1}) }}" title="Lista de Disciplinas">Aquí</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

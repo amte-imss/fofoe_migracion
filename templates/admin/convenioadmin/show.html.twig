@@ -1,0 +1,128 @@
+{% extends 'react_design/base.html.twig' %}
+
+{% macro field(label, value, width = 6) %}
+    <div class="col-md-{{ width }}" style="text-align: justify;">
+        <div class="well">
+            <span class="textLabelShowConvenio">{{ label }}</span>
+            <p class="textValueShowConvenio">{{ value }}</p>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block body %}
+    {% import _self as ui %}
+
+    <div class="jumbotron" style="width: 90%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <a class="btn btn-primary" href="{{ url('admin.conveniosadmin.conveniosadmin.index', {'page': 1}) }}" title="Lista de Convenios">
+                        Regresar a la lista de convenios
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container cstmContainer">
+            <h1 class="display-10">Convenio {{ convenio.nombre }}</h1>
+            <h3>Información de convenio</h3>
+
+            <div class="row">
+                {{ ui.field('R.F.C. de Convenio', convenio.rfc ?: 'N/A') }}
+                {{ ui.field('Razón Social', convenio.razonSocial ?: 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Nombre Comercial', convenio.nombre) }}
+                {{ ui.field('Institución', convenio.institucion.nombre ?? 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Convenio General al que se Asocia', convenio.convenioGeneral.nombre ?? 'N/A') }}
+                {{ ui.field('OOAD', convenio.convenioDelegacionesFormatted) }}
+            </div>
+            <div class="row">
+                {{ ui.field('Sector', convenio.sector) }}
+                {{ ui.field('Tipo', convenio.tipo) }}
+            </div>
+            <div class="row">
+                {{ ui.field('Objetivo de la Colaboración', convenio.objetivoColaboracion ?: 'N/A', 12) }}
+            </div>
+            <div class="row">
+                {{ ui.field('Campos Clínicos', convenio.ciclosAcademicosFormatted) }}
+                {{ ui.field('Nivel o Grado Académico', convenio.nivelAcademico.nombre ?? 'N/A') }}
+            </div>
+
+            {% if 'otro' in (convenio.nivelAcademico.nombre ?? '')|lower %}
+                <div class="row">
+                    {{ ui.field('Descripción de OTRO Nivel o Grado Académico', '', 12) }}
+                </div>
+            {% endif %}
+
+            <div class="row">
+                {{ ui.field('Disciplina', convenio.disciplina.nombre ?? 'N/A') }}
+                {{ ui.field('Carrera', convenio.carrera.nombre ?? '') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Nombre del Programa', convenio.nombrePrograma ?: 'N/A') }}
+                {{ ui.field('Fecha de Firma', convenio.fechaFirma ? convenio.fechaFirma|date('d-m-Y') : 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Vigencia (años)', convenio.vigenciaText ? convenio.vigenciaText|replace({'year': 'año'}) : 'N/A') }}
+                {{ ui.field('Fecha de Vigencia de Convenio', convenio.fechaVenceConvenio ? convenio.fechaVenceConvenio|date('d-m-Y') : 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Fecha de Emisión OTA', convenio.fechaOta ? convenio.fechaOta|date('d-m-Y') : 'N/A') }}
+                {{ ui.field('Fecha de Vigencia de Emisión OTA', convenio.fechaVenceOta ? convenio.fechaVenceOta|date('d-m-Y') : 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Fecha de Emisión RVOE', convenio.fechaRvoe ? convenio.fechaRvoe|date('d-m-Y') : 'N/A') }}
+                {{ ui.field('Fecha de Vigencia de Emisión RVOE', convenio.fechaVenceRvoe ? convenio.fechaVenceRvoe|date('d-m-Y') : 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Fecha de Emisión de Acreditación (COMAEM u otros)', convenio.fechaEmiteComaem ? convenio.fechaEmiteComaem|date('d-m-Y') : 'N/A') }}
+                {{ ui.field('Fecha de Vigencia de Emisión de Acreditación (COMAEM u otros)', convenio.fechaVenceComaem ? convenio.fechaVenceComaem|date('d-m-Y') : 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('FUICA', convenio.fuica ?: 'N/A') }}
+                {{ ui.field('Número de Convenio', convenio.numero ?: 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('¿Es CAME?', convenio.isCamex ? 'Si' : 'No') }}
+                {{ ui.field('Tipo Convenio CAME por DEFAULT', convenio.tipoCame ?: 'N/A') }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-12"><h2>Firmantes</h2></div>
+            </div>
+            <div class="row">
+                <div class="col-md-6"><h3>Por el IMSS</h3></div>
+                <div class="col-md-6"><h3>Por la Institución Educativa</h3></div>
+            </div>
+            <div class="row">
+                {{ ui.field('Cargo', convenio.cargoFirmaIdFirst.nombre ?? 'N/A') }}
+                {{ ui.field('Cargo', convenio.cargoEmiteSignfirst ?: 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Nombre', convenio.recibeSignfirst ?: 'N/A') }}
+                {{ ui.field('Nombre', convenio.nombreEmiteSignfirst ?: 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Cargo', convenio.cargoFirmaIdSecond.nombre ?? 'N/A') }}
+                {{ ui.field('Cargo', convenio.cargoEmiteSignsecond ?: 'N/A') }}
+            </div>
+            <div class="row">
+                {{ ui.field('Nombre', convenio.recibeSignsecond ?: 'N/A') }}
+                {{ ui.field('Nombre', convenio.nombreEmiteSignsecond ?: 'N/A') }}
+            </div>
+        </div>
+
+        <div class="container" style="margin-top: 6%;">
+            <div class="row">
+                <div class="col-md-6" style="text-align: justify;">
+                    <a class="btn btn-primary" href="{{ url('admin.conveniosadmin.conveniosadmin.index', {'page': 1}) }}" title="Lista de Convenios">
+                        Regresar a la lista de convenios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

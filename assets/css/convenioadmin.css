@@ -1,0 +1,225 @@
+.butonConve{
+    background-color: #00594C !important;
+    width: 11rem;
+    margin-left: 0%;
+}
+
+.mt-btn-headerConAdmin{
+    margin-top: -3%;
+}
+
+.ml-btn-headerConAdmin{
+    margin-left: 6%;
+}
+
+.mr-btn-headerConAdmin{
+    margin-right: 2.3rem;
+}
+
+.ml-search-form-header{
+    margin-left: -65%;
+    margin-top: -3%;
+}
+
+.stylingFieldsForm{
+    width: 30rem !important;
+    margin-bottom: 5%;
+    margin-right: 5rem;
+}
+
+.stylingLabelsForm{
+    text-align: left !important;
+    margin-left: -2%;
+    justify-content: left !important;
+}
+
+.ml-form{
+    margin-left: -8%;
+    margin-bottom: 5%;
+}
+
+.containerCstmWidth{
+    width: 80rem !important;
+    margin-left: 6rem !important;
+}
+
+.rowCstmWidth{
+    width: 80rem;
+}
+
+.expiredValiditySuccess{
+    color: #380B61;
+    background-color: #01DF01;
+    font-weight: bold;
+}
+
+.expiredValidityWarn{
+    color: #0B173B;
+    background-color: #E5BE01 ;
+    font-weight: bold;
+}
+
+.expiredValidityDanger{
+    background-color: #DF0101;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.marginsLinkNewAdminConve{
+    margin-top: -3%;
+    margin-left: 11%;
+}
+
+.marginsRequiredFields{
+    margin-top: -8%;
+    margin-left: -9%;
+    color: #FF0000;
+}
+
+.carrerNoteMargins{
+    margin-top: -2%;
+    margin-left: 35%;
+    width: 45%;
+}
+
+.leftSideBarMenu{
+    height: 165rem !important;
+    width: 100rem !important;
+    background-color: #2C4838;
+}
+
+.bg-topBarHeaderUser{
+    background-color: #B38E5D;
+}
+
+.bg-topBarHeader{
+    background-color: #00594C !important;
+}
+
+.ml-search-form-header-admin {
+    margin-left: -90%;
+    margin-top: -3%;
+}
+
+.mr-btn-headerConAdmin-admin{
+    margin-right: 2rem;
+}
+
+.butonCoordinaciones{
+    background-color: #00594C !important;
+    width: 15rem;
+    margin-left: 100%;
+}
+
+.ml-search-form-header-coord {
+    margin-left: -44%;
+    margin-top: -3%;
+}
+
+.mr-btn-headerConAdmin-coord {
+    margin-right: 3rem;
+}
+
+.styleErrorMessage{
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    margin-left: 6rem;
+    background-color: #DF0101;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+}
+
+.styleErrorMessageCoord{
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    margin-left: 6rem;
+    background-color: #DF0101;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    width: 35rem;
+    padding-left: 1rem;
+}
+
+.colorTextTrue{
+    color:  #01DF01;
+    font-weight: bold;
+    font-size: 1rem !important;
+}
+
+.colorTextWarn{
+    color: #E5BE01 ;
+    font-weight: bold;
+    font-size: 1rem !important;
+}
+
+.colorTextFalse{
+    color: #DF0101;
+    font-weight: bold;
+    font-size: 1rem !important;
+}
+
+.cstmContainer{
+    max-width: 100% !important;
+}
+
+.fs-tableCargaMasiva{
+    font-size: 0.7rem !important;
+}
+
+.cstmJumbutron{
+    margin-top: -106rem !important;
+    margin-left: 7%;
+}
+
+.cstmStylingObjetivo{
+    width: 65rem !important;
+    margin-bottom: 3% !important;
+    position: relative !important;
+}
+
+.stylingFieldsFormObj{
+    text-align: left !important;
+    margin-left: -1%;
+    justify-content: left !important;
+}
+
+.label-required {
+    content: " *";
+    color: #FF0000;
+}
+
+.is-required:before {
+    content: '*';
+    margin-right: 5px;
+    color: red;
+    font-weight: bold;
+}
+
+::marker {
+    unicode-bidi: isolate;
+    font-variant-numeric: tabular-nums;
+    text-transform: none;
+    text-indent: 0px !important;
+    text-align: start !important;
+    text-align-last: start !important;
+    color:#FF0000;
+}
+
+.form-inline .ml-form ul li{
+    color: #FF0000;
+}
+
+.textLabelShowConvenio{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.textValueShowConvenio{
+    font-size: 1.5rem;
+    font-weight: normal;
+    font-style: italic;
+}
+
+.hide-select-option{
+    display: none;
+}

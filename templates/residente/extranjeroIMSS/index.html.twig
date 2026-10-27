@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Residente\\ResidenteExtranjeroController::menu')) }}
+
+    <div class="section-md">
+        <div id="main-component" class="container"></div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {% set json_flags = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
+    <script>
+        window.RESIDENTE_PROP = {{ residente|json_encode(json_flags)|raw }};
+        window.ERRORS = {{ errores|json_encode(json_flags)|raw }};
+        window.ACTION = {{ url('actualizar.datos')|json_encode(json_flags)|raw }};
+    </script>
+    {{ encore_entry_script_tags('residente.perfil') }}
+{% endblock %}

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Loader from "../../../components/Loader/Loader";
 import QR from '../../../../images/example/qr.png';
 
@@ -93,8 +93,6 @@ function EnfermeriaShow({}){
 
 
 document.addEventListener('DOMContentLoaded', () => {
-	ReactDOM.render(
+	createRoot(document.getElementById('wrapper-page')).render(
 		<EnfermeriaShow/>,
-		document.getElementById('wrapper-page')
-	)
-});
+	)});

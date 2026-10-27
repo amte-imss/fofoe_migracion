@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .wrapper-came {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+
+        .menu-residentes {
+            display: flex;
+            justify-content: right;
+        }
+
+        .btn-custom {
+            min-width: 200px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {{ render(controller('App\\Controller\\Posgrado\\PosgradoController::menu')) }}
+    <div class="container-fluid wrapper-came">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 style="text-align: center; padding-bottom: 40px">Alumnos extranjeros en Ciclo académico anual</h1>
+                </div>
+                {% if posgrado_came %}
+                    <div class="col-md-12 menu-residentes">
+                        <a class="btn btn-success btn-custom" href="{{ app.request.schemeAndHttpHost }}{{ residentesCargaMasivaUrl }}">Carga Masiva</a>
+                        &nbsp;
+                        <a class="btn btn-default btn-custom"
+                           href="{{ app.request.schemeAndHttpHost }}{{ residentesCargaUnicaUrl }}">Carga Unitaria</a>
+                    </div>
+                {% endif %}
+            </div>
+            <div id="residentes-table"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        window.META = {{ meta|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
+    </script>
+    {{ encore_entry_script_tags('posgrado.residentes-imss.index') }}
+{% endblock %}

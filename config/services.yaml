@@ -28,6 +28,7 @@ parameters:
     alumno_enfermeria_dir:          '%private_dir%/alumno_enfermeria'
     residente_dir: '%kernel.project_dir%/public/uploads/residentes'
     edu_per_dir: '%kernel.project_dir%/public/uploads/edu_per'
+    app.institution_uploads_dir: '%kernel.project_dir%/public/uploads/instituciones'
 
 services:
     # default configuration for services in *this* file
@@ -279,3 +280,38 @@ services:
             $requestStack: '@request_stack'
         tags:
             -   name: doctrine.event_subscriber
+
+    App\Service\ProcesadorValidarPagoInterface:
+        alias: App\Service\ProcesadorValidarPago
+
+    App\Service\Fofoe\ValidarPagoPosgradoInterface:
+        alias: App\Service\Fofoe\ValidarPagoPosgrado
+
+    App\Service\Fofoe\ValidarPagoPosgrado:
+        arguments:
+            $sender: '%mailer_sender%'
+
+    # Alias de interfaces → implementación concreta
+    App\Calculator\ComprobantePagoCalculatorInterface:
+        alias: App\Calculator\ComprobantePagoCalculator
+
+    # ProcesadorValidarPago: solo el argumento escalar necesita declararse.
+    # El resto (calculador, repos, dispatcher, logger, mailer, twig) se autowirea.
+    App\Service\ProcesadorValidarPago:
+        arguments:
+            $sender: '%mailer_sender%'   # ajusta al parámetro/valor real de tu remitente
+
+    App\Vich\Naming\AlumnoEnfermeriaDirectoryNamer: ~
+    App\Vich\Naming\CedulaNamer: ~
+
+    app.directory_namer.alumno_enfermeria:
+        alias: App\Vich\Naming\AlumnoEnfermeriaDirectoryNamer
+        public: true
+
+    app.directory_namer.residente:
+        class: App\Vich\Naming\ResidenteDirectoryNamer
+        public: true
+
+    App\Controller\Enfermeria\SolicitudController:
+        arguments:
+            $mailerSender: '%mailer_sender%'

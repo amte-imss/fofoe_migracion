@@ -1,10 +1,8 @@
 import * as React from 'react'
-import ReactDOM, { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import ReporteUnidad from "../components/ReporteUnidad";
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('reporte-wrapper')).render(
     <ReporteUnidad />,
-    document.getElementById('reporte-wrapper')
-  )
-})
+  )})

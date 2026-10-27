@@ -1,0 +1,145 @@
+{% extends 'formatos/base.html.twig' %}
+
+{% block title %}Formato Referencia de Pago Alumnos extranjeros en Ciclo académico anual{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout-formato-fofoe.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout.css')) }}">
+    <style>
+        .center {
+            text-align: center;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .mt-20 {
+            margin-top: 20px;
+        }
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+        .row {
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+        .container {
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+    </style>
+    {{ parent() }}
+{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block body %}
+
+    {% set label_folio = residencia.tipo == 'EXTRANJERO_NO_IMSS' ? 'Oficio Aceptación' : 'Folio IMSS' %}
+    {% set login_url = url('app_login', {'tipo': 'residente'}) %}
+
+    <div class="container" style="border-bottom: 1px solid #a3a3a3">
+        <div class="row">
+            <img src="{{ absolute_url(asset('build/images/logo_IMSS.png')) }}" alt="IMSS" style="float: left; width: 60px" />
+            <h1 class="mt-20 mb-20" style="text-align: center; font-weight: bold; color: black;">Instituto Mexicano del Seguro Social</h1>
+        </div>
+        <p style="text-align: right; margin-top: 50px" class="mb-20"><strong>{{ label_folio }}: {{ residencia.folio|default('') }}</strong></p>
+    </div>
+
+    {% if residente is not null %}
+        <div class="container">
+            <div class="mt-20" style="border-bottom: 1px solid #a3a3a3">
+                <h3 style="font-weight: bold; color: black;">Formato para pago de Cuota de Recuperación para Alumnos extranjeros en Ciclo académico anual</h3>
+                <p class="mt-10 mb-10">
+                    {{ residente.usuario.nombre|default('') }}
+                    {{ residente.usuario.apellidoPaterno|default('') }}
+                    {{ residente.usuario.apellidoMaterno|default('') }}
+                </p>
+                {% if residente.usuario.rfc is not empty %}
+                    <p class="mt-10 mb-20">RFC: {{ residente.usuario.rfc }}</p>
+                {% endif %}
+            </div>
+
+            <div style="border-bottom: 1px solid #a3a3a3">
+                <p class="mt-10 mb-10">
+                    convengo en pagar la cantidad equivalente a $ {{ residencia.monto|number_format(2, '.', ',') }} dólares de los Estados Unidos de América,
+                    de acuerdo al Fixed Exchange Rate (FIX) tipo de cambio fijo,
+                    publicado por el Banco de México del día que se realice el depósito.
+                    Quedo informado(a) de que una vez efectuado el pago deberé registrar el comprobante
+                    de pago en el Sistema de Administración del FOFOE
+                    (<a href="{{ login_url }}">{{ login_url }}</a>).
+                </p>
+                <p class="mt-10 mb-10">Detalle</p>
+                <table class="table table-bordered" style="text-align: center;">
+                    <thead style="background-color: lightgrey;">
+                    <tr>
+                        <th class="center">{{ label_folio }}</th>
+                        <th class="center">Ciclo</th>
+                        <th class="center">Especialidad</th>
+                        <th class="center">Sede</th>
+                        <th class="center">Nacionalidad</th>
+                        {% if residencia.fechaInicio is not null %}
+                            <th class="center">Período</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ residencia.folio }}</td>
+                        <td>{{ residencia.ciclo }}</td>
+                        <td>{{ residencia.especialidad }}</td>
+                        <td>{{ residencia.sede }}</td>
+                        <td>{{ residente.nacionalidad }}</td>
+                        {% if residencia.fechaInicio is not null %}
+                            <td>{{ residencia.fechaInicio|date('d/m/Y') }} - {{ residencia.fechaTermino ? residencia.fechaTermino|date('d/m/Y') : '' }}</td>
+                        {% endif %}
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-20 mb-20">
+                <h2 class="mb-10" style="text-align: center; font-weight: bold; color: black;">Datos para realizar el pago</h2>
+
+                {# Domestic deposits section removed at FOFOE Posgrado's request: that account is no longer used #}
+
+                <h3 class="mt-10">Depósitos Internacionales</h3>
+                <p>Se debe solicitar el pago o transferencia con los datos completos que a continuación se detallan:</p>
+                <p>Banco: Scotiabank Inverlat, S.A. de C.V.</p>
+                <p>No de cuenta: 00104080092</p>
+                <p>CLABE: 044180001040800925</p>
+                <p>Código SWIFT: MBCOMXMMXXX</p>
+                <p>Nombre de la Cuenta / Beneficiario:
+                    R19 GYR IMSS DMF FONDO DE FOMENTO A LA EDUCACIÓN ING. 1 R.P
+                </p>
+                <p>RFC: IMS421231I45</p>
+                <p style="font-weight: bold;">Referencia: {{ referencia|default('') }}</p>
+
+                <p class="mt-20 mb-20">
+                    Nota: los pagos realizados son validados de acuerdo al Tipo de Cambio al día que se reflejan los depósitos,
+                    en caso de que existiera una diferencia derivada de la conversión de divisas o cualquier otro factor,
+                    la o el residente deberá depositarla; así como el reintegro de las comisiones bancarias que se generan
+                    al realizar los mencionados depósitos.
+                    En caso de no continuar con mi residencia NO SE ME REEMBOLSARÁ EL DEPÓSITO.
+                </p>
+            </div>
+
+            <div>
+                <p class="mt-20">
+                    {{ residente.usuario.nombre|default('') }}
+                    {{ residente.usuario.apellidoPaterno|default('') }}
+                    {{ residente.usuario.apellidoMaterno|default('') }}
+                </p>
+                <p>{{ 'now'|date('d/m/Y') }}</p>
+            </div>
+
+        </div>
+    {% endif %}
+
+{% endblock %}

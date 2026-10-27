@@ -1,0 +1,37 @@
+{% extends 'emails/base.html.twig' %}
+
+{% block preheader %}
+    <span class="preheader">Nueva Residencia.</span>
+{% endblock %}
+
+{% block body %}
+    {% set usuario = residencia.residente.usuario %}
+    {% set login_url = url('app_login', {'tipo': 'residente'}) %}
+
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>Estimado, {{ usuario.nombre }} {{ usuario.apellidoPaterno }} {{ usuario.apellidoMaterno }}</p>
+
+            <p>El Instituto Mexicano del Seguro Social, agradece tu interés en participar en el curso de "{{ residencia.especialidad }}" Generación {{ residencia.ciclo }}.</p>
+
+            <p>A continuación, te compartimos tus credenciales y la liga de acceso para que puedas dar seguimiento a tu inscripción:</p>
+
+            <p>Usuario: <strong>{{ usuario.matricula }}</strong></p>
+            <p>Contraseña: <strong>{{ usuario.plainPassword }}</strong></p>
+            <p>Liga: <strong><a href="{{ login_url }}">{{ login_url }}</a></strong></p>
+
+            <p>Correo registrado: <strong>{{ usuario.correo }}</strong></p>
+
+            <p>La plataforma está abierta las 24 horas los 365 días del año.</p>
+
+            <p>Recibe un cordial saludo y quedamos a tus órdenes para cualquier aclaración o duda; comunícate con nosotros por medio del correo electrónico <a href="mailto:factura.fofoe@imss.gob.mx">factura.fofoe@imss.gob.mx</a>.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

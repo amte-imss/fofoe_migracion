@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from "react-dom/client";
 import {checkInputFile, getSchemeAndHttpHost, moneyFormat} from "../../utils";
 import Cleave from "cleave.js/react";
 import { TIPO_PAGO } from "../../constants";
@@ -290,13 +290,11 @@ const CargaDeComprobanteDePago = (
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+  createRoot(document.getElementById('cargar-de-comprobante-de-pago-component')).render(
     <CargaDeComprobanteDePago
       gestionPago={window.GESTION_PAGO_PROPS}
       pagoId={window.PAGO_ID_PROPS}
       institucion={window.INSTITUCION_PROPS}
       errors={window.ERRORS_PROPS}
     />,
-    document.getElementById('cargar-de-comprobante-de-pago-component')
-  )
-})
+  )})
