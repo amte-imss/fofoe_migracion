@@ -1,94 +1,61 @@
-{% extends 'base.html.twig' %}
+{% extends 'enfermeria-alumno/_layout.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('build/loader.css') }}">
-    <link rel="stylesheet" href="{{ asset('build/enfermeria-alumno.login.css') }}">
-    <style>
-        .wrapper-page {
-            margin-top: 20px;
-            margin-bottom: 80px;
-        }
-
-        #captcha {
-            width: 100%;
-        }
-    </style>
-{% endblock %}
+{% block title %}Acceso — Escuela de Enfermería IMSS{% endblock %}
+{% block submenu %}{% endblock %}
+{% block menu_bar %}{% endblock %}
 
 {% block body %}
-    <div class="section-md">
-        <div class='container-fluid'>
-            <div class='container'>
-                <h1 class="text-bold text-center mb-20">Bienvenido</h1>
-                <h2 class="text-bold text-center mb-20">Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h2>
-                <h2 class="text-bold text-center mb-20">{{ solicitud.unidad.nombreEnfermeria }}</h2>
-                <h3 class="text-bold text-center mb-20">Tipo: {{ solicitud.periodo | capitalize }}</h3>
-                <h3 class="text-bold text-center mb-20">Periodo: {{ solicitud.fechaInicioFormatted }}
-                    - {{ solicitud.fechaFinFormatted }}</h3>
-                <div class="row">
-                    <div class="col-md-4"></div>
-                    <div class="col-md-4">
-                        <div class="row">
-                            <div class="col-md-1"></div>
-                            <div class="col-md-10" style="display: initial;">
-                                <form id="form-login-enf" class="form" action="#" method="post">
-                                    <div class="form-group">
-                                        <label for="f-username">Usuario</label>
-                                        <input type="text" required=""
-                                               id="f-username"
-                                               class="form-control form__input"
-                                               name="alumno_login[curp]">
-                                        <span class="help-block form__error f-username-error"></span>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password">Email</label>
-                                        <input
-                                            required
-                                            type="email" class="form-control  form__input" id="password"
-                                            name="alumno_login[email]">
-                                        <span class="help-block form__error password-error "></span>
-                                    </div>
-                                    <div class="captcha-before"></div>
-                                    <div class="row mt-20">
-                                        <div class="col-md-12">
-                                            <label for="accept_agreement">
-                                                <input class=" form__input"
-                                                       id="f-agreement"
-                                                       type="checkbox"
-                                                       style="margin-right: 10px;"
-                                                       name="accept_agreement"
-                                                       required="">
-                                                ACEPTO LAS <a href="https://educast.imss.gob.mx/sys/fofoe/aviso-privacidad" target="_blank">POLÍTICAS DE PAGO DE CUOTAS DE RECUPERACIÓN AL FOFOE</a>
-                                            </label>
-                                            <div class="form__error f-agreement-error"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-20">
-                                        <div class="col-md-12">
-                                            <input type="submit" class="btn btn-success btn-block form__submit"
-                                                   value="Ingresar"/>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
+    <main class="nursing-page nursing-login-page">
+        <div class="container py-4 py-md-5">
+            <div class="nursing-login-grid">
+                <section class="nursing-login-intro" aria-labelledby="nursing-login-title">
+                    <div class="nursing-heading-icon"><i class="ti ti-school"></i></div>
+                    <span class="nursing-eyebrow">Portal del alumno</span>
+                    <h1 id="nursing-login-title">Escuelas de Enfermería del IMSS</h1>
+                    <p>Consulta el estado de tu proceso y registra el comprobante de pago de tu licenciatura.</p>
+                    <div class="nursing-school-card">
+                        <span>Escuela</span>
+                        <strong>{{ solicitud.unidad.nombreEnfermeria }}</strong>
+                        <div class="nursing-school-period">
+                            <span><i class="ti ti-calendar"></i> {{ solicitud.periodo|capitalize }}</span>
+                            <span>{{ solicitud.fechaInicioFormatted }} — {{ solicitud.fechaFinFormatted }}</span>
                         </div>
                     </div>
-                </div>
+                </section>
+
+                <section class="nursing-card nursing-login-card" aria-labelledby="nursing-access-title">
+                    <div class="nursing-card-header"><i class="ti ti-login-2"></i><div><h2 id="nursing-access-title">Ingresa a tu cuenta</h2><p>Usa los datos registrados por tu escuela.</p></div></div>
+                    <div class="nursing-card-body">
+                        {% if error_login %}<div class="alert alert-danger" role="alert">{{ error_login }}</div>{% endif %}
+                        {% if error_captcha %}<div class="alert alert-warning" role="alert">El código de seguridad no coincide. Genera uno nuevo e inténtalo otra vez.</div>{% endif %}
+                        <form id="form-login-enf" class="form nursing-login-form" action="{{ path('enfermeria-alumno.login', {solicitudId: solicitud.id}) }}" method="post">
+                            <div class="form-group">
+                                <label for="f-username">CURP <span class="text-danger">*</span></label>
+                                <input id="f-username" type="text" name="alumno_login[curp]" class="form-control form__input" autocomplete="username" maxlength="18" required autofocus>
+                                <span class="form__error f-username-error" aria-live="polite"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Correo electrónico <span class="text-danger">*</span></label>
+                                <input id="password" type="email" name="alumno_login[email]" class="form-control form__input" autocomplete="email" required>
+                                <span class="form__error password-error" aria-live="polite"></span>
+                            </div>
+                            <div class="captcha-before"></div>
+                            <label class="nursing-consent" for="f-agreement">
+                                <input id="f-agreement" type="checkbox" name="accept_agreement" class="form__input" required>
+                                <span>Acepto las <a href="{{ path('agreement_privacy.index') }}" target="_blank" rel="noopener noreferrer">políticas de pago de cuotas de recuperación al FOFOE</a>.</span>
+                            </label>
+                            <span class="form__error f-agreement-error" aria-live="polite"></span>
+                            <button type="submit" class="btn nursing-btn-primary btn-block form__submit mt-4"><i class="ti ti-arrow-right mr-1"></i> Ingresar</button>
+                        </form>
+                    </div>
+                </section>
             </div>
         </div>
-    </div>
+    </main>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        window.Solicitud = {{ solicitud | json_encode | raw }};
-        window.SolicitudId = {{ solicitud.id }};
-        window.Login_Errors = {{ errors | json_encode | raw }};
-        window.Captcha_Errors = {{ error_captcha | json_encode | raw }};
-        window.Login_Errors_Credentials = '{{ error_login }}';
-    </script>
-    <script src="{{ asset('build/enfermeria-alumno.login.js') }}"></script>
+    <script>window.SolicitudId = {{ solicitud.id|json_encode|raw }};</script>
+    {{ encore_entry_script_tags('enfermeria-alumno.login') }}
 {% endblock %}

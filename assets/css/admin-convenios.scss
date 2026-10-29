@@ -1,0 +1,203 @@
+.convenios-page {
+    --convenios-green: #006847;
+    --convenios-border: #e4ebe7;
+    color: #25342e;
+}
+
+.convenios-heading {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.convenios-heading-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: .9rem;
+    color: var(--convenios-green);
+    background: #e6f4ee;
+    font-size: 1.6rem;
+}
+
+.convenios-eyebrow {
+    color: var(--convenios-green);
+    font-size: .73rem;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.convenios-heading h1 {
+    margin: .2rem 0;
+    color: #153c2d;
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.convenios-heading p {
+    margin: 0;
+    color: #66736d;
+    font-size: .9rem;
+}
+
+.convenios-back {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-bottom: 1.5rem;
+    color: var(--convenios-green);
+    font-size: .85rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.convenios-back:hover { color: #004d34; text-decoration: underline; }
+
+.convenios-card {
+    overflow: hidden;
+    border: 1px solid var(--convenios-border);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 14px rgba(16, 52, 37, .045);
+}
+
+.convenios-card-header {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    padding: 1rem 1.35rem;
+    border-bottom: 1px solid var(--convenios-border);
+    color: #214b39;
+    background: #fbfdfb;
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+.convenios-card-header .ti { color: var(--convenios-green); font-size: 1.2rem; }
+.convenios-card-body { padding: 1.35rem; }
+.convenios-page .form-label { margin-bottom: .4rem; color: #43564b; font-size: .78rem; font-weight: 700; }
+.convenios-page .form-control,
+.convenios-page .form-select { min-height: 38px; border-color: #d8e2dc; border-radius: 7px; }
+.convenios-page .form-control:focus,
+.convenios-page .form-select:focus { border-color: #68aa88; box-shadow: 0 0 0 .2rem rgba(0, 104, 71, .12); }
+
+.convenios-search-controls { display: flex; align-items: center; gap: .75rem; }
+.convenios-search-controls .form-control { min-width: 0; }
+.convenios-search-controls .btn { flex: none; border-radius: 7px; }
+.convenios-btn-primary,
+.convenios-page .convenios-btn-primary:hover,
+.convenios-page .convenios-btn-primary:focus {
+    border-color: var(--convenios-green);
+    background: var(--convenios-green);
+    color: #fff;
+}
+.convenios-btn-primary:hover { background: #004d34 !important; border-color: #004d34 !important; }
+.convenios-clear { color: var(--convenios-green); font-size: .8rem; font-weight: 600; text-decoration: none; }
+.convenios-clear:hover { color: #004d34; text-decoration: underline; }
+
+.convenios-toolbar,
+.convenios-toolbar-actions { display: flex; align-items: center; gap: .75rem; }
+.convenios-toolbar { justify-content: space-between; color: #64746a; font-size: .85rem; }
+.convenios-toolbar strong { color: #153c2d; font-size: 1rem; }
+.convenios-toolbar-actions { flex-wrap: wrap; }
+
+.convenios-table { min-width: 1700px; margin: 0; font-size: .79rem; }
+.convenios-table--especial { min-width: 1080px; }
+.convenios-table--instituciones { min-width: 1450px; }
+.convenios-table--coordinaciones { min-width: 900px; }
+.convenios-table--disciplinas { min-width: 1050px; }
+.convenios-table thead { background: #f3f8f5; }
+.convenios-table th {
+    padding: .8rem .9rem;
+    border-bottom: 1px solid #dce9e0;
+    color: #41604d;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .025em;
+    white-space: nowrap;
+}
+.convenios-table td { padding: .85rem .9rem; vertical-align: middle; border-color: #eef2ef; color: #435047; }
+.convenios-table tbody tr:hover { background: #f8fbf8; }
+.convenios-table th:last-child,
+.convenios-table td:last-child { position: sticky; right: 0; box-shadow: -6px 0 12px rgba(16, 52, 37, .045); }
+.convenios-table th:last-child { z-index: 1; background: #f3f8f5; }
+.convenios-table td:last-child { background: #fff; }
+.convenios-table tbody tr:hover td:last-child { background: #f8fbf8; }
+.convenios-number { color: var(--convenios-green); font-weight: 700; }
+.convenios-actions-cell { min-width: 185px; }
+.convenios-row-actions { display: flex; flex-wrap: wrap; gap: .35rem; }
+.convenios-row-actions form { margin: 0; }
+.convenios-row-actions .btn { white-space: nowrap; }
+.convenios-table td.expiredValiditySuccess { background: #e7f6ec; color: #176b3a; }
+.convenios-table td.expiredValidityWarn { background: #fff5d8; color: #956300; }
+.convenios-table td.expiredValidityDanger { background: #fdeaea; color: #b42323; }
+.convenios-empty { padding: 3rem !important; text-align: center; }
+.convenios-empty .ti { display: block; margin-bottom: .6rem; color: #97b3a2; font-size: 2rem; }
+.convenios-empty strong,
+.convenios-empty span { display: block; }
+.convenios-empty span { margin-top: .25rem; color: #738278; }
+
+.convenios-pagination { padding: .8rem 1rem; border-top: 1px solid var(--convenios-border); }
+.convenios-pagination .pagination { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .15rem; margin: 0; padding: 0; list-style: none; }
+.convenios-pagination .pagination li { padding: 0; }
+.convenios-pagination .pagination a { display: block; padding: .4rem .7rem; border-radius: 6px; color: var(--convenios-green); cursor: pointer; text-decoration: none; }
+.convenios-pagination .pagination li.active a { background: var(--convenios-green); color: #fff; text-decoration: none; }
+.convenios-pagination .pagination li.disabled a { color: #aeb9b2; cursor: default; }
+
+.convenios-required { margin-left: auto; color: #9e423a; font-size: .75rem; font-weight: 500; }
+.convenios-form-panel .convenios-card-body { padding: 1.5rem; }
+.convenios-form-panel form > .container { max-width: none; padding: 0; }
+.convenios-form-panel form .row { margin-bottom: .8rem; }
+.convenios-form-panel form label { display: block; margin-bottom: .4rem; color: #43564b; font-size: .8rem; font-weight: 600; }
+.convenios-form-panel form label.text-success { color: #43564b !important; }
+.convenios-form-panel form .form-control,
+.convenios-form-panel form select { min-height: 39px; }
+.convenios-form-panel form .btn-block { width: 100%; }
+.convenios-form-panel form .btn-primary,
+.convenios-form-panel form .btn-success { border-color: var(--convenios-green); background: var(--convenios-green); }
+.convenios-form-panel form .btn-primary:hover,
+.convenios-form-panel form .btn-success:hover { border-color: #004d34; background: #004d34; }
+.convenios-form-panel form h3 {
+    margin: 1.5rem 0 1rem !important;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--convenios-border);
+    color: #214b39;
+    font-size: 1rem;
+    text-align: left !important;
+}
+.convenios-form-panel form p { margin-bottom: .6rem; }
+.convenios-form-panel form .text-danger { font-size: .78rem; }
+
+.convenios-detail-card .convenios-card-body { padding: 1.1rem 1.35rem; }
+.convenios-detail-card .row > [class*="col-"] { padding-top: .35rem; padding-bottom: .35rem; }
+.convenios-detail-field { min-height: 4.1rem; padding: .75rem 1rem; border: 1px solid #edf1ee; border-radius: 8px; background: #fbfdfb; }
+.convenios-detail-label { display: block; margin-bottom: .25rem; color: #6b7b70; font-size: .72rem; font-weight: 600; }
+.convenios-detail-value { margin: 0; color: #233d2e; font-size: .86rem; font-weight: 600; overflow-wrap: anywhere; }
+.convenios-detail-card h3 { margin: .35rem 0 .5rem; color: #214b39; font-size: .9rem; }
+
+.convenios-status { display: inline-flex; align-items: center; border-radius: 999px; padding: .2rem .6rem; font-size: .72rem; font-weight: 700; }
+.convenios-status--active { color: #176b3a; background: #e7f6ec; }
+.convenios-status--inactive { color: #6a756e; background: #edf1ee; }
+.convenios-status--deleted { color: #a43737; background: #fdeaea; }
+.convenios-standard-form .form-label { display: block; margin-bottom: .4rem; color: #43564b; font-size: .8rem; font-weight: 700; }
+.convenios-standard-form .form-check { padding-left: 1.6rem; }
+.convenios-standard-form .form-check-input { margin-top: .28rem; }
+.convenios-standard-form .form-check-label { color: #43564b; font-size: .85rem; }
+.convenios-standard-form .invalid-feedback,
+.convenios-standard-form ul { color: #b42323; font-size: .78rem; }
+
+@media (max-width: 767px) {
+    .convenios-heading { align-items: flex-start; }
+    .convenios-heading-icon { width: 2.8rem; height: 2.8rem; font-size: 1.35rem; }
+    .convenios-toolbar { align-items: flex-start; flex-direction: column; }
+    .convenios-form-panel .convenios-card-body,
+    .convenios-detail-card .convenios-card-body { padding: 1rem; }
+}
+
+@media (max-width: 575px) {
+    .convenios-search-controls { align-items: stretch; flex-direction: column; }
+}

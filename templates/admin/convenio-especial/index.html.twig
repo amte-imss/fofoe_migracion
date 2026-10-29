@@ -1,26 +1,27 @@
-{% extends 'react_design/base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
+
+{% block title %}Convenios especiales — FOFOE{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
+    {{ encore_entry_link_tags('admin.convenio.styles') }}
     {{ encore_entry_link_tags('admin.convenio-especial.index') }}
 {% endblock %}
 
 {% block body %}
-    {# Content #}
-    <div class="col-md-11 content">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Convenios Especiales</h3>
-            </div>
-            <div class="col-md-12">
-                <div class="react"></div>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-file-star"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Gestión de Convenios</div>
+                <h1>Convenios especiales</h1>
+                <p>Consulta, administra y exporta los convenios especiales registrados.</p>
             </div>
         </div>
+        <div class="react"></div>
     </div>
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
+{% block extra_js %}
     <script>
         window.IS_CONVENIOS_OBSERVER = {{ is_convenios_observer|default(false)|json_encode }};
     </script>

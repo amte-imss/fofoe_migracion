@@ -1,10 +1,14 @@
-{% extends 'base.html.twig' %}
+{% extends 'residente/extranjeroIMSS/_layout.html.twig' %}
+
+{% block title %}Mi perfil — Residente FOFOE{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Residente\\ResidenteExtranjeroController::menu')) }}
-
-    <div class="section-md">
-        <div id="main-component" class="container"></div>
+    <div class="container resident-page py-4 py-md-5">
+        <div class="resident-page-heading mb-4">
+            <div class="resident-heading-icon"><i class="ti ti-user-circle"></i></div>
+            <div><span class="resident-eyebrow">Portal del residente</span><h1>Mi perfil</h1><p>Consulta tus datos y el estado de tus pagos.</p></div>
+        </div>
+        <div id="main-component"></div>
     </div>
 {% endblock %}
 

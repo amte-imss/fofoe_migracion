@@ -1,0 +1,24 @@
+{% extends 'layouts/gov_base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    {{ encore_entry_link_tags('residente.styles') }}
+{% endblock %}
+
+{% block submenu %}
+    <a class="resident-nav-link" href="{{ path('residente.perfil') }}"><i class="ti ti-home"></i> Mi perfil</a>
+    <a class="resident-nav-link" href="{{ path('app_logout') }}"><i class="ti ti-logout"></i> Cerrar sesión</a>
+{% endblock %}
+
+{% block menu_avatar %}
+    <div class="menu__image resident-avatar"><i class="ti ti-user"></i></div>
+{% endblock %}
+
+{% block userbar_content %}
+    <p class="resident-user-label">Portal del residente</p>
+    <p class="resident-user-name">{{ app.user.nombre }} {{ app.user.apellidoPaterno }} {{ app.user.apellidoMaterno }}</p>
+{% endblock %}
+
+{% block userbar_aside %}
+    {% if app.user.residente.folio|default('') is not empty %}<span class="resident-folio">Folio {{ app.user.residente.folio }}</span>{% endif %}
+{% endblock %}

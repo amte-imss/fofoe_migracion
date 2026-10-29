@@ -1,0 +1,30 @@
+{% extends 'layouts/gov_base.html.twig' %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    {{ encore_entry_link_tags('enfermeria-alumno.styles') }}
+{% endblock %}
+
+{% block submenu %}
+    {% if app.user %}
+        <a class="nursing-nav-link" href="{{ path('enfermeria-alumno.index') }}"><i class="ti ti-home"></i> Inicio</a>
+        <a class="nursing-nav-link" href="{{ path('enfermeria_alumno.logout') }}"><i class="ti ti-logout"></i> Cerrar sesión</a>
+    {% endif %}
+{% endblock %}
+
+{% block menu_bar %}
+    {% if app.user %}{{ parent() }}{% endif %}
+{% endblock %}
+
+{% block menu_avatar %}
+    <div class="menu__image nursing-avatar"><i class="ti ti-school"></i></div>
+{% endblock %}
+
+{% block userbar_content %}
+    <p class="nursing-user-label">Portal del alumno</p>
+    <p class="nursing-user-name">{{ app.user.nombre|default('') }}</p>
+{% endblock %}
+
+{% block userbar_aside %}
+    <span class="nursing-user-aside">Escuelas de Enfermería IMSS</span>
+{% endblock %}

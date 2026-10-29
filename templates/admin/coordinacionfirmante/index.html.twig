@@ -1,176 +1,98 @@
-{% extends 'react_design/base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Coordinaciones Firmantes{% endblock %}
+{% block title %}Coordinaciones firmantes — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
 
 {% block body %}
-    {# Content #}
-    <div class="col-md-11 content">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Coordinaciones Firmantes de Convenios</h3>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-users"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Gestión de Convenios</div>
+                <h1>Coordinaciones firmantes</h1>
+                <p>Consulta y administra las coordinaciones firmantes de convenios.</p>
             </div>
-            <div id="searcher-buttons" class="col-md-12 d-none"></div>
-            <div id="searcher-buttons-conve" class="col-md-12 d-none"></div>
-            <div id="searcher-buttons-coordinacion" class="col-md-12" style="padding-left: 55%;"></div>
+        </div>
 
-            <div class="row mt-3 mb-3">
-                {% if not is_convenios_observer %}
-                    <div class="col-md-3 mr-btn-headerConAdmin-admin">
-                        <a class="btn btn-primary btn-block action-new butonConve" style="width: 100%;"
-                           href="{{ url('admin.coordfirmante.coordfirmante.new') }}" target="_self">Crear Coordinación Firmante</a>
-                    </div>
-                {% endif %}
-                <div class="col-md-5 mr-btn-headerConAdmin-admin">
-                    <a class="btn btn-primary btn-block action-new butonConve" style="width: 100%;"
-                       href="{{ url('admin.coordfirm.export') }}" target="_self">Exportar Coordinaciones Firmantes</a>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                {% if message|trim is not empty %}
-                    <div id="errorMessageDivCoord" class="styleErrorMessageCoord">
-                        <span>{{ message }}</span>
-                    </div>
-                {% endif %}
-
-                {% if coordinaciones %}
-                    <div class="row w-100">
-                        <div class="table-responsive scrollListViewTable col-md-12">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Número de Coordinación Firmante</th>
-                                    <th>Nombre</th>
-                                    <th>¿Está Activa?</th>
-                                    <th>¿Ha sido borrada?</th>
-                                    <th>Fecha de Creación</th>
-                                    <th>Fecha de Modificación</th>
-                                    <th>Acciones</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for coordinacion in coordinaciones %}
-                                    <tr>
-                                        <td>{{ coordinacion.id }}</td>
-                                        <td>{{ coordinacion.nombre }}</td>
-                                        <td>
-                                            {% if coordinacion.activa %}
-                                                <label class="colorTextTrue">Si</label>
-                                            {% else %}
-                                                <label class="colorTextFalse">No</label>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if coordinacion.borrado %}
-                                                <label class="colorTextFalse">Si</label>
-                                            {% else %}
-                                                <label class="colorTextTrue">No</label>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ coordinacion.fechaCreacion ? coordinacion.fechaCreacion|date('d-m-Y') : '' }}</td>
-                                        <td>{{ coordinacion.fechaModificacion ? coordinacion.fechaModificacion|date('d-m-Y') : '' }}</td>
-                                        <td>
-                                            {% if not is_convenios_observer %}
-                                                <div class="p-1">
-                                                    {{ include('admin/coordinacionfirmante/_delete_form.html.twig') }}
-                                                </div>
-                                                <div class="p-1">
-                                                    <a class="btn btn-primary" style="background-color: #137474;"
-                                                       href="{{ url('admin.coordfirmante.coordfirmante.edit', {'id': coordinacion.id}) }}" target="_self">
-                                                        Modificar
-                                                    </a>
-                                                </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {% set paginationParams = {'orderBy': orderBy, 'orderDirection': orderDirectionP, 'coordinacionToSearch': coordinacionToSearch} %}
-                    <div class="toolbar toolbar-products toolbar-bottom" style="margin-top: 2%;">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <span>Mostrando {{ minLimit }} - {{ maxLimit }} de {{ totalRegistros }} Registros</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <nav aria-label="Paginación" class="text-right">
-                                        <ul class="pagination list-pagination-paginator first-page">
-                                            {% if not isTheLFirstPage %}
-                                                <li class="page-item">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': 1})) }}" title="Primera">
-                                                        <span>&laquo; Primera</span>
-                                                    </a>
-                                                </li>
-                                                <li class="item pages-item-previous">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': anterior})) }}" title="Anterior">
-                                                        <span>&laquo; Anterior</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% if not isTheLastPage %}
-                                                <li class="item pages-item-next">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': siguiente})) }}" title="Siguiente">
-                                                        <span>Siguiente &raquo;</span>
-                                                    </a>
-                                                </li>
-                                                <li class="item pages-item-next">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('admin.coordfirmante.coordfirmante.index', paginationParams|merge({'page': totalPaginas})) }}" title="Última">
-                                                        <span>Última &raquo;</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-                                </div>
+        <div class="convenios-card convenios-filters mb-4">
+            <div class="convenios-card-header"><i class="ti ti-adjustments-horizontal"></i><span>Buscar coordinaciones</span></div>
+            <div class="convenios-card-body">
+                <form action="{{ path('admin.coordfirmante.coordfirmante.index') }}" method="get" autocomplete="off">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8 col-xl-6">
+                            <label for="coordinacionToSearch" class="form-label">Nombre de la coordinación</label>
+                            <div class="convenios-search-controls">
+                                <input class="form-control" type="search" id="coordinacionToSearch" name="coordinacionToSearch" value="{{ coordinacionToSearch }}" placeholder="Buscar por nombre">
+                                <button class="btn convenios-btn-primary" type="submit"><i class="ti ti-search me-1"></i>Buscar</button>
                             </div>
                         </div>
                     </div>
-                {% else %}
-                    <div class="jumbotron">
-                        <div class="container">
-                            {% if criterioDeBusqueda|trim is not empty %}
-                                <h1 class="display-10">No Existen Registros con los Criterios de Búsqueda Indicados</h1>
-                                <h3 class="lead">Tu Criterio de Búsqueda: {{ criterioDeBusqueda }}</h3>
-                                <div class="row">
-                                    <div class="col-md-6" style="text-align: justify;">
-                                        <h2>Para regresar a la lista de Coordinaciones Firmantes:</h2>
-                                        <span>
-                                            Haz click
-                                            <a class="page-link" href="{{ url('admin.coordfirmante.coordfirmante.index', {'page': 1}) }}" title="Lista de Coordinaciones Firmantes">Aquí</a>
-                                        </span>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <h1 class="display-10">No Existen Registros de Coordinaciones Firmantes por el Momento</h1>
-                                <div class="row">
-                                    <div class="col-md-6" style="text-align: justify;">
-                                        <h2>Puedes iniciar una lista de Coordinaciones Firmantes dando click:</h2>
-                                        <span>
-                                            <a class="page-link" href="{{ url('admin.coordfirmante.coordfirmante.new') }}" title="Crear Coordinación Firmante">Aquí</a>
-                                        </span>
-                                        <span>O en el botón de CREAR COORDINACIÓN ubicado en la esquina superior derecha de esta pantalla.</span>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
+                </form>
+                {% if coordinacionToSearch is not empty %}
+                    <a class="btn btn-link convenios-clear px-0 mt-3" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><i class="ti ti-filter-off me-1"></i>Limpiar búsqueda</a>
                 {% endif %}
             </div>
         </div>
-    </div>
-{% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
-    <script>
-        window.IS_CONVENIOS_OBSERVER = {{ is_convenios_observer|default(false)|json_encode }};
-    </script>
+        {% if message|trim is not empty %}
+            <div class="alert alert-{{ message starts with 'La Coordinación' ? 'success' : 'danger' }}" role="alert">{{ message }}</div>
+        {% endif %}
+
+        <div class="convenios-toolbar mb-3">
+            <div><strong>{{ totalRegistros }}</strong> coordinaciones encontradas</div>
+            <div class="convenios-toolbar-actions">
+                {% if not is_convenios_observer %}
+                    <a class="btn convenios-btn-primary" href="{{ path('admin.coordfirmante.coordfirmante.new') }}"><i class="ti ti-plus me-1"></i>Nueva coordinación</a>
+                {% endif %}
+                <a class="btn btn-outline-success" href="{{ path('admin.coordfirm.export') }}"><i class="ti ti-download me-1"></i>Exportar</a>
+            </div>
+        </div>
+
+        <div class="convenios-card convenios-list-card">
+            <div class="table-responsive">
+                <table class="table table-hover convenios-table convenios-table--coordinaciones">
+                    <thead><tr>
+                        <th>Número</th><th>Nombre</th><th>Estado</th><th>Registro</th><th>Fecha de creación</th><th>Última modificación</th><th>Acciones</th>
+                    </tr></thead>
+                    <tbody>
+                        {% for coordinacion in coordinaciones %}
+                            <tr>
+                                <td><span class="convenios-number">{{ coordinacion.id }}</span></td>
+                                <td>{{ coordinacion.nombre }}</td>
+                                <td><span class="convenios-status convenios-status--{{ coordinacion.activa ? 'active' : 'inactive' }}">{{ coordinacion.activa ? 'Activa' : 'Inactiva' }}</span></td>
+                                <td><span class="convenios-status convenios-status--{{ coordinacion.borrado ? 'deleted' : 'active' }}">{{ coordinacion.borrado ? 'Borrada' : 'Vigente' }}</span></td>
+                                <td>{{ coordinacion.fechaCreacion ? coordinacion.fechaCreacion|date('d-m-Y') : '—' }}</td>
+                                <td>{{ coordinacion.fechaModificacion ? coordinacion.fechaModificacion|date('d-m-Y') : '—' }}</td>
+                                <td class="convenios-actions-cell">
+                                    {% if not is_convenios_observer %}
+                                        <div class="convenios-row-actions">
+                                            <a class="btn btn-sm btn-outline-primary" href="{{ path('admin.coordfirmante.coordfirmante.edit', {id: coordinacion.id}) }}"><i class="ti ti-edit me-1"></i>Editar</a>
+                                            {{ include('admin/coordinacionfirmante/_delete_form.html.twig') }}
+                                        </div>
+                                    {% else %}—{% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="7" class="convenios-empty"><i class="ti ti-users-off"></i><strong>No se encontraron coordinaciones</strong><span>Prueba con otro nombre o registra una coordinación nueva.</span></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if totalRegistros > 0 %}
+                <div class="convenios-pagination d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                    <span>Mostrando {{ minLimit }}–{{ maxLimit }} de {{ totalRegistros }}</span>
+                    {% set paginationParams = {coordinacionToSearch: coordinacionToSearch} %}
+                    <nav aria-label="Paginación de coordinaciones">
+                        <ul class="pagination">
+                            <li class="{{ isTheLFirstPage ? 'disabled' : '' }}"><a href="{{ isTheLFirstPage ? '#' : path('admin.coordfirmante.coordfirmante.index', paginationParams|merge({page: 1})) }}" aria-label="Primera página">Primera</a></li>
+                            <li class="{{ isTheLFirstPage ? 'disabled' : '' }}"><a href="{{ isTheLFirstPage ? '#' : path('admin.coordfirmante.coordfirmante.index', paginationParams|merge({page: anterior})) }}" aria-label="Página anterior">Anterior</a></li>
+                            <li class="{{ isTheLastPage ? 'disabled' : '' }}"><a href="{{ isTheLastPage ? '#' : path('admin.coordfirmante.coordfirmante.index', paginationParams|merge({page: siguiente})) }}" aria-label="Página siguiente">Siguiente</a></li>
+                            <li class="{{ isTheLastPage ? 'disabled' : '' }}"><a href="{{ isTheLastPage ? '#' : path('admin.coordfirmante.coordfirmante.index', paginationParams|merge({page: totalPaginas})) }}" aria-label="Última página">Última</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,160 +1,95 @@
-{% extends 'react_design/disciplinas-base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Disciplinas{% endblock %}
+{% block title %}Disciplinas — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
 
 {% block body %}
-    {# Content #}
-    <div class="col-md-11 content">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Disciplinas</h3>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-book"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Gestión de Convenios</div>
+                <h1>Disciplinas</h1>
+                <p>Consulta y administra el catálogo de disciplinas.</p>
             </div>
-            <div id="searcher-buttons-disciplina" class="col-md-12" style="padding-left: 55%;"></div>
+        </div>
 
-            {% if errorMessage|trim is not empty %}
-                <div id="errorMessageDiv" class="styleErrorMessage">
-                    <span>{{ errorMessage }}</span>
-                </div>
-            {% endif %}
-
-            <div class="row mt-3 mb-3">
-                {% if not is_convenios_observer %}
-                    <div class="col-md-3 mr-btn-headerConAdmin-admin">
-                        <a class="btn btn-primary action-new butonConve" href="{{ url('disciplina_new') }}" target="_self">Crear Disciplina</a>
-                    </div>
-                {% endif %}
-                <div class="col-md-3 mr-btn-headerConAdmin-admin">
-                    <a class="btn btn-primary action-new butonConve" href="{{ url('admin.disciplina.export') }}" target="_self">Exportar Disciplinas</a>
-                </div>
-            </div>
-
-            <div class="col-md-12">
-                {% if disciplinas %}
-                    <div class="row w-100">
-                        <div class="table-responsive scrollListViewTable col-md-12">
-                            <table class="table table-hover">
-                                <thead>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Nombre</th>
-                                    <th>Descripción</th>
-                                    <th>Activa</th>
-                                    <th>Borrado</th>
-                                    <th>Fecha Creación</th>
-                                    <th>Fecha Modificación</th>
-                                    <th>Acciones</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for disciplina in disciplinas|slice(minLimit - 1, maxLimit - minLimit + 1) %}
-                                    <tr>
-                                        <td>
-                                            <a href="{{ path('disciplina_show', {'id': disciplina.id}) }}">{{ disciplina.id }}</a>
-                                        </td>
-                                        <td>{{ disciplina.nombre }}</td>
-                                        <td>
-                                            {{ disciplina.descripcion }}&nbsp;
-                                            <a href="{{ url('disciplina_show', {'id': disciplina.id}) }}" target="_blank">Leer Más</a>
-                                        </td>
-                                        <td>{{ disciplina.activa ? 'Si' : 'No' }}</td>
-                                        <td>{{ disciplina.borrado ? 'Si' : 'No' }}</td>
-                                        <td>{{ disciplina.fechaCreacion ? disciplina.fechaCreacion|date('Y-m-d') : '' }}</td>
-                                        <td>{{ disciplina.fechaModificacion ? disciplina.fechaModificacion|date('Y-m-d') : '' }}</td>
-                                        <td>
-                                            {% if not is_convenios_observer %}
-                                                <div class="p-1">
-                                                    {{ include('disciplina/_delete_form.html.twig') }}
-                                                </div>
-                                                <div class="p-1">
-                                                    <a class="btn btn-primary" style="background-color: #137474;"
-                                                       href="{{ url('disciplina_edit', {'id': disciplina.id}) }}" target="_self">
-                                                        Modificar
-                                                    </a>
-                                                </div>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {% set paginationParams = {'orderBy': orderBy, 'orderDirection': orderDirectionP, 'disciplinaToSearch': disciplinaToSearch} %}
-                    <div class="toolbar toolbar-products toolbar-bottom" style="margin-top: 2%;">
-                        <div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <span>Mostrando {{ minLimit }} - {{ maxLimit }} de {{ totalRegistros }} Registros</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <nav aria-label="Paginación" class="text-right">
-                                        <ul class="pagination list-pagination-paginator first-page">
-                                            {% if not isTheLFirstPage %}
-                                                <li class="page-item">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('disciplina_index', paginationParams|merge({'page': 1})) }}" title="Primera">
-                                                        <span>&laquo; Primera</span>
-                                                    </a>
-                                                </li>
-                                                <li class="item pages-item-previous">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('disciplina_index', paginationParams|merge({'page': anterior})) }}" title="Anterior">
-                                                        <span>&laquo; Anterior</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                            {% if not isTheLastPage %}
-                                                <li class="item pages-item-next">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('disciplina_index', paginationParams|merge({'page': siguiente})) }}" title="Siguiente">
-                                                        <span>Siguiente &raquo;</span>
-                                                    </a>
-                                                </li>
-                                                <li class="item pages-item-next">
-                                                    <a class="page-link" style="color: #137474 !important;"
-                                                       href="{{ url('disciplina_index', paginationParams|merge({'page': totalPaginas})) }}" title="Última">
-                                                        <span>Última &raquo;</span>
-                                                    </a>
-                                                </li>
-                                            {% endif %}
-                                        </ul>
-                                    </nav>
-                                </div>
+        <div class="convenios-card convenios-filters mb-4">
+            <div class="convenios-card-header"><i class="ti ti-adjustments-horizontal"></i><span>Buscar disciplinas</span></div>
+            <div class="convenios-card-body">
+                <form action="{{ path('disciplina_index') }}" method="get" autocomplete="off">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-8 col-xl-6">
+                            <label for="disciplinaToSearch" class="form-label">Nombre de la disciplina</label>
+                            <div class="convenios-search-controls">
+                                <input class="form-control" type="search" id="disciplinaToSearch" name="disciplinaToSearch" value="{{ disciplinaToSearch }}" placeholder="Buscar por nombre">
+                                <button class="btn convenios-btn-primary" type="submit"><i class="ti ti-search me-1"></i>Buscar</button>
                             </div>
                         </div>
                     </div>
-                {% else %}
-                    <div class="jumbotron">
-                        <div class="container">
-                            {% if criterioDeBusqueda|trim is not empty %}
-                                <h1 class="display-10">No Existen Registros con los Criterios de Búsqueda Indicados</h1>
-                                <h3 class="lead">Tu Criterio de Búsqueda: {{ criterioDeBusqueda }}</h3>
-                                <div class="row">
-                                    <div class="col-md-6" style="text-align: justify;">
-                                        <h2>Para regresar a la lista de Disciplinas:</h2>
-                                        <span>
-                                            Haz click
-                                            <a class="page-link" href="{{ url('disciplina_index', {'page': 1}) }}" title="Lista de Disciplinas">Aquí</a>
-                                        </span>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <h1 class="display-10">No Existen Registros de Disciplinas por el Momento</h1>
-                                <div class="row">
-                                    <div class="col-md-6" style="text-align: justify;">
-                                        <h2>Puedes iniciar una lista de disciplinas dando click:</h2>
-                                        <span>
-                                            <a class="page-link" href="{{ url('disciplina_new') }}" title="Agregar Nueva Disciplina">Aquí</a>
-                                        </span>
-                                        <span>O en el botón de CREAR DISCIPLINA ubicado en la esquina superior derecha de esta pantalla.</span>
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
+                </form>
+                {% if disciplinaToSearch is not empty %}
+                    <a class="btn btn-link convenios-clear px-0 mt-3" href="{{ path('disciplina_index') }}"><i class="ti ti-filter-off me-1"></i>Limpiar búsqueda</a>
                 {% endif %}
             </div>
+        </div>
+
+        {% if errorMessage|trim is not empty %}<div class="alert alert-danger" role="alert">{{ errorMessage }}</div>{% endif %}
+        {% if successMessage|trim is not empty %}<div class="alert alert-success" role="alert">{{ successMessage }}</div>{% endif %}
+
+        <div class="convenios-toolbar mb-3">
+            <div><strong>{{ totalRegistros }}</strong> disciplinas encontradas</div>
+            <div class="convenios-toolbar-actions">
+                {% if not is_convenios_observer %}
+                    <a class="btn convenios-btn-primary" href="{{ path('disciplina_new') }}"><i class="ti ti-plus me-1"></i>Nueva disciplina</a>
+                {% endif %}
+                <a class="btn btn-outline-success" href="{{ path('admin.disciplina.export') }}"><i class="ti ti-download me-1"></i>Exportar</a>
+            </div>
+        </div>
+
+        <div class="convenios-card convenios-list-card">
+            <div class="table-responsive">
+                <table class="table table-hover convenios-table convenios-table--disciplinas">
+                    <thead><tr>
+                        <th>ID</th><th>Nombre</th><th>Descripción</th><th>Estado</th><th>Registro</th><th>Fecha de creación</th><th>Última modificación</th><th>Acciones</th>
+                    </tr></thead>
+                    <tbody>
+                        {% for disciplina in disciplinas|slice(minLimit - 1, maxLimit - minLimit + 1) %}
+                            <tr>
+                                <td><a class="convenios-number" href="{{ path('disciplina_show', {id: disciplina.id}) }}">{{ disciplina.id }}</a></td>
+                                <td>{{ disciplina.nombre }}</td>
+                                <td>{{ disciplina.descripcion ?: '—' }} {% if disciplina.descripcion is not empty %}<a href="{{ path('disciplina_show', {id: disciplina.id}) }}" target="_blank" rel="noopener noreferrer">Leer más</a>{% endif %}</td>
+                                <td><span class="convenios-status convenios-status--{{ disciplina.activa ? 'active' : 'inactive' }}">{{ disciplina.activa ? 'Activa' : 'Inactiva' }}</span></td>
+                                <td><span class="convenios-status convenios-status--{{ disciplina.borrado ? 'deleted' : 'active' }}">{{ disciplina.borrado ? 'Borrada' : 'Vigente' }}</span></td>
+                                <td>{{ disciplina.fechaCreacion ? disciplina.fechaCreacion|date('d-m-Y') : '—' }}</td>
+                                <td>{{ disciplina.fechaModificacion ? disciplina.fechaModificacion|date('d-m-Y') : '—' }}</td>
+                                <td class="convenios-actions-cell"><div class="convenios-row-actions">
+                                    <a class="btn btn-sm btn-outline-success" href="{{ path('disciplina_show', {id: disciplina.id}) }}" target="_blank" rel="noopener noreferrer"><i class="ti ti-eye me-1"></i>Ver</a>
+                                    {% if not is_convenios_observer %}
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ path('disciplina_edit', {id: disciplina.id}) }}"><i class="ti ti-edit me-1"></i>Editar</a>
+                                        {{ include('disciplina/_delete_form.html.twig') }}
+                                    {% endif %}
+                                </div></td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="8" class="convenios-empty"><i class="ti ti-book-off"></i><strong>No se encontraron disciplinas</strong><span>Prueba con otro nombre o registra una disciplina nueva.</span></td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if totalRegistros > 0 %}
+                <div class="convenios-pagination d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                    <span>Mostrando {{ minLimit }}–{{ maxLimit }} de {{ totalRegistros }}</span>
+                    {% set paginationParams = {disciplinaToSearch: disciplinaToSearch} %}
+                    <nav aria-label="Paginación de disciplinas"><ul class="pagination">
+                        <li class="{{ isTheLFirstPage ? 'disabled' : '' }}"><a href="{{ isTheLFirstPage ? '#' : path('disciplina_index', paginationParams|merge({page: 1})) }}" aria-label="Primera página">Primera</a></li>
+                        <li class="{{ isTheLFirstPage ? 'disabled' : '' }}"><a href="{{ isTheLFirstPage ? '#' : path('disciplina_index', paginationParams|merge({page: anterior})) }}" aria-label="Página anterior">Anterior</a></li>
+                        <li class="{{ isTheLastPage ? 'disabled' : '' }}"><a href="{{ isTheLastPage ? '#' : path('disciplina_index', paginationParams|merge({page: siguiente})) }}" aria-label="Página siguiente">Siguiente</a></li>
+                        <li class="{{ isTheLastPage ? 'disabled' : '' }}"><a href="{{ isTheLastPage ? '#' : path('disciplina_index', paginationParams|merge({page: totalPaginas})) }}" aria-label="Última página">Última</a></li>
+                    </ul></nav>
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

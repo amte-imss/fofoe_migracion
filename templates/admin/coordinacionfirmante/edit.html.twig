@@ -1,19 +1,23 @@
-{% extends 'react_design/base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Edición de Coordinación Firmante{% endblock %}
+{% block title %}Editar coordinación firmante — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
 
 {% block body %}
-    <div class="col-md-11 content">
-        <div class="row w-50" style="margin-left: 5%;">
-            <div class="col-md-12">
-                <h3>Editar Coordinación Firmante</h3>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <a class="convenios-back" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><i class="ti ti-arrow-left"></i> Volver a coordinaciones</a>
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-edit"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Gestión de Convenios</div>
+                <h1>Editar coordinación firmante</h1>
+                <p>{{ form.nombre.vars.value }}</p>
             </div>
-            <div class="col-md-12">
-                {{ include('admin/coordinacionfirmante/_form.html.twig', {'button_label': 'Guardar'}) }}
-                <div class="col-md-7" style="margin-top: -5%; margin-left: 15%;">
-                    <a href="{{ url('admin.coordfirmante.coordfirmante.index', {'page': 1}) }}">Regresar a la Lista de Coordinaciones Firmantes</a>
-                </div>
-            </div>
+        </div>
+        <div class="convenios-card convenios-form-panel">
+            <div class="convenios-card-header"><i class="ti ti-users"></i><span>Datos de la coordinación</span><span class="convenios-required">* Campos obligatorios</span></div>
+            <div class="convenios-card-body">{{ include('admin/coordinacionfirmante/_form.html.twig') }}</div>
         </div>
     </div>
 {% endblock %}

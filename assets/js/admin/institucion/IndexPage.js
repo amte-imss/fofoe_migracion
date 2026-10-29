@@ -1,235 +1,161 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import {getSchemeAndHttpHost} from "../../utils";
-import Loader from "../../components/Loader/Loader";
-import ReactPaginate from "react-paginate";
-import Swal from "sweetalert2";
-import "../../components/ReactPaginator/ReactPaginator.css";
-import apiInstitucion from "./api/ApiInstitucion";
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { getSchemeAndHttpHost } from '../../utils';
+import Loader from '../../components/Loader/Loader';
+import ReactPaginate from 'react-paginate';
+import Swal from 'sweetalert2';
+import '../../components/ReactPaginator/ReactPaginator.css';
+import apiInstitucion from './api/ApiInstitucion';
 
-export default function IndexPage({isConveniosObserver = false}) {
+const upper = value => value ? String(value).toUpperCase() : '—';
 
+export default function IndexPage({ isConveniosObserver = false }) {
     const [isLoading, setIsLoading] = React.useState(false);
-    const searchRef = React.useRef(null);
+    const [error, setError] = React.useState('');
+    const [searchDraft, setSearchDraft] = React.useState('');
+    const [search, setSearch] = React.useState('');
     const [total, setTotal] = React.useState(0);
     const [page, setPage] = React.useState(1);
-    const [perPage, setPerPage] = React.useState(50);
     const [instituciones, setInstituciones] = React.useState([]);
+    const perPage = 50;
 
-    React.useEffect(() => {
-        loadData();
-    }, [page])
-
-    const loadData = async () => {
+    const loadData = () => {
         setIsLoading(true);
-        apiInstitucion.paginateInstituciones({
-            search: searchRef.current.elements.search.value || '',
-            page,
-            perPage
-        }).then(content => {
-            setInstituciones(content.data)
-            setTotal(content.total);
-        }).finally(() => {
-            setIsLoading(false)
-        })
-    }
+        setError('');
+        apiInstitucion.paginateInstituciones({ search, page, perPage })
+            .then(content => {
+                setInstituciones(content.data);
+                setTotal(content.total);
+            })
+            .catch(() => setError('No se pudieron cargar las instituciones. Intenta buscar de nuevo.'))
+            .finally(() => setIsLoading(false));
+    };
 
-    const handleSearch = (event) => {
+    React.useEffect(() => { loadData(); }, [page, search]);
+
+    const handleSearch = event => {
         event.preventDefault();
-        setPage(1)
-        loadData()
-    }
+        setPage(1);
+        setSearch(searchDraft.trim());
+    };
 
-    const handlePagination = value => {
-        setPage(value.selected + 1);
-    }
+    const handleCleanSearch = () => {
+        setSearchDraft('');
+        setPage(1);
+        setSearch('');
+    };
 
-    const handleDelete = (event) => {
+    const handleDelete = event => {
         event.preventDefault();
-        const institucionId = event.target.getAttribute('data-value');
+        const institucionId = event.currentTarget.getAttribute('data-value');
         Swal.fire({
-            title: "¿Seguro que quieres borrar la institución?",
+            title: '¿Seguro que quieres borrar la institución?',
             html: 'Esta acción no se puede deshacer',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: "Si, Eliminar",
-            denyButtonText: 'Cancelar'
-        }).then((result) => {
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then(result => {
             if (result.isConfirmed) {
-                apiInstitucion.deleteInstitucion(institucionId).then(content => {
-                    Swal.fire(
-                        content.message,
-                        '',
-                        'success'
-                    ).then(() => {
-                        loadData();
-                    })
-                }).catch(error => {
-                    if (error.data) {
-                        error.data.data.then(({message}) => {
-                            Swal.fire(
-                                'No se pudo eliminar la institución',
-                                message,
-                                'error'
-                            )
-                        });
-                    }
-                });
+                apiInstitucion.deleteInstitucion(institucionId)
+                    .then(content => Swal.fire(content.message, '', 'success'))
+                    .then(() => loadData())
+                    .catch(error => {
+                        if (error.data) {
+                            error.data.data.then(({ message }) => Swal.fire('No se pudo eliminar la institución', message, 'error'));
+                        } else {
+                            Swal.fire('No se pudo eliminar la institución', 'Intenta de nuevo.', 'error');
+                        }
+                    });
             }
         });
-    }
+    };
 
-    const handleCleanSearch = () => {
-        searchRef.current.reset();
-        loadData();
-    }
+    return <>
+        <Loader show={isLoading}/>
 
-    // Método para generar el enlace completo
-    const getDownloadLink = (institucion) => {
-        const filePath = `${getSchemeAndHttpHost("/admin/institucion/")}${institucion.id}/cedula`;
-        return filePath;
-    }
-
-    return (
-        <>
-            <Loader show={isLoading}/>
-
-            <div className="row mt-3">
-                <div className="col-md-12">
-                    <form className="form-inline text-right"
-                          autoComplete={'off'}
-                          method="post" ref={searchRef} onSubmit={handleSearch}>
-                        <div className="form-group">
-                            <input type="text" className="form-control" name="search"
-                                   placeholder="Buscar..."/>
+        <div className="convenios-card convenios-filters mb-4">
+            <div className="convenios-card-header"><i className="ti ti-adjustments-horizontal"/><span>Buscar instituciones</span></div>
+            <div className="convenios-card-body">
+                <form autoComplete="off" onSubmit={handleSearch}>
+                    <div className="row g-3 align-items-end">
+                        <div className="col-md-8 col-xl-6">
+                            <label htmlFor="institutionSearch" className="form-label">Institución</label>
+                            <div className="convenios-search-controls">
+                                <input id="institutionSearch" type="search" className="form-control"
+                                       value={searchDraft} placeholder="Razón social, RFC o nombre comercial"
+                                       onChange={event => setSearchDraft(event.target.value)}/>
+                                <button className="btn convenios-btn-primary" type="submit"><i className="ti ti-search me-1"/>Buscar</button>
+                            </div>
                         </div>
-                        <button className="btn btn-outline-secondary" type="submit">
-                            <i className="fa fa-search"></i>
-                            <span className="hidden-xs hidden-sm">Buscar</span>
-                        </button>
-                        <button className="btn btn-outline-primary ml-1"
-                                onClick={handleCleanSearch}
-                                type="button">
-                            <i className="fa fa-trash"></i>
-                            <span className="hidden-xs hidden-sm">Limpiar filtros</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-            <div className="row mt-3">
-                { !isConveniosObserver &&
-                <div className="col-md-3  mr-btn-headerConAdmin-admin ">
-                    <a className="btn btn-primary action-new butonConve"
-                       href={getSchemeAndHttpHost("/admin/institucion/new")}
-                       target="_self">Crear Institución</a>
-                </div> }
-                <div className="col-md-4 mr-btn-headerConAdmin-admin ">
-                    <a className="btn btn-primary action-new butonConve"
-                       style={{width: "100%"}}
-                       href={getSchemeAndHttpHost("/admin/institucion/export")}
-                       target="_self">Exportar Instituciones</a>
-                </div>
-                <div id="clearFiltersAdmin" className="col-md-3 mr-btn-headerConAdmin-admin  d-none"><a
-                  className="btn btn-primary action-new butonConve" href="/admin/instituto" target="_self">Limpiar
-                    Filtros</a></div>
-            </div>
-            <div className="col-md-12">
-                <div className="row">
-                    <div className="table-responsive scrollListViewTable col-md-12">
-                        <table className="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>Razón Social</th>
-                                <th>RFC</th>
-                                <th>Nombre Comercial</th>
-                                <th>Email</th>
-                                <th>Sitio Web</th>
-                                <th>Dirección</th>
-                                <th>Fax</th>
-                                <th>Extensión</th>
-                                <th>Teléfono</th>
-                                <th>Cédula Fiscal</th>
-                                <th>Acciones</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {
-                                instituciones.map((instituto, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{instituto.razonSocial.toString().toUpperCase()}</td>
-                                            <td>{instituto.rfc.toString().toUpperCase()}</td>
-                                            <td>{instituto.nombre.toString().toUpperCase()}</td>
-                                            <td>{instituto.correo ? instituto.correo.toString().toUpperCase() : ''}</td>
-                                            <td>{instituto.sitioWeb ? instituto.sitioWeb.toString().toUpperCase() : ''}</td>
-                                            <td>{instituto.direccion ? instituto.direccion.toString().toUpperCase() : ''}</td>
-                                            <td>{instituto.fax ? instituto.fax.toString().toUpperCase() : ''}</td>
-                                            <td>{instituto.extension ? instituto.extension.toString().toUpperCase() : ''}</td>
-                                            <td>{instituto.telefono ? instituto.telefono.toString().toUpperCase() : ''}</td>
-                                            <td>
-                                                {
-                                                    instituto.cedulaIdentificacion ?
-                                                        <a href={getDownloadLink(instituto)}
-                                                           target="_blank">
-                                                            Descargar PDF
-                                                        </a>
-                                                        :
-                                                        'No disponible'
-                                                }
-                                            </td>
-                                            <td>
-                                                <div className="">
-                                                    { !isConveniosObserver &&
-                                                    <div className="p-1 col-md-4 btn-sm">
-                                                        <form onSubmit={handleDelete} data-value={instituto.id}>
-                                                            <button className="btn btn-danger mb-2" style={{width: "10rem"}}>Eliminar</button>
-                                                        </form>
-                                                    </div> }
-                                                    { !isConveniosObserver &&
-                                                    <div className="p-1 col-md-4 btn-sm">
-                                                        <a className="btn btn-primary" style={{backgroundColor: "#137474", width: "10rem"}}
-                                                           href={getSchemeAndHttpHost(`/admin/institucion/edit/${instituto.id}`)}
-                                                           target="_self">
-                                                            Modificar
-                                                        </a>
-                                                    </div> }
-                                                    <div className="p-1 col-md-4 btn-sm">
-                                                        <a className="btn btn-primary" style={{backgroundColor: "#137474", "width": "10rem"}}
-                                                           href={getSchemeAndHttpHost(`/admin/institucion/${instituto.id}`)}
-                                                           target="_blank">
-                                                            Más Información
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                })
-                            }
-                            </tbody>
-                        </table>
                     </div>
-                    <ReactPaginate
-                        previousLabel={'Anterior'}
-                        nextLabel={'Siguiente'}
-                        breakLabel={'...'}
-                        breakClassName={'break-me'}
-                        pageCount={total / perPage}
-                        marginPagesDisplayed={2}
-                        pageRangeDisplayed={parseInt(perPage)}
-                        onPageChange={handlePagination}
-                        containerClassName={'pagination'}
-                        subContainerClassName={'pages pagination'}
-                        activeClassName={'active'}
-                    />
-                </div>
+                </form>
+                <button className="btn btn-link convenios-clear px-0 mt-3" type="button" onClick={handleCleanSearch}>
+                    <i className="ti ti-filter-off me-1"/>Limpiar búsqueda
+                </button>
             </div>
-        </>
-    )
+        </div>
 
+        {error && <div className="alert alert-danger" role="alert">{error}</div>}
+        <div className="convenios-toolbar mb-3">
+            <div><strong>{total.toLocaleString('es-MX')}</strong> instituciones encontradas</div>
+            <div className="convenios-toolbar-actions">
+                {!isConveniosObserver && <a className="btn convenios-btn-primary" href={getSchemeAndHttpHost('/admin/institucion/new')}>
+                    <i className="ti ti-plus me-1"/>Nueva institución</a>}
+                <a className="btn btn-outline-success" href={getSchemeAndHttpHost('/admin/institucion/export')}>
+                    <i className="ti ti-download me-1"/>Exportar</a>
+            </div>
+        </div>
+
+        <div className="convenios-card convenios-list-card">
+            <div className="table-responsive">
+                <table className="table table-hover convenios-table convenios-table--instituciones">
+                    <thead><tr>
+                        <th>Razón social</th><th>RFC</th><th>Nombre comercial</th><th>Correo</th><th>Sitio web</th>
+                        <th>Dirección</th><th>Fax</th><th>Extensión</th><th>Teléfono</th><th>Cédula fiscal</th><th>Acciones</th>
+                    </tr></thead>
+                    <tbody>
+                        {instituciones.map(institucion => <tr key={institucion.id}>
+                            <td><span className="convenios-number">{upper(institucion.razonSocial)}</span></td>
+                            <td>{upper(institucion.rfc)}</td>
+                            <td>{upper(institucion.nombre)}</td>
+                            <td>{upper(institucion.correo)}</td>
+                            <td>{upper(institucion.sitioWeb)}</td>
+                            <td>{upper(institucion.direccion)}</td>
+                            <td>{upper(institucion.fax)}</td>
+                            <td>{upper(institucion.extension)}</td>
+                            <td>{upper(institucion.telefono)}</td>
+                            <td>{institucion.cedulaIdentificacion
+                                ? <a href={getSchemeAndHttpHost(`/admin/institucion/${institucion.id}/cedula`)} target="_blank" rel="noopener noreferrer">Descargar PDF</a>
+                                : 'No disponible'}</td>
+                            <td className="convenios-actions-cell"><div className="convenios-row-actions">
+                                <a className="btn btn-sm btn-outline-success" href={getSchemeAndHttpHost(`/admin/institucion/${institucion.id}`)}
+                                   target="_blank" rel="noopener noreferrer"><i className="ti ti-eye me-1"/>Ver</a>
+                                {!isConveniosObserver && <a className="btn btn-sm btn-outline-primary"
+                                    href={getSchemeAndHttpHost(`/admin/institucion/edit/${institucion.id}`)}><i className="ti ti-edit me-1"/>Editar</a>}
+                                {!isConveniosObserver && <form onSubmit={handleDelete} data-value={institucion.id}>
+                                    <button className="btn btn-sm btn-outline-danger" type="submit"><i className="ti ti-trash me-1"/>Eliminar</button>
+                                </form>}
+                            </div></td>
+                        </tr>)}
+                        {instituciones.length === 0 && !isLoading && <tr><td colSpan={11} className="convenios-empty">
+                            <i className="ti ti-building-off"/><strong>No se encontraron instituciones</strong>
+                            <span>Prueba con otro nombre, RFC o razón social.</span>
+                        </td></tr>}
+                    </tbody>
+                </table>
+            </div>
+            <div className="convenios-pagination">
+                <ReactPaginate previousLabel="Anterior" nextLabel="Siguiente" breakLabel="..."
+                               breakClassName="break-me" pageCount={Math.ceil(total / perPage)}
+                               forcePage={page - 1} marginPagesDisplayed={2} pageRangeDisplayed={5}
+                               onPageChange={value => setPage(value.selected + 1)}
+                               containerClassName="pagination" activeClassName="active"/>
+            </div>
+        </div>
+    </>;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    createRoot(document.querySelector('.react')).render(
-        <IndexPage isConveniosObserver={window.IS_CONVENIOS_OBSERVER}/>,
-    )});
+    createRoot(document.querySelector('.react')).render(<IndexPage isConveniosObserver={window.IS_CONVENIOS_OBSERVER}/>);
+});

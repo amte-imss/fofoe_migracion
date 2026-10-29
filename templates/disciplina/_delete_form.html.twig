@@ -1,6 +1,4 @@
-<form method="post"
-      action="{{ path('disciplina_delete', {'id': disciplina.id}) }}"
-      onsubmit="return confirm('¿Estás seguro de borrar esta Disciplina?');">
+<form method="post" action="{{ path('disciplina_delete', {id: disciplina.id}) }}" onsubmit="return confirm('¿Estás seguro de borrar esta disciplina?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ disciplina.id) }}">
-    <button type="submit" class="btn btn-danger mb-2">Eliminar</button>
+    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="ti ti-trash me-1"></i>Eliminar</button>
 </form>

@@ -1,387 +1,160 @@
-import * as React from 'react'
-import {createRoot} from "react-dom/client";
-import {dateFormat, getSchemeAndHttpHost, moneyFormat} from "../../utils";
-import Cleave from "cleave.js/react";
-import {FormValidator} from "../../components/FormValidator/FormValidator";
-import Modal from 'react-modal';
-import Loader from "../../components/Loader/Loader";
-import PreviewDocument from "../../components/PreviewDocument/PreviewDocument";
-import Swal from "sweetalert2";
-import api from "../utils/api";
-const SI_REQUIERE_FACTURA_DEFAULT = 1;
-const NO_REQUIERE_FACTURA_DEFAULT = 0;
+import * as React from 'react';
+import { createRoot } from 'react-dom/client';
+import Cleave from 'cleave.js/react';
+import { getSchemeAndHttpHost, moneyFormat } from '../../utils';
+import api from '../utils/api';
 
-const numberFormat = new Intl.NumberFormat('es-MX', {
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2
-})
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
+const fieldError = (errors, name) => {
+  const value = errors?.[name] || errors?.[`comprobante_pago[${name}]`];
+  return Array.isArray(value) ? value.join(' ') : (value || '');
+};
+const displayDate = date => date ? date.split('-').reverse().join('/') : '—';
 
-const EnfermeriaAlumnoCargaComprobante = ({solicitud, usuario}) => {
-	return (
-		<>
-			<div className="row">
-				<DatosSolicitud solicitud={solicitud} usuario={usuario}/>
-				<FormCargaComprobante
-					solicitud={solicitud}
-					usuario={usuario}
-				/>
-			</div>
-		</>
-	)
+function Field({ label, value }) {
+  return <div className="nursing-field"><span>{label}</span><strong>{value || '—'}</strong></div>;
 }
 
-const FormCargaComprobante = ({solicitud, usuario}) => {
+function ConfirmModal({ fecha, monto, requiereFactura, comprobante, onClose, onConfirm, busy }) {
+  const previewUrl = React.useMemo(() => comprobante ? URL.createObjectURL(comprobante) : null, [comprobante]);
+  React.useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
 
-	const { useState } = React
-	const formRef = React.useRef();
-	const [monto, setMonto] = useState(undefined)
-	const [tipoMoneda, setTipoMoneda] = useState('')
-	const [hasMontoError, setMontoError] = useState(false)
-	const [requiereFactura, setRequiereFactura] = useState(undefined)
-	const [showModal, setShowModal] = React.useState(false);
-	const [isLoading, setIsLoading] = React.useState(false);
-
-	const [errores, setErrores] = React.useState({});
-	const [errors, setErrors] = React.useState({});
-
-	function handleMonto({ target }) {
-		setMonto(target.value)
-	}
-
-	function handleTipoMoneda({ target }) {
-		setTipoMoneda(target.value)
-	}
-
-	function handleSubmit(event) {
-		event.preventDefault();
-		setShowModal(true)
-	}
-
-	function  handleConfirmarDatos(event) {
-		setShowModal(false);
-		setIsLoading(true);
-		const formData = new FormData(formRef.current);
-		if(formData.get('comprobante_pago[cedulaFile]') && formData.get('comprobante_pago[cedulaFile]').size === 0){
-			formData.delete('comprobante_pago[cedulaFile]');
-		}
-		formData.set('comprobante_pago[montoRegistrado]', monto.toString().replace(',', ''));
-		api.storePago(solicitud.id, formData).then(data => {
-			console.log(data);
-			Swal.fire(
-				'Comprobante cargado con éxito',
-				'',
-				'success',
-			).then(() => {
-				window.location.href = getSchemeAndHttpHost(`/enfermeria-alumno/`)
-			})
-		}).catch(errors => {
-			console.error(errors);
-		}).finally(() => {
-			setIsLoading(false);
-		})
-	}
-
-	return (
-		<div className="col-md-12">
-			<Loader show={isLoading}/>
-			<h3 className='mb-5'>Registrar comprobante de pago</h3>
-
-			<FormValidator errors={errors} setErrors={setErrores}>
-				<form
-					ref={formRef}
-					method='post'
-					className='form-horizontal'
-					encType='multipart/form-data'
-					onSubmit={handleSubmit}
-				>
-					<div className={`form-group ${errors['comprobante_pago[fechaPagoRegistrada]'] ? 'has-error' : ''}`}>
-						<label
-							htmlFor="comprobante_pago_fechaPagoRegistrada"
-							className='control-label col-md-4'
-						>
-							Fecha en que se realizó el pago a registrar:
-						</label>
-						<div className="col-md-3">
-							<input
-								type="date"
-								id='comprobante_pago_fechaPagoRegistrada'
-								className='form-control'
-								name='comprobante_pago[fechaPagoRegistrada]'
-								required={true}
-								max={new Date().toISOString().split('T')[0]} // Prevent future dates
-							/>
-						</div>
-						{errors['comprobante_pago[fechaPagoRegistrada]'] ? 	<p className="help-block">{errors['comprobante_pago[fechaPagoRegistrada]']}</p> : null }
-					</div>
-					<div className={`form-group ${errors['comprobante_pago[fechaPagoRegistrada]'] ? 'has-error' : ''}`}>
-						<label
-							htmlFor="comprobante_pago_monto"
-							className='control-label col-md-4'
-						>
-							Monto del comprobante a registrar:<br/>
-							<span className='text-danger text-sm'>NOTA: El monto debe coincidir con el comprobante registrado</span>
-						</label>
-						<div className="col-md-3">
-							<div className={`input-group ${errors['comprobante_pago[montoRegistrado]'] ? 'has-error' : ''}`}>
-								<div className="input-group-addon">$</div>
-								<Cleave
-									options={{numeral: true, numeralThousandsGroupStyle: 'thousand'}}
-									className='form-control'
-									required={true}
-									name={'comprobante_pago[montoRegistrado]'}
-									onChange={handleMonto}
-								/>
-							</div>
-							{errors['comprobante_pago[montoRegistrado]'] ? 	<p className="text-danger">{errors['comprobante_pago[montoRegistrado]']}</p> : null }
-						</div>
-					</div>
-					<div className={`form-group ${errors['comprobante_pago[comprobantePagoFile]'] ? 'has-error' : ''} `}>
-						<label
-							htmlFor="comprobante_pago_comprobantePagoFile"
-							className='control-label col-md-4'
-						>
-							Cargar comprobante del nuevo pago
-							<p className="text-danger text-sm">Solo se admiten archivos PDF de máx 2MB</p>
-						</label>
-						<div className="col-md-3">
-							<input
-								type="file"
-								accept=".pdf"
-								id='comprobante_pago_comprobantePagoFile'
-								name='comprobante_pago[comprobantePagoFile]'
-								className='form-control'
-								onChange={(e) => {
-									const file = e.target.files[0];
-									if (file && file.type !== 'application/pdf') {
-										Swal.fire({
-											icon: 'warning',
-											title: 'Archivo no válido',
-											text: 'Solo se permiten archivos PDF.',
-										});
-										e.target.value = ''; // limpia el input
-									}
-								}}
-								required={true}
-							/>
-							<p className="text-danger">{errors['comprobante_pago[comprobantePagoFile]']}</p>
-							<span className="text-danger ">{errors.comprobantePagoFile ? errors.comprobantePagoFile[0] : ''}</span>
-							<span className="text-danger ">{errors.comprobante_pago_file ? errors.comprobante_pago_file[0] : ''}</span>
-						</div>
-					</div>
-
-					<div className="form-group">
-						<label
-							htmlFor='comprobante_pago_requiere_factura'
-							className="control-label col-md-4 text-right"
-						>
-							¿Requiere factura?&nbsp;
-						</label>
-						<span className="text-danger">{errors.cedulaFile ? errors.cedulaFile[0] : ''}</span>
-						<div className="col-md-3">
-							<label htmlFor='comprobante_pago_requiereFactura_yes'>Si&nbsp;</label>
-							<input
-								type="radio"
-								value={SI_REQUIERE_FACTURA_DEFAULT}
-								id='comprobante_pago_requiereFactura_yes'
-								name='comprobante_pago[requiereFactura]'
-								onClick={()=>setRequiereFactura(SI_REQUIERE_FACTURA_DEFAULT)}
-								required={true}
-							/>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<label htmlFor="comprobante_pago_requiereFactura_no">No&nbsp;</label>
-							<input
-								type="radio"
-								value={NO_REQUIERE_FACTURA_DEFAULT}
-								id='comprobante_pago_requiereFactura_no'
-								name='comprobante_pago[requiereFactura]'
-								onClick={()=>setRequiereFactura(NO_REQUIERE_FACTURA_DEFAULT)}
-								required={true}
-							/>
-						</div>
-					</div>
-					{
-						requiereFactura ?
-							<div className="form-group">
-								<div className="col-md-8">
-									<label htmlFor="institucion_cedulaFile">
-										Adjunte Constancia de Situación Fiscal Actualizada (No mayor a 3 meses) <br/>
-										<span className='text-danger text-sm'>Por favor verifique que los datos que aparecen en su archivo sean correctos. <br/>
-            La constancia de situación fiscal se utilizará para emitir las facturas de sus pagos.</span>
-									</label>
-								</div>
-
-								<div className="col-md-3">
-									<input
-										type="file"
-										id='institucion_cedulaFile'
-										name='comprobante_pago[cedulaFile]'
-										className='form-control'
-										required={true}
-									/>
-								</div>
-							</div> : null
-					}
-
-					<div className="row mt-30">
-						<div className="col-md-4"/>
-						<div className="col-md-2">
-							<a
-								href={`${getSchemeAndHttpHost('/')}`}
-								className='btn btn-default btn-block'
-							>Cancelar</a>
-						</div>
-						<div className="col-md-2">
-							<button
-								type='submit'
-								className='btn btn-success btn-block'>
-								Guardar
-							</button>
-						</div>
-					</div>
-				</form>
-			</FormValidator>
-
-
-			{showModal &&     <Modal
-				isOpen={showModal}
-				ariaHideApp={false}
-				contentLabel="Confirme sus datos"
-			>
-				<div>
-					<div className={"mb-20"}>
-						<div className="col-md-12">
-							<div className="row">
-								<div className="col-md-12 mb-20">
-									<h2 className={'text-danger text-bold'}>Por favor confirma que todos los datos con correctos</h2>
-								</div>
-							</div>
-						</div>
-						<div className="col-md-12">
-							<div className={"row"}>
-								<div className="col-md-12 mb-20">
-									<h2>Datos Generales</h2>
-								</div>
-							</div>
-						</div>
-						<div className="col-md-12">
-							<div className="row">
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span>Escuela de enfermería</span></div>
-										<div>{solicitud?.unidad?.nombre}</div>
-									</div>
-								</div>
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span>Fecha inicio</span></div>
-										<div>{solicitud?.fechaInicioFormatted}</div>
-									</div>
-								</div>
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span>Fecha Fin</span></div>
-										<div>{solicitud?.fechaFinFormatted}</div>
-									</div>
-								</div>
-							</div>
-							<div className="row">
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span>Alumno</span></div>
-										<div>{usuario?.nombre}</div>
-									</div>
-								</div>
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span>CURP</span></div>
-										<div>{usuario.curp}</div>
-									</div>
-								</div>
-								<div className="col-md-4">
-									<div className="form-group">
-										<div><span></span></div>
-										<div></div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div className="col-md-12">
-							<div className="row">
-								<div className="col-md-6">
-									<p className="mb-5">
-										Fecha en que se realizó el pago a
-										registrar <strong>{formRef && formRef.current ? formRef.current.elements['comprobante_pago[fechaPagoRegistrada]'].value : ''}</strong>
-									</p>
-								</div>
-								<div className="col-md-6">
-									<p className="mb-5">
-										Monto del comprobante a
-										registrar <strong>{formRef && formRef.current ? formRef.current.elements['comprobante_pago[montoRegistrado]'].value : ''} </strong>
-									</p>
-								</div>
-							</div>
-							<div className="row">
-								<PreviewDocument file={formRef && formRef.current ? formRef.current.elements['comprobante_pago[comprobantePagoFile]'].files[0]: {}}/>
-							</div>
-						</div>
-						<div className={"row"}>
-							<div className="col-md-6">
-								<div className="form-group">
-									<button type={'button'}
-													onClick={handleConfirmarDatos}
-													className="btn btn-block btn-success">
-										Si, son correctos
-									</button>
-								</div>
-							</div>
-							<div className="col-md-6">
-								<div className="form-group">
-									<button type={'button'}
-													onClick={() => setShowModal(false)}
-													className="btn btn-block btn-danger">
-										Cancelar
-									</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</Modal> }
-		</div>
-	)
+  return <div className="nursing-modal-overlay" role="presentation">
+    <div className="nursing-modal" role="dialog" aria-modal="true" aria-labelledby="nursing-confirm-title">
+      <div className="nursing-modal-header"><i className="ti ti-circle-check"/><div><h2 id="nursing-confirm-title">Confirma los datos del pago</h2><p>Revisa la información antes de enviarla.</p></div></div>
+      <div className="nursing-modal-body">
+        <div className="nursing-confirm-grid">
+          <div><span>Fecha de pago</span><strong>{displayDate(fecha)}</strong></div>
+          <div><span>Monto registrado</span><strong>{moneyFormat(Number(monto.replace(/,/g, '')))}</strong></div>
+          <div><span>¿Requiere factura?</span><strong>{requiereFactura === '1' ? 'Sí' : 'No'}</strong></div>
+          <div><span>Comprobante</span><strong>{comprobante?.name || '—'}</strong></div>
+        </div>
+        {previewUrl && <iframe className="nursing-pdf-preview" src={previewUrl} title="Vista previa del comprobante"/>}
+      </div>
+      <div className="nursing-modal-actions">
+        <button type="button" className="btn btn-outline-secondary" onClick={onClose} disabled={busy}>Volver a editar</button>
+        <button type="button" className="btn nursing-btn-primary" onClick={onConfirm} disabled={busy}><i className="ti ti-upload mr-1"/>Confirmar y enviar</button>
+      </div>
+    </div>
+  </div>;
 }
 
-const DatosSolicitud = ({solicitud, usuario}) => {
+function CargaComprobante({ usuario }) {
+  const formRef = React.useRef(null);
+  const solicitud = usuario.solicitud || {};
+  const [fecha, setFecha] = React.useState('');
+  const [monto, setMonto] = React.useState('');
+  const [requiereFactura, setRequiereFactura] = React.useState('');
+  const [comprobante, setComprobante] = React.useState(null);
+  const [showConfirm, setShowConfirm] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const [message, setMessage] = React.useState('');
+  const [errors, setErrors] = React.useState({});
+  const today = new Date();
+  const maxDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-	return (
-		<div className="col-md-12 mt-30 mb-30">
-			<div className="row">
-				<div className={'die_container'}>
-					<p>
-						<strong>Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social: </strong>
-						{solicitud.unidad.nombreEnfermeria }
-					</p>
-					<p><strong>Alumno: </strong> {usuario.nombre}</p>
-					<p><strong>CURP: </strong> {usuario.curp} </p>
-					<p><strong>Email: </strong> {usuario.email} </p>
-					<p><strong>Periodo: </strong> {solicitud.periodo} </p>
-					<p><strong>Monto: </strong>$ {numberFormat.format(usuario.lastPago.monto)}</p>
-					<p><strong>Fecha inicio: </strong> {solicitud.fechaInicioFormatted } </p>
-					<p><strong>Fecha fin: </strong> {solicitud.fechaFinFormatted} </p>
-					<p><strong>Estado del proceso: </strong>{usuario.statusFormatted}</p>
-				</div>
-			</div>
-		</div>
-	)
+  const selectPdf = event => {
+    const file = event.target.files?.[0] || null;
+    const isPdf = file && (file.type === 'application/pdf' || (!file.type && /\.pdf$/i.test(file.name)));
+    if (file && (!isPdf || file.size > MAX_FILE_BYTES)) {
+      event.target.value = '';
+      setComprobante(null);
+      setMessage('El comprobante debe ser un PDF de máximo 2 MB.');
+      return;
+    }
+    setMessage('');
+    setComprobante(file);
+  };
+
+  const confirm = async () => {
+    setShowConfirm(false);
+    setBusy(true);
+    setMessage('');
+    setErrors({});
+    const formData = new FormData(formRef.current);
+    formData.set('comprobante_pago[montoRegistrado]', monto.replace(/,/g, ''));
+    const cedula = formData.get('comprobante_pago[cedulaFile]');
+    if (cedula && cedula.size === 0) formData.delete('comprobante_pago[cedulaFile]');
+
+    try {
+      const response = await api.storePago(solicitud.id, formData);
+      if (response.status === false) throw new Error(response.message || 'No se pudo cargar el comprobante.');
+      window.location.href = getSchemeAndHttpHost('/enfermeria-alumno/');
+    } catch (error) {
+      let detail = error?.data;
+      if (detail?.data && typeof detail.data.then === 'function') {
+        detail = await detail.data.catch(() => null);
+      }
+      setErrors(detail?.errors || {});
+      setMessage(detail?.message && detail.message !== 'Error' ? detail.message : 'No se pudo guardar el comprobante. Revisa los datos e inténtalo de nuevo.');
+      setBusy(false);
+    }
+  };
+
+  return <>
+    <section className="nursing-card mb-4">
+      <div className="nursing-card-header"><i className="ti ti-id"/><div><h2>Datos de la solicitud</h2><p>Comprueba que el pago corresponde a tu escuela.</p></div></div>
+      <div className="nursing-card-body nursing-info-grid">
+        <Field label="Escuela" value={solicitud.unidad?.nombreEnfermeria}/>
+        <Field label="Alumno" value={usuario.nombre}/>
+        <Field label="CURP" value={usuario.curp}/>
+        <Field label="Correo electrónico" value={usuario.email}/>
+        <Field label="Período" value={solicitud.periodo}/>
+        <Field label="Vigencia" value={[solicitud.fechaInicioFormatted, solicitud.fechaFinFormatted].filter(Boolean).join(' — ')}/>
+        <Field label="Monto de referencia" value={usuario.lastPago?.monto != null ? moneyFormat(usuario.lastPago.monto) : '—'}/>
+        <Field label="Estado" value={usuario.statusFormatted}/>
+      </div>
+    </section>
+
+    <section className="nursing-card">
+      <div className="nursing-card-header"><i className="ti ti-file-upload"/><div><h2>Registrar comprobante</h2><p>Captura los datos tal como aparecen en tu comprobante.</p></div></div>
+      <div className="nursing-card-body">
+        {usuario.lastPago?.observaciones && <div className="nursing-notice nursing-notice--warning mb-4"><strong>Observaciones sobre tu pago:</strong> {usuario.lastPago.observaciones}</div>}
+        {message && <div className="alert alert-danger" role="alert">{message}</div>}
+        <form ref={formRef} method="post" encType="multipart/form-data" onSubmit={event => { event.preventDefault(); setShowConfirm(true); }}>
+          <div className="nursing-form-grid">
+            <div className="nursing-form-group">
+              <label htmlFor="nursing-fecha">Fecha en que realizaste el pago <span className="text-danger">*</span></label>
+              <input id="nursing-fecha" type="date" name="comprobante_pago[fechaPagoRegistrada]" className="form-control" value={fecha} onChange={event => setFecha(event.target.value)} max={maxDate} required/>
+              {fieldError(errors, 'fechaPagoRegistrada') && <small className="text-danger d-block">{fieldError(errors, 'fechaPagoRegistrada')}</small>}
+            </div>
+            <div className="nursing-form-group">
+              <label htmlFor="nursing-monto">Monto del comprobante <span className="text-danger">*</span></label>
+              <Cleave id="nursing-monto" name="comprobante_pago[montoRegistrado]" className="form-control" options={{ numeral: true, numeralThousandsGroupStyle: 'thousand' }} onChange={event => setMonto(event.target.value)} required/>
+              <small className="nursing-form-help">Debe coincidir con el monto de tu comprobante.</small>
+              {fieldError(errors, 'montoRegistrado') && <small className="text-danger d-block">{fieldError(errors, 'montoRegistrado')}</small>}
+            </div>
+          </div>
+          <div className="nursing-form-group">
+            <label htmlFor="nursing-comprobante">Comprobante de pago <span className="text-danger">*</span></label>
+            <input id="nursing-comprobante" type="file" name="comprobante_pago[comprobantePagoFile]" className="form-control nursing-file-input" accept="application/pdf,.pdf" onChange={selectPdf} required/>
+            <small className="nursing-form-help">Solo archivos PDF de máximo 2 MB.</small>
+            {fieldError(errors, 'comprobantePagoFile') && <small className="text-danger d-block">{fieldError(errors, 'comprobantePagoFile')}</small>}
+          </div>
+          <fieldset className="nursing-form-group">
+            <legend className="h6 mb-2">¿Requieres factura? <span className="text-danger">*</span></legend>
+            <div className="nursing-options">
+              <label className="nursing-option"><input type="radio" name="comprobante_pago[requiereFactura]" value="1" checked={requiereFactura === '1'} onChange={() => setRequiereFactura('1')} required/> Sí</label>
+              <label className="nursing-option"><input type="radio" name="comprobante_pago[requiereFactura]" value="0" checked={requiereFactura === '0'} onChange={() => setRequiereFactura('0')} required/> No</label>
+            </div>
+            {fieldError(errors, 'requiereFactura') && <small className="text-danger d-block">{fieldError(errors, 'requiereFactura')}</small>}
+          </fieldset>
+          {requiereFactura === '1' && <div className="nursing-form-group">
+            <label htmlFor="nursing-cedula">Constancia de Situación Fiscal actualizada <span className="text-danger">*</span></label>
+            <input id="nursing-cedula" type="file" name="comprobante_pago[cedulaFile]" className="form-control nursing-file-input" accept="application/pdf,.pdf" required/>
+            <small className="nursing-form-help">Adjunta un PDF emitido en los últimos 3 meses (máximo 2 MB).</small>
+            {fieldError(errors, 'cedulaFile') && <small className="text-danger d-block">{fieldError(errors, 'cedulaFile')}</small>}
+          </div>}
+          <div className="nursing-form-actions">
+            <a href={getSchemeAndHttpHost('/enfermeria-alumno/')} className="btn btn-outline-secondary">Cancelar</a>
+            <button type="submit" className="btn nursing-btn-primary" disabled={busy}><i className="ti ti-arrow-right mr-1"/>Revisar y continuar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+    {showConfirm && <ConfirmModal fecha={fecha} monto={monto} requiereFactura={requiereFactura} comprobante={comprobante} onClose={() => setShowConfirm(false)} onConfirm={confirm} busy={busy}/>}
+  </>;
 }
 
-
-document.addEventListener('DOMContentLoaded', () => {
-    const rootElement = createRoot(document.getElementById('wrapper-page'));
-    rootElement.render(
-        <EnfermeriaAlumnoCargaComprobante
-            usuario={window.Usuario}
-            solicitud={window.Usuario.solicitud}
-        />
-    );
-});
+const rootElement = document.getElementById('wrapper-page');
+if (rootElement) createRoot(rootElement).render(<CargaComprobante usuario={window.Usuario}/>);

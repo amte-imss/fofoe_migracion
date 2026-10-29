@@ -1,54 +1,35 @@
-{% extends 'react_design/base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Edición de Institución{% endblock %}
+{% block title %}Editar institución — FOFOE{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
+    {{ encore_entry_link_tags('admin.convenio.styles') }}
     {{ encore_entry_link_tags('loader') }}
     {{ encore_entry_link_tags('admin.institucion.edit') }}
 {% endblock %}
 
-{% block javascripts %}
-    {{ parent() }}
+{% block body %}
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <a class="convenios-back" href="{{ path('admin.institucion.index') }}"><i class="ti ti-arrow-left"></i> Volver a instituciones</a>
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-edit"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Instituciones Educativas · {{ institucion.rfc }}</div>
+                <h1>Editar institución</h1>
+                <p>{{ institucion.razonSocial }}</p>
+            </div>
+        </div>
+        <div class="convenios-card convenios-form-panel">
+            <div class="convenios-card-header"><i class="ti ti-building"></i><span>Datos de la institución</span><span class="convenios-required">* Campos obligatorios</span></div>
+            <div class="convenios-card-body">{{ include('admin/institucion/_form.html.twig') }}</div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
     <script>
         window.Institucion = {{ institucion|json_encode|raw }};
         window.InstitucionHasCedula = {{ hasCedula|json_encode }};
     </script>
     {{ encore_entry_script_tags('admin.institucion.edit') }}
-{% endblock %}
-
-{% block body %}
-    <div class="col-md-11 content">
-        <div class="row" style="margin-left: 2%; margin-top: 3%;">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h3>Edición de la institución {{ institucion.razonSocial }}</h3>
-                                <h4>{{ institucion.rfc }}</h4>
-                            </div>
-                            <div class="col-md-6">
-                                <a class="btn btn-secondary" href="{{ url('admin.institucion.index') }}">Regresar a la Lista de Instituciones</a>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-7 text-danger">
-                                * Campos Requeridos
-                            </div>
-                        </div>
-
-                        {{ include('admin/institucion/_form.html.twig') }}
-
-                        <div class="row">
-                            <div class="col-md-7 text-danger">
-                                * Campos Requeridos
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

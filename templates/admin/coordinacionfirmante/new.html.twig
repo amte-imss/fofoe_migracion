@@ -1,23 +1,23 @@
-{% extends 'react_design/base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Nueva Coordinación Firmante{% endblock %}
+{% block title %}Nueva coordinación firmante — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
 
 {% block body %}
-    <div class="col-md-11 content">
-        <div class="row" style="margin-left: 2%; margin-top: 3%;">
-            <div class="col-md-12">
-                <h3>Creación de Nueva Coordinación Firmante</h3>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <a class="convenios-back" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><i class="ti ti-arrow-left"></i> Volver a coordinaciones</a>
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-user-plus"></i></div>
+            <div>
+                <div class="convenios-eyebrow">Gestión de Convenios</div>
+                <h1>Nueva coordinación firmante</h1>
+                <p>Registra el nombre y estado de la coordinación.</p>
             </div>
-            <div class="container containerCstmWidth">
-                <div class="row rowCstmWidth">
-                    <div class="col-md-12">
-                        {{ include('admin/coordinacionfirmante/_form.html.twig') }}
-                        <div class="col-md-7 marginsLinkNewAdminConve">
-                            <a href="{{ url('admin.coordfirmante.coordfirmante.index', {'page': 1}) }}">Regresar a la Lista de Coordinaciones Firmantes</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="convenios-card convenios-form-panel">
+            <div class="convenios-card-header"><i class="ti ti-users"></i><span>Datos de la coordinación</span><span class="convenios-required">* Campos obligatorios</span></div>
+            <div class="convenios-card-body">{{ include('admin/coordinacionfirmante/_form.html.twig') }}</div>
         </div>
     </div>
 {% endblock %}

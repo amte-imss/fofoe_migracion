@@ -1,31 +1,15 @@
-{% extends 'base.html.twig' %}
+{% extends 'residente/extranjeroIMSS/_layout.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {{ encore_entry_link_tags('loader') }}
-    <style>
-        .iframe {
-            border: 1px solid lightgray;
-            width: 100%;
-            height: 50vh;
-        }
-    </style>
-{% endblock %}
+{% block title %}Cargar comprobante de pago — Residente FOFOE{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Residente\\ResidenteExtranjeroController::menu')) }}
-
-    <div class="section-md">
-        <div class="container-fluid">
-            <div class="container">
-                <h1 class="text-bold text-center">Carga de comprobante de pago</h1>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="cargar-de-comprobante-de-pago-component"></div>
-                    </div>
-                </div>
-            </div>
+    <div class="container resident-page py-4 py-md-5">
+        <a class="resident-back" href="{{ path('residente.perfil') }}"><i class="ti ti-arrow-left"></i> Volver a mi perfil</a>
+        <div class="resident-page-heading mb-4">
+            <div class="resident-heading-icon"><i class="ti ti-file-upload"></i></div>
+            <div><span class="resident-eyebrow">Pagos de residencia</span><h1>Cargar comprobante de pago</h1><p>Registra los datos del pago y adjunta el comprobante en PDF.</p></div>
         </div>
+        <div id="cargar-de-comprobante-de-pago-component"></div>
     </div>
 {% endblock %}
 

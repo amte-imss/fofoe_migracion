@@ -1,43 +1,23 @@
-{% extends 'base.html.twig' %}
+{% extends 'enfermeria-alumno/_layout.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    {{ encore_entry_link_tags('loader') }}
-    {{ encore_entry_link_tags('enfermeria-alumno') }}
-    <style>
-        .wrapper-page {
-            margin-top: 20px;
-            margin-bottom: 80px;
-        }
-
-        .iframe {
-            border: 1px solid lightgray;
-            width: 100%;
-            height: 50vh;
-        }
-    </style>
-{% endblock %}
+{% block title %}Cargar comprobante — Escuela de Enfermería IMSS{% endblock %}
 
 {% block body %}
-    {{ render(controller('App\\Controller\\Enfermeria\\AlumnoController::menu')) }}
-    <div class="section-md">
-        <div class="container-fluid">
-            <div class="container">
-                <h1 class="text-bold text-center mb-20">Carga de comprobante de pago</h1>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div id="wrapper-page"></div>
-                    </div>
-                </div>
+    <main class="nursing-page">
+        <div class="container py-4 py-md-5">
+            <a class="nursing-back" href="{{ path('enfermeria-alumno.index') }}"><i class="ti ti-arrow-left"></i> Volver a mi proceso</a>
+            <div class="nursing-page-heading mb-4">
+                <div class="nursing-heading-icon"><i class="ti ti-file-upload"></i></div>
+                <div><span class="nursing-eyebrow">Pago de licenciatura</span><h1>Cargar comprobante de pago</h1><p>Registra los datos del pago y adjunta tu comprobante en PDF.</p></div>
             </div>
+            <div id="wrapper-page"></div>
         </div>
-    </div>
+    </main>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        window.Usuario = {{ usuario|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
-    </script>
+    {% set json_flags = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
+    <script>window.Usuario = {{ usuario|json_encode(json_flags)|raw }};</script>
     {{ encore_entry_script_tags('enfermeria-alumno.cargaComprobante') }}
 {% endblock %}

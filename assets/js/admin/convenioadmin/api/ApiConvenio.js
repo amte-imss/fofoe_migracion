@@ -81,7 +81,13 @@ class ApiConvenio extends AbstracApi {
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest'
 			}
-		}).then(response => this.toJson(response))
+		}).then(response => {
+			if (response.redirected && new URL(response.url).pathname === '/login') {
+				window.location.assign(response.url);
+				throw new Error('La sesión ha expirado');
+			}
+			return this.toJson(response);
+		})
 	}
 }
 

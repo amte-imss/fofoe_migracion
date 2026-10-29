@@ -1,0 +1,86 @@
+.gov-content { background: #f7faf8; }
+.resident-page { color: #26382f; }
+.resident-page-heading { display: flex; align-items: center; gap: 1rem; }
+.resident-heading-icon, .resident-avatar { display: grid; place-items: center; flex: none; border-radius: .9rem; color: #006847; background: #e6f4ee; }
+.resident-heading-icon { width: 3.3rem; height: 3.3rem; font-size: 1.65rem; }
+.resident-avatar { font-size: 1.8rem; }
+.resident-eyebrow, .resident-user-label { color: #006847; font-size: .73rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.resident-page-heading h1 { margin: .15rem 0; color: #153c2d; font-size: clamp(1.55rem, 2.5vw, 2rem); font-weight: 700; }
+.resident-page-heading p { margin: 0; color: #65746a; font-size: .9rem; }
+.resident-user-label, .resident-user-name { margin: 0; }
+.resident-user-name { color: #244432; font-weight: 600; }
+.resident-folio { display: inline-flex; padding: .35rem .7rem; border-radius: 999px; color: #006847; background: #e6f4ee; font-size: .78rem; font-weight: 700; }
+.resident-nav-link { display: inline-flex; align-items: center; gap: .35rem; color: #006847; font-size: .85rem; font-weight: 600; }
+.resident-nav-link:hover, .resident-back:hover { color: #004d34; text-decoration: underline; }
+.resident-back { display: inline-flex; align-items: center; gap: .35rem; margin-bottom: 1.3rem; color: #006847; font-size: .85rem; font-weight: 600; }
+
+.resident-card { overflow: hidden; border: 1px solid #e1eae4; border-radius: 12px; background: #fff; box-shadow: 0 2px 14px rgba(16, 52, 37, .045); }
+.resident-card-header { display: flex; align-items: center; gap: .8rem; padding: 1rem 1.35rem; border-bottom: 1px solid #e4ebe7; background: #fbfdfb; }
+.resident-card-header > .ti { color: #006847; font-size: 1.45rem; }
+.resident-card-header h2 { margin: 0; color: #214b39; font-size: 1rem; font-weight: 700; }
+.resident-card-header p { margin: .15rem 0 0; color: #738278; font-size: .79rem; }
+.resident-card-body { padding: 1.4rem; }
+.resident-info-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; }
+.resident-field { min-width: 0; padding: .85rem 1rem; border: 1px solid #edf1ee; border-radius: 8px; background: #fbfdfb; }
+.resident-field span, .resident-payment-summary span { display: block; margin-bottom: .25rem; color: #6b7b70; font-size: .73rem; font-weight: 600; }
+.resident-field strong, .resident-payment-summary strong { display: block; color: #233d2e; font-size: .87rem; font-weight: 600; overflow-wrap: anywhere; }
+.resident-section-label { margin-bottom: .8rem; padding-top: 1.2rem; border-top: 1px solid #e4ebe7; color: #214b39; font-size: .88rem; font-weight: 700; }
+.resident-contact-form label, .resident-upload-form label:not(.resident-option) { display: block; margin-bottom: .4rem; color: #43564b; font-size: .8rem; font-weight: 700; }
+.resident-page .form-control { min-height: 39px; border-color: #d8e2dc; border-radius: 7px; }
+.resident-page .form-control:focus { border-color: #68aa88; box-shadow: 0 0 0 .2rem rgba(0, 104, 71, .12); }
+.resident-page .resident-btn-primary, .resident-confirm-modal .resident-btn-primary { border-color: #006847; background: #006847; color: #fff; }
+.resident-page .resident-btn-primary:hover, .resident-page .resident-btn-primary:focus, .resident-confirm-modal .resident-btn-primary:hover, .resident-confirm-modal .resident-btn-primary:focus { border-color: #004d34; background: #004d34; color: #fff; }
+
+.resident-table { min-width: 1020px; font-size: .8rem; }
+.resident-table thead { background: #f3f8f5; }
+.resident-table th { padding: .8rem .9rem; border-top: 0; border-bottom: 1px solid #dce9e0; color: #41604d; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.resident-table td { padding: .85rem .9rem; border-color: #eef2ef; color: #435047; vertical-align: middle; }
+.resident-table tbody tr:hover { background: #f8fbf8; }
+.resident-table a { color: #006847; font-weight: 600; }
+.resident-row-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .4rem; min-width: 190px; }
+.resident-row-actions .btn { white-space: nowrap; }
+.resident-status { display: inline-flex; border-radius: 999px; padding: .22rem .6rem; font-size: .72rem; font-weight: 700; white-space: nowrap; }
+.resident-status--success { color: #176b3a; background: #e7f6ec; }
+.resident-status--warning { color: #956300; background: #fff5d8; }
+.resident-status--danger { color: #a43737; background: #fdeaea; }
+.resident-status--muted { color: #6a756e; background: #edf1ee; }
+.resident-empty { padding: 2.5rem !important; text-align: center; }
+.resident-empty .ti { display: block; color: #97b3a2; font-size: 2rem; }
+.resident-empty strong { display: block; margin-top: .4rem; }
+
+.resident-payment-summary { display: flex; flex-wrap: wrap; gap: .75rem; }
+.resident-payment-summary > div { min-width: 210px; padding: .9rem 1.1rem; border: 1px solid #dce9e0; border-radius: 8px; background: #f3f8f5; }
+.resident-payment-summary strong { color: #006847; font-size: 1.05rem; }
+.resident-upload-form .resident-form-group { padding: 1rem; border: 1px solid #e4ebe7; border-radius: 8px; }
+.resident-form-group legend { width: auto; margin: 0 0 .65rem; color: #43564b; font-size: .8rem; font-weight: 700; }
+.resident-options { display: flex; flex-wrap: wrap; gap: .55rem; }
+.resident-option { display: inline-flex; align-items: center; gap: .45rem; margin: 0; padding: .55rem .8rem; border: 1px solid #d8e2dc; border-radius: 7px; color: #43564b; cursor: pointer; font-size: .82rem; }
+.resident-option:has(input:checked) { border-color: #68aa88; background: #eaf6ef; color: #005d40; }
+.resident-option input { margin: 0; accent-color: #006847; }
+.resident-extra-input { max-width: 300px; }
+.resident-help { display: block; margin-top: .3rem; color: #758078; font-size: .76rem; }
+.resident-form-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem; padding-top: 1.1rem; border-top: 1px solid #e4ebe7; }
+
+.resident-confirm-overlay { position: fixed; inset: 0; z-index: 1100; display: grid; place-items: center; padding: 1rem; background: rgba(16, 37, 27, .58); }
+.resident-confirm-modal { width: min(100%, 780px); max-height: calc(100vh - 2rem); overflow-y: auto; border-radius: 12px; background: #fff; box-shadow: 0 18px 45px rgba(0, 0, 0, .18); outline: none; }
+.resident-modal-heading { display: flex; align-items: center; gap: .8rem; padding: 1.2rem 1.4rem; border-bottom: 1px solid #e4ebe7; background: #fbfdfb; }
+.resident-modal-heading > .ti { color: #006847; font-size: 1.7rem; }
+.resident-modal-heading h2 { margin: 0; color: #214b39; font-size: 1.1rem; font-weight: 700; }
+.resident-modal-heading p { margin: .2rem 0 0; color: #738278; font-size: .82rem; }
+.resident-modal-body { padding: 1.3rem 1.4rem; }
+.resident-modal-body .resident-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.resident-preview > span { display: block; margin-bottom: .55rem; color: #43564b; font-size: .8rem; font-weight: 700; }
+.resident-preview .iframe { width: 100%; height: 300px; border: 1px solid #d8e2dc; border-radius: 8px; }
+.resident-modal-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .7rem; padding: 1rem 1.4rem; border-top: 1px solid #e4ebe7; }
+
+@media (max-width: 767px) {
+  .resident-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .resident-card-body { padding: 1rem; }
+  .resident-confirm-modal .resident-info-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 575px) {
+  .resident-info-grid { grid-template-columns: 1fr; }
+  .resident-page-heading { align-items: flex-start; }
+  .resident-heading-icon { width: 2.75rem; height: 2.75rem; font-size: 1.3rem; }
+  .resident-form-actions .btn, .resident-modal-actions .btn { width: 100%; }
+}

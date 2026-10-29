@@ -1,135 +1,72 @@
-import * as React from 'react'
-import {dateFormat, getSchemeAndHttpHost, moneyFormat, getEstatusPago, toOrdinalFormat} from "../../utils";
-import {ESTATUS_PAGO} from "../../constants";
-import {ESTATUS_RESIDENCIA} from "../constants";
+import * as React from 'react';
+import { dateFormat, getSchemeAndHttpHost, moneyFormat, getEstatusPago, toOrdinalFormat } from '../../utils';
+import { ESTATUS_PAGO } from '../../constants';
+import { ESTATUS_RESIDENCIA } from '../constants';
 
-const LinkDescargaReferenciaPago = ({residencia, lastPago, setReferenciaDescargada}) => {
+const displayDate = value => {
+  if (!value) return 'Pendiente';
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : dateFormat(value);
+};
 
-  const urlDownload = `${getSchemeAndHttpHost()}/residente/residencia/${residencia.id}/referencia-pago/download`
-  const estatus_allowed = [ESTATUS_PAGO.SIN_REGISTRO, ESTATUS_PAGO.INCORRECTO]
-
-  function handleClick() {
-    setReferenciaDescargada(true)
-  }
-
-  return (
-    estatus_allowed.includes(getEstatusPago(lastPago, residencia.pagos.length)) &&
-    <a href={urlDownload} onClick={handleClick} className="btn btn-sm btn-block btn-link" target="_blank"  >
-      Descargar referencia
-    </a>
-  )
+function statusClass(status) {
+  if (status === ESTATUS_PAGO.VALIDADO || status === ESTATUS_RESIDENCIA.PAGO_VALIDADO_FOFOE) return 'resident-status--success';
+  if (status === ESTATUS_PAGO.INCORRECTO) return 'resident-status--danger';
+  if (status === ESTATUS_PAGO.EN_VALIDACION || status === ESTATUS_RESIDENCIA.PENDIENTE_FACTURA_FOFOE) return 'resident-status--warning';
+  return 'resident-status--muted';
 }
 
-const LinkCargaComprobantePago = ({residencia, lastPago, residenciaDownloaded}) => {
+function ResidenciaRow({ residencia }) {
+  const [referenciaDescargada, setReferenciaDescargada] = React.useState(false);
+  const pagos = residencia.pagos || [];
+  const lastPago = pagos.find(pago => pago.id === residencia.lastPago?.id) || pagos[0];
+  const estatusPago = lastPago ? getEstatusPago(lastPago, pagos.length) : ESTATUS_PAGO.SIN_REGISTRO;
+  const estatus = residencia.estatus === ESTATUS_RESIDENCIA.PENDIENTE_FACTURA_FOFOE
+    ? residencia.estatus : estatusPago;
+  const puedeDescargarReferencia = lastPago && [ESTATUS_PAGO.SIN_REGISTRO, ESTATUS_PAGO.INCORRECTO].includes(estatusPago);
+  const puedeCargar = lastPago &&
+    ([ESTATUS_RESIDENCIA.FORMATO_PAGO_DESCARGADO, ESTATUS_PAGO.INCORRECTO].includes(residencia.estatus) || referenciaDescargada) &&
+    [ESTATUS_PAGO.SIN_REGISTRO, ESTATUS_PAGO.INCORRECTO].includes(estatusPago);
+  const puedeDescargarComprobante = lastPago && [ESTATUS_PAGO.VALIDADO, ESTATUS_PAGO.EN_VALIDACION].includes(estatusPago);
 
-  const urlUpload = `${getSchemeAndHttpHost()}/residente/pagos/${residencia.lastPago.id}/carga-de-comprobante-de-pago`
-  const estatus_residencia_allowed = [ESTATUS_RESIDENCIA.FORMATO_PAGO_DESCARGADO, ESTATUS_PAGO.INCORRECTO]
-  const estatus_pago_allowed = [ESTATUS_PAGO.SIN_REGISTRO, ESTATUS_PAGO.INCORRECTO]
-  const estatus_last_pago =  getEstatusPago(lastPago, residencia.pagos.length)
-
-  return (
-    (estatus_residencia_allowed.includes(residencia.estatus) || residenciaDownloaded)
-    && estatus_pago_allowed.includes(estatus_last_pago) &&
-    <a href={urlUpload} className="btn btn-block btn-sm btn-success" >
-      {
-        estatus_last_pago === ESTATUS_PAGO.INCORRECTO ?
-          'Rectificar comprobante'
-          : 'Cargar Comprobante de pago'
-      }
-    </a>
-  )
+  return <tr>
+    <td><strong>{residencia.ciclo || '—'}</strong></td>
+    <td>{residencia.especialidad || '—'}</td>
+    <td>{toOrdinalFormat(residencia.grado) || '—'}</td>
+    <td>{displayDate(lastPago?.fechaPago)}</td>
+    <td>{moneyFormat(residencia.monto)} {residencia.tipoMoneda}</td>
+    <td><span className={`resident-status ${statusClass(estatus)}`}>{estatus}</span></td>
+    <td><div className="resident-row-actions">
+      {puedeDescargarReferencia && <a className="btn btn-sm btn-outline-success"
+        href={getSchemeAndHttpHost(`/residente/residencia/${residencia.id}/referencia-pago/download`)}
+        onClick={() => setReferenciaDescargada(true)} target="_blank" rel="noopener noreferrer">
+        <i className="ti ti-download mr-1"/>Referencia
+      </a>}
+      {puedeCargar && <a className="btn btn-sm resident-btn-primary"
+        href={getSchemeAndHttpHost(`/residente/pagos/${lastPago.id}/carga-de-comprobante-de-pago`)}>
+        <i className="ti ti-upload mr-1"/>{estatusPago === ESTATUS_PAGO.INCORRECTO ? 'Rectificar' : 'Cargar comprobante'}
+      </a>}
+      {puedeDescargarComprobante && <a className="btn btn-sm btn-outline-success"
+        href={getSchemeAndHttpHost(`/residente/residencia/${residencia.id}/comprobantes-pago/download`)} target="_blank" rel="noopener noreferrer">
+        <i className="ti ti-file-download mr-1"/>Comprobantes
+      </a>}
+      {!puedeDescargarReferencia && !puedeCargar && !puedeDescargarComprobante && <span className="text-muted">—</span>}
+    </div></td>
+  </tr>;
 }
 
-const LinkDescargaComprobantePago = ({residencia, lastPago}) => {
-
-  const urlDownload = `${getSchemeAndHttpHost()}/residente/residencia/${residencia.id}/comprobantes-pago/download`
-  const estatus_allowed = [ESTATUS_PAGO.VALIDADO, ESTATUS_PAGO.EN_VALIDACION]
-
-  return (
-    estatus_allowed.includes(getEstatusPago(lastPago, residencia.pagos.length)) &&
-    <div>
-      <a href={urlDownload} className="link"  target="_blank" >
-        Descargar comprobante(s) de pago
-      </a>
-      {
-        getEstatusPago(lastPago) === ESTATUS_PAGO.EN_VALIDACION &&
-        <p> * Pendiente de validar *</p>
-      }
+export default function Residencias({ residencias }) {
+  return <section className="resident-card">
+    <div className="resident-card-header"><i className="ti ti-school"/><div><h2>Mis residencias</h2><p>Revisa tus pagos y descarga tus documentos.</p></div></div>
+    <div className="table-responsive">
+      <table className="table table-hover resident-table mb-0">
+        <thead><tr><th>Ciclo académico</th><th>Especialidad</th><th>Grado</th><th>Fecha de pago</th><th>Monto</th><th>Estado del pago</th><th>Acciones</th></tr></thead>
+        <tbody>
+          {residencias.length > 0
+            ? residencias.map(residencia => <ResidenciaRow key={residencia.id} residencia={residencia}/>)
+            : <tr><td className="resident-empty" colSpan={7}><i className="ti ti-school-off"/><strong>No hay residencias registradas</strong></td></tr>}
+        </tbody>
+      </table>
     </div>
-
-
-  )
+  </section>;
 }
-
-const Residencias = ({residencias}) => {
-
-  function getLastPago(pagos, lastPagoId) {
-    const results =  pagos.filter(item => {
-      return item.id === lastPagoId;
-    });
-    if(results.length > 0){
-      return results[0];
-    }
-  }
-
-  function getFechaPago(pago) {
-    if (pago.fechaPago !== null) {
-      return dateFormat(pago.fechaPago)
-    }
-
-    return 'Pendiente'
-  }
-
-  return (
-    <div className="row">
-      <div className="panel panel-default col-md-12">
-        <div className="panel-body">
-          <table className='table'>
-            <thead className='headers'>
-            <tr>
-              <th>Ciclo Académico</th>
-              <th>Especialidad</th>
-              <th>Grado Académico</th>
-              <th>Fecha de Pago</th>
-              <th>Monto de Pago</th>
-              <th>Estatus del Pago</th>
-              <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {
-              residencias.length !== 0 ?
-                residencias.map((residencia, index) => {
-                  const lastPago =  getLastPago(residencia.pagos, residencia.lastPago.id)
-                  const { useState, useEffect } = React
-                  const [ referenciaDescargada, setReferenciaDescargada ] = useState(false)
-
-                  return (
-                  <tr key={index}>
-                    <td>{residencia.ciclo}</td>
-                    <td>{residencia.especialidad}</td>
-                    <td>{ toOrdinalFormat(residencia.grado) }</td>
-                    <td>{getFechaPago(lastPago)}</td>
-                    <td>{ moneyFormat(residencia.monto) } {residencia.tipoMoneda}</td>
-                    <td>{ residencia.estatus !== 'Pendiente factura FOFOE' ? getEstatusPago(lastPago, residencia.pagos.length) : 'Pendiente factura FOFOE' }</td>
-                    <td>
-                      <LinkDescargaReferenciaPago residencia={residencia} lastPago={lastPago} setReferenciaDescargada={setReferenciaDescargada} />
-                      <LinkCargaComprobantePago residencia={residencia} lastPago={lastPago} residenciaDownloaded={referenciaDescargada} />
-                      <LinkDescargaComprobantePago residencia={residencia} lastPago={lastPago} />
-                    </td>
-                  </tr>
-                )})
-                :
-                <tr>
-                  <td className='text-center' colSpan={7}>No hay registros disponibles</td>
-                </tr>
-            }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export default Residencias

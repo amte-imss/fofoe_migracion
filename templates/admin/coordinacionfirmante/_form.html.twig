@@ -1,4 +1,19 @@
-{{ form_start(form) }}
-    {{ form_widget(form, {'attr': {'class': 'form-inline ml-form'}}) }}
-<button type="submit" class="btn btn-primary mb-2 mt-3">{{ button_label|default('Guardar') }}</button>
+{{ form_start(form, {attr: {class: 'convenios-standard-form'}}) }}
+    <div class="row g-3">
+        <div class="col-md-8">
+            {{ form_label(form.nombre, 'Nombre de la coordinación firmante *', {label_attr: {class: 'form-label'}}) }}
+            {{ form_widget(form.nombre, {attr: {class: 'form-control'}}) }}
+            {{ form_errors(form.nombre) }}
+        </div>
+        <div class="col-md-12">
+            <div class="form-check">
+                {{ form_widget(form.activa, {attr: {class: 'form-check-input'}}) }}
+                {{ form_label(form.activa, 'Activa', {label_attr: {class: 'form-check-label'}}) }}
+            </div>
+            {{ form_errors(form.activa) }}
+        </div>
+        <div class="col-md-12">
+            <button type="submit" class="btn convenios-btn-primary"><i class="ti ti-device-floppy me-1"></i>Guardar coordinación</button>
+        </div>
+    </div>
 {{ form_end(form) }}

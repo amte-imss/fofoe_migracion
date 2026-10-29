@@ -8,10 +8,12 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Length;
 
 class ComprobantePagoType extends AbstractType
 {
@@ -23,6 +25,11 @@ class ComprobantePagoType extends AbstractType
             ->add('monto')
             ->add('tipoMoneda', null, [
                 'required' => true,
+            ])
+            ->add('tipoMoneda_otro', TextType::class, [
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [new Length(max: 10)],
             ])
             ->add('fechaPago', DateType::class, [
                 'widget' => 'single_text',
@@ -49,9 +56,19 @@ class ComprobantePagoType extends AbstractType
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
             /** @var Pago $pago */
             $pago = $event->getData();
+            $form = $event->getForm();
+
+            if ($pago->getTipoMoneda() === 'other') {
+                $otherCurrency = trim((string) $form->get('tipoMoneda_otro')->getData());
+                if ($otherCurrency === '') {
+                    $form->get('tipoMoneda_otro')->addError(new FormError('Especifica la moneda del pago.'));
+                } else {
+                    $pago->setTipoMoneda($otherCurrency);
+                }
+            }
 
             $pago->setRequiereFactura(
-                $event->getForm()->get('requiereFactura')->getViewData() === '1'
+                $form->get('requiereFactura')->getViewData() === '1'
             );
         });
     }

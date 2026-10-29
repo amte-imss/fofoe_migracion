@@ -231,13 +231,13 @@
                             <i class="ti ti-chevron-right nav-group-chevron"></i>
                         </summary>
                         <ul class="nav-group-list">
-                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
-                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="{{ path('admin.convenios-especiales.index') }}"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
                             {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
-                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coordinación Firmante</span></a></li>
-                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coordinación Firmante</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="{{ path('disciplina_index') }}"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
                             {% endif %}
-                            <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
+                            <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="{{ path('admin.institucion.index') }}"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
                         </ul>
                     </details>
                 </li>
@@ -409,13 +409,13 @@
                 {# ── Gestión de Convenios ── #}
                 {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_CONVENIOS_OBSERVER') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Gestión de Convenios</div>
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
+                <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/conveniosadmin' ? 'active' : '' }}" href="{{ path('admin.conveniosadmin.conveniosadmin.index') }}"><span class="nav-link-icon"><i class="ti ti-file-certificate"></i></span><span class="nav-link-title">Convenios</span></a></li>
+                <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/convenios-especiales' ? 'active' : '' }}" href="{{ path('admin.convenios-especiales.index') }}"><span class="nav-link-icon"><i class="ti ti-file-star"></i></span><span class="nav-link-title">Convenios Especiales</span></a></li>
                 {% if is_granted('ROLE_CONVENIOS') or is_granted('ROLE_SUPER') %}
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coordinación Firmante</span></a></li>
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
+                <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/coordfirmante' ? 'active' : '' }}" href="{{ path('admin.coordfirmante.coordfirmante.index') }}"><span class="nav-link-icon"><i class="ti ti-users"></i></span><span class="nav-link-title">Catálogo Coordinación Firmante</span></a></li>
+                <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/disciplina' ? 'active' : '' }}" href="{{ path('disciplina_index') }}"><span class="nav-link-icon"><i class="ti ti-book"></i></span><span class="nav-link-title">Catálogo de Disciplinas</span></a></li>
                 {% endif %}
-                <li class="nav-item"><a class="nav-link spa-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="#"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
+                <li class="nav-item"><a class="nav-link {{ app.request.pathInfo starts with '/admin/institucion' ? 'active' : '' }}" href="{{ path('admin.institucion.index') }}"><span class="nav-link-icon"><i class="ti ti-building"></i></span><span class="nav-link-title">Instituciones Educativas</span></a></li>
                 {% endif %}
 
                 {# ── Gestión FOFOE ── #}

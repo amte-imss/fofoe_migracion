@@ -1,67 +1,32 @@
-{% extends 'react_design/disciplinas-base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Disciplinas{% endblock %}
+{% block title %}Detalle de disciplina — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
+
+{% macro field(label, value, width = 6) %}
+    <div class="col-md-{{ width }}"><div class="convenios-detail-field"><span class="convenios-detail-label">{{ label }}</span><p class="convenios-detail-value">{{ value ?: 'N/A' }}</p></div></div>
+{% endmacro %}
 
 {% block body %}
-    <div class="jumbotron">
-        <div class="container cstmContainer">
-            <h1 class="display-10">Disciplina {{ disciplina.nombre }}</h1>
-            <h3 class="lead">Información de Disciplina</h3>
-
-            <div class="row">
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">Nombre de Disciplina</span>
-                        <p class="textValueShowConvenio">{{ disciplina.nombre }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">Descripción de Disciplina</span>
-                        <p class="textValueShowConvenio">{{ disciplina.descripcion ?: 'N/A' }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">¿Está Activa?</span>
-                        <p class="textValueShowConvenio">{{ disciplina.activa ? 'Si' : 'No' }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">¿Está Borrada?</span>
-                        <p class="textValueShowConvenio">{{ disciplina.borrado ? 'Si' : 'No' }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">Fecha de Creación</span>
-                        <p class="textValueShowConvenio">{{ disciplina.fechaCreacion ? disciplina.fechaCreacion|date('Y-m-d') : 'N/A' }}</p>
-                    </div>
-                </div>
-                <div class="col-md-6" style="text-align: justify;">
-                    <div class="well">
-                        <span class="textLabelShowConvenio">Fecha de Modificación</span>
-                        <p class="textValueShowConvenio">{{ disciplina.fechaModificacion ? disciplina.fechaModificacion|date('Y-m-d') : 'N/A' }}</p>
-                    </div>
-                </div>
-            </div>
+    {% import _self as ui %}
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <a class="convenios-back" href="{{ path('disciplina_index') }}"><i class="ti ti-arrow-left"></i> Volver a disciplinas</a>
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-book"></i></div>
+            <div><div class="convenios-eyebrow">Gestión de Convenios · #{{ disciplina.id }}</div><h1>{{ disciplina.nombre }}</h1><p>Detalle de la disciplina</p></div>
         </div>
-
-        <div class="container" style="margin-top: 6%;">
-            <div class="row">
-                <div class="col-md-6" style="text-align: justify;">
-                    <h3>Para regresar a la lista de Disciplinas:</h3>
-                    <span>
-                        Haz click
-                        <a class="page-link" href="{{ url('disciplina_index', {'page': 1}) }}" title="Lista de Disciplinas">Aquí</a>
-                    </span>
-                </div>
-            </div>
-        </div>
+        <section class="convenios-card convenios-detail-card">
+            <div class="convenios-card-header"><i class="ti ti-book"></i><span>Información de la disciplina</span></div>
+            <div class="convenios-card-body"><div class="row g-3">
+                {{ ui.field('Nombre', disciplina.nombre) }}
+                {{ ui.field('ID', disciplina.id) }}
+                {{ ui.field('Descripción', disciplina.descripcion, 12) }}
+                {{ ui.field('Estado', disciplina.activa ? 'Activa' : 'Inactiva') }}
+                {{ ui.field('Registro', disciplina.borrado ? 'Borrada' : 'Vigente') }}
+                {{ ui.field('Fecha de creación', disciplina.fechaCreacion ? disciplina.fechaCreacion|date('d-m-Y') : 'N/A') }}
+                {{ ui.field('Última modificación', disciplina.fechaModificacion ? disciplina.fechaModificacion|date('d-m-Y') : 'N/A') }}
+            </div></div>
+        </section>
     </div>
 {% endblock %}

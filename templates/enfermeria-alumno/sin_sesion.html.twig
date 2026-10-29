@@ -1,23 +1,20 @@
-{% extends 'layouts/ie.html.twig' %}
+{% extends 'enfermeria-alumno/_layout.html.twig' %}
 
-{% block title %}Acceso no válido — FOFOE{% endblock %}
+{% block title %}Acceso no válido — Escuela de Enfermería IMSS{% endblock %}
+{% block submenu %}{% endblock %}
+{% block menu_bar %}{% endblock %}
 
 {% block body %}
-<div class="section-md">
-    <div class="container text-center" style="padding: 60px 20px;">
-        <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
-        <h2>Acceso no válido</h2>
-        <p class="text-muted">
-            Para acceder al portal de alumnos necesitas usar el enlace de acceso<br>
-            que fue enviado a tu correo electrónico al momento de tu registro.
-        </p>
-        <p class="text-muted" style="margin-top: 10px;">
-            El enlace tiene el formato:<br>
-            <code>{{ app.request.schemeAndHttpHost }}/enfermeria-alumno/login/<strong>{id de tu solicitud}</strong></code>
-        </p>
-        <p class="text-muted" style="margin-top: 20px;">
-            Si tienes dudas, contacta a <a href="mailto:factura.fofoe@imss.gob.mx">factura.fofoe@imss.gob.mx</a>
-        </p>
-    </div>
-</div>
+    <main class="nursing-page nursing-empty-page">
+        <div class="container py-5">
+            <section class="nursing-card nursing-empty-card">
+                <div class="nursing-heading-icon mx-auto"><i class="ti ti-lock"></i></div>
+                <span class="nursing-eyebrow">Portal del alumno</span>
+                <h1>Acceso no válido</h1>
+                <p>Para ingresar utiliza el enlace que recibiste por correo al momento de tu registro.</p>
+                <div class="nursing-access-example">/enfermeria-alumno/login/<strong>{id de tu solicitud}</strong></div>
+                <p class="mb-0">Si necesitas ayuda, escribe a <a href="mailto:factura.fofoe@imss.gob.mx">factura.fofoe@imss.gob.mx</a>.</p>
+            </section>
+        </div>
+    </main>
 {% endblock %}

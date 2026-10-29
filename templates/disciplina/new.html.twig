@@ -1,26 +1,19 @@
-{% extends 'react_design/disciplinas-base.html.twig' %}
+{% extends 'layouts/app.html.twig' %}
 
-{% block title %}Disciplinas{% endblock %}
+{% block title %}Nueva disciplina — FOFOE{% endblock %}
+
+{% block stylesheets %}{{ encore_entry_link_tags('admin.convenio.styles') }}{% endblock %}
 
 {% block body %}
-    <div class="col-md-11 content">
-        <div class="row" style="margin-left: 2%; margin-top: 3%;">
-            <div class="col-md-12">
-                <h3>Crear Disciplina</h3>
-            </div>
-            <div class="container containerCstmWidth">
-                <div class="row rowCstmWidth">
-                    <div class="col-md-12">
-                        {{ form_start(form) }}
-                        {{ form_widget(form) }}
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                        {{ form_end(form) }}
-                        <div class="col-md-7" style="margin-top: -3%; margin-left: 15%;">
-                            <a href="{{ url('disciplina_index', {'page': 1}) }}">Regresar a la Lista de Disciplinas</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="container-xl convenios-page py-4 py-lg-5">
+        <a class="convenios-back" href="{{ path('disciplina_index') }}"><i class="ti ti-arrow-left"></i> Volver a disciplinas</a>
+        <div class="convenios-heading mb-4">
+            <div class="convenios-heading-icon"><i class="ti ti-book-2"></i></div>
+            <div><div class="convenios-eyebrow">Gestión de Convenios</div><h1>Nueva disciplina</h1><p>Registra su nombre, descripción y estado.</p></div>
+        </div>
+        <div class="convenios-card convenios-form-panel">
+            <div class="convenios-card-header"><i class="ti ti-book"></i><span>Datos de la disciplina</span><span class="convenios-required">* Campos obligatorios</span></div>
+            <div class="convenios-card-body">{{ include('disciplina/_form.html.twig') }}</div>
         </div>
     </div>
 {% endblock %}
