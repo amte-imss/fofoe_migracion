@@ -29,7 +29,8 @@
     {% if solicitud is not null %}
 
     <div class="section">
-        <h3>Formato para pago de Cuota de Recuperación para Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h3>
+        <h3>Formato para pago de Cuota de Recuperación para Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h3>
+        <p>Tipo de solicitud: {{ solicitud.typeFormatted }}</p>
         <p>OOAD: {{ solicitud.unidad.delegacion.nombre | upper | default('') }}</p>
         <p>UNIDAD: {{ solicitud.unidad.nombreEnfermeria | upper | default('') }}</p>
         <p>ALUMNO: {{ user.nombre | upper | default('') }}</p>

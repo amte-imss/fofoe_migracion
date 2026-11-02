@@ -33,9 +33,10 @@ const SeleccionadorAnio = ({years, meta}) => {
     )
 }
 
-const LinkComprobantes = ({data, tipo, clave}) => {
+const LinkComprobantes = ({data, tipo, clave, year}) => {
 
-    const href = `${getSchemeAndHttpHost()}/fofoe/pagos/${FOFOE_TIPO_PAGOS[tipo]['sufijo_url']}?estado=${FOFOE_TIPO_PAGOS[tipo][clave]}`
+    const extra = FOFOE_TIPO_PAGOS[tipo].type ? `&type=${FOFOE_TIPO_PAGOS[tipo].type}&year=${year}` : '';
+    const href = `${getSchemeAndHttpHost()}/fofoe/pagos/${FOFOE_TIPO_PAGOS[tipo]['sufijo_url']}?estado=${FOFOE_TIPO_PAGOS[tipo][clave]}${extra}`
 
     return (
         <a href={href}>
@@ -83,9 +84,14 @@ const Inicio = ({years, metadata, data}) => {
                 'para la Excelencia Clínica y Quirúrgica'
         },
         {
-            'tipo': 'ESCUELA_ENFERMERIA',
+            'tipo': 'ESCUELA_ENFERMERIA_LICENCIATURA',
             'nombre': 'Enfermería',
-            'proceso': 'Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social'
+            'proceso': 'Escuela de Enfermería – Licenciatura'
+        },
+        {
+            'tipo': 'ESCUELA_ENFERMERIA_POSGRADO',
+            'nombre': 'Enfermería',
+            'proceso': 'Escuela de Enfermería – Posgrado'
         }
     ]
 
@@ -132,13 +138,13 @@ const Inicio = ({years, metadata, data}) => {
                                                 {area.tipo == 'CC' ?
                                                     <a href={getSchemeAndHttpHost('/fofoe/solicitud')}>{area.proceso}</a> : area.proceso}
                                             </td>
-                                            <td><LinkComprobantes data={data} tipo={area.tipo}
+                                            <td><LinkComprobantes data={data} tipo={area.tipo} year={metadata.year}
                                                                   clave={'pendientes_val'}/></td>
-                                            <td><LinkComprobantes data={data} tipo={area.tipo} clave={'no_validos'}/>
+                                            <td><LinkComprobantes data={data} tipo={area.tipo} year={metadata.year} clave={'no_validos'}/>
                                             </td>
-                                            <td><LinkComprobantes data={data} tipo={area.tipo}
+                                            <td><LinkComprobantes data={data} tipo={area.tipo} year={metadata.year}
                                                                   clave={'pendientes_facturacion'}/></td>
-                                            <td><LinkComprobantes data={data} tipo={area.tipo}
+                                            <td><LinkComprobantes data={data} tipo={area.tipo} year={metadata.year}
                                                                   clave={'validados_facturados'}/></td>
                                         </tr>
                                     )

@@ -21,6 +21,7 @@ function EnfermeriaShow({solicitud, qr}){
 					<div id="die-area">
 						<div className="row">
 							<div className="col-md-4">
+								<strong>Tipo de solicitud:</strong> {solicitud.typeFormatted}<br/>
 								<strong>Tipo de periodo:</strong> {solicitud.periodoFormatted}
 							</div>
 							<div className="col-md-4">

@@ -322,7 +322,7 @@ class AlumnoController extends DIEControllerController
                 'id', 'nombre', 'email', 'promedio', 'tipo', 'curp', 'monto', 'status',
                 'statusFormatted',
                 'solicitud' => [
-                    'id', 'periodo', 'fechaInicioFormatted', 'fechaFinFormatted',
+                    'id', 'type', 'typeFormatted', 'periodo', 'fechaInicioFormatted', 'fechaFinFormatted',
                     'unidad' => [
                         'id', 'nombre', 'nombreEnfermeria',
                     ],

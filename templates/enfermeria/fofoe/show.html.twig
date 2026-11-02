@@ -18,7 +18,7 @@
     <div class="section-md">
         <div class="container-fluid">
             <div class="container">
-                <h1 class="text-bold text-center mb-20">Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h1>
+                <h1 class="text-bold text-center mb-20">Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h1>
                 <div class="row">
                     <div class="col-md-12">
                         <div id="wrapper-page"></div>
@@ -33,6 +33,7 @@
     {{ parent() }}
     <script>
         window.Pago = {{ pago|json_encode(constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP'))|raw }};
+        window.YEAR = {{ year }};
     </script>
     {{ encore_entry_script_tags('fofoe.enfermeria.show') }}
 {% endblock %}

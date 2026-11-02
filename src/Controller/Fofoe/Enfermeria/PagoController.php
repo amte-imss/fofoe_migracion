@@ -44,6 +44,8 @@ class PagoController extends DIEControllerController
     {
         return $this->render('enfermeria/fofoe/index.html.twig', [
             'statusPago' => $request->query->get('estado', ''),
+            'type' => $request->query->get('type', ''),
+            'year' => $request->query->get('year', ''),
         ]);
     }
 

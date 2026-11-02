@@ -316,9 +316,22 @@ class PagoRepository extends ServiceEntityRepository implements PagoRepositoryIn
             default            => $qb->andWhere('pago.id < 0'),
         };
 
+        if (!empty($filters['type']) || !empty($filters['name'])) {
+            $qb->innerJoin('pago.escuelaEnfermeriaSolicitud', 'alumno');
+        }
+        if (in_array($filters['type'] ?? null, ['licenciatura', 'posgrado'], true)) {
+            $qb->innerJoin('alumno.solicitud', 'lote')
+                ->andWhere('lote.type = :type')
+                ->setParameter('type', $filters['type']);
+        }
+        if (!empty($filters['year']) && ctype_digit((string) $filters['year'])) {
+            $year = (int) $filters['year'];
+            $qb->andWhere('pago.fechaPago >= :yearStart AND pago.fechaPago < :yearEnd')
+                ->setParameter('yearStart', $year . '-01-01')
+                ->setParameter('yearEnd', ($year + 1) . '-01-01');
+        }
         if (!empty($filters['name'])) {
-            $qb->innerJoin('pago.escuelaEnfermeriaSolicitud', 'alumno')
-                ->andWhere('upper(alumno.nombre) like :name')
+            $qb->andWhere('upper(alumno.nombre) like :name')
                 ->setParameter('name', '%' . mb_strtoupper($filters['name']) . '%');
         }
 
