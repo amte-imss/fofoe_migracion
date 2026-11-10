@@ -37,18 +37,18 @@ class Solicitud implements UserInterface
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected $id;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\TipoSolicitud::class, inversedBy: 'solicitudes', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\TipoSolicitud::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_id', referencedColumnName: 'id')]
     private $tipoSolicitud;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Duracion::class, inversedBy: 'duraciones', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Duracion::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'duration_id', referencedColumnName: 'id')]
     private $duracion;
 
     #[ORM\Column(type: 'float', precision: 24, scale: 4, nullable: false)]
     private $amount;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Curso::class, inversedBy: 'solicitudes', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Curso::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'course_id', referencedColumnName: 'id')]
     private $curso;
 
@@ -58,7 +58,7 @@ class Solicitud implements UserInterface
     /**
      * @var string
      */
-    #[ORM\Column(type: 'string', length: 10, nullable: false)]
+    #[ORM\Column(type: 'string', length: 20, nullable: false)]
     private $status;
 
     /**

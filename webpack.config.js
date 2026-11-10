@@ -58,6 +58,14 @@ Encore
     // ── FOFOE / Enfermería ───────────────────────────────────────────────────
     .addEntry('fofoe.enfermeria.index', './assets/js/enfermeria/pages/fofoe/index.js')
     .addEntry('fofoe.enfermeria.show',  './assets/js/enfermeria/pages/fofoe/show.js')
+    // Educación Permanente
+    .addEntry('edu-per.index', './assets/js/edu_per/pages/index.js')
+    .addEntry('edu-per.create', './assets/js/edu_per/pages/create.js')
+    .addEntry('edu-per.login', './assets/js/edu_per/pages/login.js')
+    .addEntry('edu-per.participant.index', './assets/js/edu_per/pages/participant/index.js')
+    .addEntry('edu-per.participant.cargaComprobante', './assets/js/edu_per/pages/participant/cargaComprobante.js')
+    .addEntry('fofoe.edu-per.index', './assets/js/edu_per/pages/fofoe/index.js')
+    .addEntry('fofoe.edu-per.show', './assets/js/edu_per/pages/fofoe/show.js')
     .addStyleEntry('layout-formato-fofoe', './assets/css/formatos/fofoe/layout.scss')
 
     // ── Estilos compartidos ──────────────────────────────────────────────────

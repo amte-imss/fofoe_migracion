@@ -15,6 +15,11 @@ security:
                 class: App\Entity\Enfermeria\Alumno
                 property: curp
 
+        edu_per_participant_provider:
+            entity:
+                class: App\Entity\EduPer\Solicitud
+                property: id
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -29,6 +34,14 @@ security:
             provider: alumno_enfermeria_provider
             lazy: true
             custom_authenticator: App\Security\EnfermeriaAlumnoAuthenticator
+
+        edu_per_participant:
+            pattern: ^/edu-per/(request/login|participant)
+            provider: edu_per_participant_provider
+            lazy: true
+            custom_authenticator: App\Security\EduPerParticipantAuthenticator
+            logout:
+                path: edu-per.participant.logout
 
         main:
             lazy: true
@@ -52,6 +65,7 @@ security:
         - { path: '/aviso-privacidad',                               roles: PUBLIC_ACCESS }
         - { path: '^/enfermeria-alumno/login',                       roles: PUBLIC_ACCESS }
         - { path: '^/edu-per/request/login',                         roles: PUBLIC_ACCESS }
+        - { path: '^/edu-per/participant/logout',                    roles: PUBLIC_ACCESS }
         - { path: '^/enfermeria-alumno/cedula-fiscal',               roles: [ROLE_ENFERMERIA_ALUMNO, ROLE_FOFOE_INICIO, ROLE_FOFOE_VALIDAR_PAGO, ROLE_FOFOE_VALIDAR_PAGO_MULTIPLE, ROLE_FOFOE_REGISTRAR_FACTURA] }
         - { path: '^/enfermeria-alumno',                             roles: [ROLE_ENFERMERIA_ALUMNO] }
         - { path: '^/directorio',                                    roles: PUBLIC_ACCESS }
@@ -74,6 +88,7 @@ security:
         - { path: '^/fofoe/inicio',                                  roles: [ROLE_SUPER, ROLE_FOFOE_INICIO] }
         - { path: '^/fofoe/validar-pago$',                           roles: [ROLE_SUPER, ROLE_FOFOE_VALIDAR_PAGO] }
         - { path: '^/fofoe/validar-pago-multiple',                   roles: [ROLE_SUPER, ROLE_FOFOE_VALIDAR_PAGO_MULTIPLE] }
+        - { path: '^/fofoe/pagos/edu-per',                           roles: [ROLE_SUPER, ROLE_FOFOE_INICIO, ROLE_FOFOE_VALIDAR_PAGO, ROLE_FOFOE_VALIDAR_PAGO_MULTIPLE, ROLE_FOFOE_REGISTRAR_FACTURA] }
         - { path: '^/fofoe/pagos',                                   roles: [ROLE_SUPER, ROLE_FOFOE_INICIO, ROLE_FOFOE_REGISTRAR_FACTURA] }
         - { path: '^/fofoe/detalle-ie',                              roles: [ROLE_SUPER, ROLE_FOFOE_INICIO, ROLE_FOFOE_DETALLE_INSTITUCION_EDUCATIVA] }
         - { path: '^/fofoe/reporte_ingresos',                        roles: [ROLE_SUPER, ROLE_FOFOE_REPORTE_INGS] }

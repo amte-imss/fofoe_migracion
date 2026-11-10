@@ -41,10 +41,6 @@ class TipoSolicitud
     #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    #[ORM\OneToMany(targetEntity: \App\Entity\EduPer\Duracion::class, mappedBy: 'tipoSolicitud', cascade: ['persist'])]
-    #[ORM\OrderBy(['id' => 'ASC'])]
-    private $duraciones;
-
     public function __construct()
     {
         $this->createdAt = Carbon::now();

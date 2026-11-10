@@ -34,6 +34,9 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
+        if ($this->isGranted('ROLE_EDU_PER') || $this->isGranted('ROLE_SUPER')) {
+            yield MenuItem::linkToRoute('Educación Permanente', 'fa fa-book', 'edu-per.index');
+        }
         yield from $this->agreementMenu();
         yield from $this->posgradoMenu();
         // yield MenuItem::linkTo(SomeCrudController::class, 'The Label', 'fas fa-list');

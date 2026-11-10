@@ -5,7 +5,7 @@ namespace App\Entity\EduPer;
 use Carbon\Carbon;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: \App\Repository\EduPer\ModalityRepository::class)]
+#[ORM\Entity(repositoryClass: \App\Repository\EduPer\ModalidadRepository::class)]
 #[ORM\Table(name: 'edu_per_modalities')]
 class Modalidad
 {
@@ -41,7 +41,7 @@ class Modalidad
     #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\TipoSolicitud::class, inversedBy: 'duraciones', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\TipoSolicitud::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'type_id', referencedColumnName: 'id')]
     private $tipoSolicitud;
 
