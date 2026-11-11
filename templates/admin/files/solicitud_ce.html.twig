@@ -1,0 +1,20 @@
+{% extends '@EasyAdmin/page/content.html.twig' %}
+
+{% block head_stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('easyadmin.files.solicitud-ce.index') }}
+{% endblock %}
+
+{% block body_javascript %}
+    {{ parent() }}
+    <script>
+        window.SCHEMA_AND_HTTP_HOST = {{ url('homepage')|trim('/', side = 'right')|json_encode|raw }};
+    </script>
+    {{ encore_entry_script_tags('easyadmin.files.solicitud-ce.index') }}
+{% endblock %}
+
+{% block content_title %}Archivos de Solicitud de Ciclos Educativos{% endblock %}
+
+{% block main %}
+    <div class="react"></div>
+{% endblock %}

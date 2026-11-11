@@ -1,0 +1,7 @@
+{% if entity.instance.oficioAceptacion %}
+    <a href="{{ path('admin.posgrado.residencia.oficioAceptacion', {id: entity.instance.id}) }}" target="_blank">
+        <i class="fa fa-file-pdf"></i> Descargar Oficio (PDF)
+    </a>
+{% else %}
+    <span class="text-muted">Sin oficio</span>
+{% endif %}

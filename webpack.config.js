@@ -107,6 +107,10 @@ Encore
 
     .addEntry('admin.came.institucion.index','./assets/js/admin/conveniocame/institucion/IndexPage.js')
 
+    .addEntry('easyadmin.agreement-super.index', './assets/js/admin/AgreementSuper/IndexPage.js')
+    .addEntry('easyadmin.files.pagos.index', './assets/js/admin/files/Pago/IndexPage.js')
+    .addEntry('easyadmin.files.solicitud-ce.index', './assets/js/admin/files/SolicitudCE/IndexPage.js')
+
     // ── Imágenes ─────────────────────────────────────────────────────────────
     .copyFiles({ from: './assets/images', to: 'images/[path][name].[ext]' })
 

@@ -2,287 +2,246 @@
 
 namespace App\Controller\Admin;
 
+use App\Admin\Field\PlainField;
 use App\Entity\Delegacion;
 use App\Entity\Institucion;
 use App\Entity\Permiso;
 use App\Entity\Rol;
 use App\Entity\Unidad;
 use App\Entity\Usuario;
-use App\Repository\PermissionRepository;
-use App\Repository\RoleRepository;
-use App\Repository\UsuarioRepository;
+use App\Repository\Admin\AdminRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\QueryBuilder;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\KeyValueStore;
+use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
+use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/usuarios')]
-class UserCrudController extends AbstractController
+#[IsGranted('ROLE_ADM_FOFOE')]
+class UserCrudController extends AbstractCrudController
 {
+    private const string SUPER_PERMISSION_KEY = 'SUPER';
+
     public function __construct(
-        private EntityManagerInterface      $em,
-        private UserPasswordHasherInterface $hasher,
-        private UsuarioRepository           $usuarioRepo,
-        private RoleRepository              $roleRepo,
-        private PermissionRepository        $permissionRepo
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly EntityManagerInterface $em,
     ) {}
 
-    // ─── Listado ───────────────────────────────────────────────────────────
-    #[Route('', name: 'admin.usuarios.index', methods: ['GET'])]
-    public function index(Request $request): Response
+    public static function getEntityFqcn(): string
     {
-        $this->denyAccessUnlessGranted('ROLE_ADM_FOFOE');
-
-        $page    = max(1, (int) $request->query->get('page', 1));
-        $perPage = 20;
-        $q       = $request->query->get('q', '');
-
-        $isSuperAdmin = $this->isGranted('ROLE_SUPER');
-        $excludeSuper = !$isSuperAdmin;
-
-        if ($q) {
-            $qb = $this->usuarioRepo->createQueryBuilder('u')
-                ->where('u.nombre LIKE :q OR u.correo LIKE :q OR u.matricula LIKE :q')
-                ->setParameter('q', "%{$q}%")
-                ->orderBy('u.id', 'DESC');
-
-            if ($excludeSuper) {
-                $subQb = $this->usuarioRepo->createQueryBuilder('u2')
-                    ->select('u2.id')
-                    ->innerJoin('u2.permisos', 'p2')
-                    ->where('p2.clave = :super')
-                    ->getDQL();
-                $qb->andWhere($qb->expr()->notIn('u.id', $subQb))
-                   ->setParameter('super', 'SUPER');
-            }
-
-            $usuarios = $qb->getQuery()->getResult();
-            $total    = count($usuarios);
-        } else {
-            $usuarios = $this->usuarioRepo->findPaginatedExcludingSuper($page, $perPage, $excludeSuper);
-            $total    = (int) $this->usuarioRepo->createQueryBuilder('u')
-                ->select('COUNT(u.id)')
-                ->getQuery()
-                ->getSingleScalarResult();
-        }
-
-        return $this->render('admin/usuarios/index.html.twig', [
-            'usuarios'   => $usuarios,
-            'total'      => $total,
-            'page'       => $page,
-            'perPage'    => $perPage,
-            'totalPages' => (int) ceil($total / $perPage),
-            'q'          => $q,
-            'roles'      => $this->roleRepo->findAllOrdered(),
-        ]);
+        return Usuario::class;
     }
 
-    // ─── Crear ─────────────────────────────────────────────────────────────
-    #[Route('/nuevo', name: 'admin.usuarios.new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function configureCrud(Crud $crud): Crud
     {
-        $this->denyAccessUnlessGranted('ROLE_ADM_FOFOE');
-
-        if ($request->isMethod('POST')) {
-            return $this->save(new Usuario(), $request, true);
-        }
-
-        return $this->render('admin/usuarios/form.html.twig', [
-            'usuario'      => new Usuario(),
-            'roles'        => $this->roleRepo->findAllOrdered(),
-            'delegaciones' => $this->em->getRepository(Delegacion::class)->findBy([], ['nombre' => 'ASC']),
-            'instituciones' => $this->em->getRepository(Institucion::class)->findBy([], ['nombre' => 'ASC']),
-            'unidades'     => $this->em->getRepository(Unidad::class)->createQueryBuilder('u')
-                ->where('u.esUmae = true OR u.esEnfermeria = true')
-                ->orderBy('u.nombre', 'ASC')
-                ->getQuery()->getResult(),
-            'accion'       => 'Nuevo usuario',
-        ]);
-    }
-
-    // ─── Editar ────────────────────────────────────────────────────────────
-    #[Route('/{id}/editar', name: 'admin.usuarios.edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADM_FOFOE');
-
-        $usuario = $this->usuarioRepo->find($id);
-        if (!$usuario) {
-            throw $this->createNotFoundException('Usuario no encontrado.');
-        }
-
-        // Bloquear edición de SUPER a no-SUPER
-        if (!$this->isGranted('ROLE_SUPER') && in_array('ROLE_SUPER', $usuario->getRoles(), true)) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if ($request->isMethod('POST')) {
-            return $this->save($usuario, $request, false);
-        }
-
-        // Detectar rol actual del usuario (primer permiso que pertenezca a un rol)
-        $rolActual = null;
-        foreach ($usuario->getPermisos() as $permiso) {
-            if ($permiso->getRol()) {
-                $rolActual = $permiso->getRol()->getId();
-                break;
-            }
-        }
-
-        return $this->render('admin/usuarios/form.html.twig', [
-            'usuario'      => $usuario,
-            'roles'        => $this->roleRepo->findAllOrdered(),
-            'rolActual'    => $rolActual,
-            'delegaciones' => $this->em->getRepository(Delegacion::class)->findBy([], ['nombre' => 'ASC']),
-            'instituciones' => $this->em->getRepository(Institucion::class)->findBy([], ['nombre' => 'ASC']),
-            'unidades'     => $this->em->getRepository(Unidad::class)->createQueryBuilder('u')
-                ->where('u.esUmae = true OR u.esEnfermeria = true')
-                ->orderBy('u.nombre', 'ASC')
-                ->getQuery()->getResult(),
-            'accion'       => 'Editar usuario',
-        ]);
-    }
-
-    // ─── Activar/Desactivar ────────────────────────────────────────────────
-    #[Route('/{id}/toggle', name: 'admin.usuarios.toggle', methods: ['POST'])]
-    public function toggle(int $id): JsonResponse
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADM_FOFOE');
-
-        $usuario = $this->usuarioRepo->find($id);
-        if (!$usuario) {
-            return new JsonResponse(['ok' => false, 'message' => 'No encontrado.'], 404);
-        }
-
-        $usuario->setActivo(!$usuario->getActivo());
-        $this->em->flush();
-
-        return new JsonResponse(['ok' => true, 'activo' => $usuario->getActivo()]);
-    }
-
-    // ─── Eliminar ──────────────────────────────────────────────────────────
-    #[Route('/{id}/eliminar', name: 'admin.usuarios.delete', methods: ['POST'])]
-    public function delete(int $id): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        $usuario = $this->usuarioRepo->find($id);
-        if ($usuario) {
-            $this->em->remove($usuario);
-            $this->em->flush();
-            $this->addFlash('success', 'Usuario eliminado.');
-        }
-
-        return $this->redirectToRoute('admin.usuarios.index');
-    }
-
-    // ─── Lógica de guardado compartida ────────────────────────────────────
-    private function save(Usuario $usuario, Request $request, bool $esNuevo): Response
-    {
-        $data = $request->request;
-
-        $usuario->setNombre($data->get('nombre', ''));
-        $usuario->setApellidoPaterno($data->get('apellidoPaterno', ''));
-        $usuario->setApellidoMaterno($data->get('apellidoMaterno', ''));
-        $usuario->setCorreo($data->get('correo', ''));
-        $usuario->setMatricula($data->get('matricula', ''));
-        $usuario->setTelefono($data->get('telefono', ''));
-        $usuario->setCurp($data->get('curp', ''));
-        $usuario->setRfc($data->get('rfc', ''));
-        $usuario->setSexo($data->get('sexo', ''));
-        $regimsRaw = $data->get('regims', '');
-        $usuario->setRegims($regimsRaw !== '' ? (int) $regimsRaw : null);
-        $usuario->setActivo((bool) $data->get('activo', true));
-
-        $fechaIngresoRaw = $data->get('fechaIngreso', '');
-        if ($fechaIngresoRaw) {
-            $usuario->setFechaIngreso(new \DateTime($fechaIngresoRaw));
-        }
-
-        // Delegaciones OOAD — múltiples
-        $delegacionIds = $data->all('delegacionIds') ?? [];
-        $usuario->getDelegaciones()->clear();
-        foreach ($delegacionIds as $did) {
-            $delegacion = $this->em->getRepository(Delegacion::class)->find((int) $did);
-            if ($delegacion) {
-                $usuario->getDelegaciones()->add($delegacion);
-            }
-        }
-
-        // Delegación institución (OOAD institución)
-        $delegacionInstId = (int) $data->get('delegacionInstitucionId', 0);
-        if ($delegacionInstId) {
-            $delegacionInst = $this->em->getRepository(Delegacion::class)->find($delegacionInstId);
-            $usuario->setDelegacionInstitucion($delegacionInst ?: null);
-        } else {
-            $usuario->setDelegacionInstitucion(null);
-        }
-
-        // Institución
-        $institucionId = (int) $data->get('institucionId', 0);
-        if ($institucionId) {
-            $institucion = $this->em->getRepository(Institucion::class)->find($institucionId);
-            $usuario->setInstitucion($institucion ?: null);
-        } else {
-            $usuario->setInstitucion(null);
-        }
-
-        // Unidades (UMAE + Enfermería) — multivalor
-        $unidadIds = $data->all('unidadIds') ?? [];
-        $usuario->getUnidades()->clear();
-        foreach ($unidadIds as $uid) {
-            $unidad = $this->em->getRepository(Unidad::class)->find((int) $uid);
-            if ($unidad) {
-                $usuario->getUnidades()->add($unidad);
-            }
-        }
-
-        // Hash de contraseña
-        $plainPassword = $data->get('plainPassword', '');
-        if ($plainPassword) {
-            $hashed = $this->hasher->hashPassword($usuario, $plainPassword);
-            $usuario->setContrasena($hashed);
-        } elseif ($esNuevo) {
-            $this->addFlash('error', 'La contraseña es requerida para nuevos usuarios.');
-            return $this->render('admin/usuarios/form.html.twig', [
-                'usuario' => $usuario,
-                'roles'   => $this->roleRepo->findAllOrdered(),
-                'accion'  => $esNuevo ? 'Nuevo usuario' : 'Editar usuario',
+        return $crud
+            ->setEntityLabelInSingular('Usuario')
+            ->setEntityLabelInPlural('Usuarios')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Usuarios')
+            ->setSearchFields([
+                'matricula', 'delegaciones.nombre', 'unidades.nombre', 'permisos.nombre',
+                'nombre', 'apellidoPaterno', 'apellidoMaterno', 'correo', 'curp',
             ]);
-        }
-
-        // Asignar permisos según rol seleccionado
-        $rolId = (int) $data->get('rolId', 0);
-        if ($rolId) {
-            $this->removePermisosFromUser($usuario);
-            $rol = $this->roleRepo->find($rolId);
-            if ($rol) {
-                $this->setPermisosToUser($usuario, $rol);
-            }
-        }
-
-        $this->em->persist($usuario);
-        $this->em->flush();
-
-        $this->addFlash('success', $esNuevo ? 'Usuario creado correctamente.' : 'Usuario actualizado correctamente.');
-        return $this->redirectToRoute('admin.usuarios.index');
     }
 
-    private function removePermisosFromUser(Usuario $usuario): void
+    public function configureActions(Actions $actions): Actions
     {
-        foreach ($usuario->getPermisos() as $permiso) {
-            $usuario->removePermiso($permiso);
+        return $actions
+            ->update(Crud::PAGE_INDEX, Action::NEW, fn(Action $action): Action => $action->setLabel('Crear usuario'))
+            ->setPermission(Action::DETAIL, 'ROLE_SUPER');
+    }
+
+    public function configureFields(string $pageName): iterable
+    {
+        return in_array($pageName, [Crud::PAGE_EDIT, Crud::PAGE_NEW], true)
+            ? $this->formFields($pageName)
+            : $this->displayFields();
+    }
+
+    public function createIndexQueryBuilder(
+        SearchDto $searchDto,
+        EntityDto $entityDto,
+        FieldCollection $fields,
+        FilterCollection $filters
+    ): QueryBuilder {
+        $qb = parent::createIndexQueryBuilder($searchDto, $entityDto, $fields, $filters);
+
+        if ($this->isGranted('ROLE_SUPER')) {
+            return $qb;
+        }
+
+        // Non-super admins must not see users holding the SUPER permission
+        return $qb
+            ->andWhere(sprintf(
+                'NOT EXISTS (SELECT superUser.id FROM %s superUser JOIN superUser.permisos superPermission
+                    WHERE superUser = entity AND superPermission.clave = :superPermissionKey)',
+                Usuario::class
+            ))
+            ->setParameter('superPermissionKey', self::SUPER_PERMISSION_KEY);
+    }
+
+    public function createEditFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
+    {
+        /** @var Usuario $user */
+        $user = $entityDto->getInstance();
+
+        if (!$user->getPermisos()->isEmpty()) {
+            $user->setRol($user->getPermisos()->first()->getRol());
+        }
+
+        return parent::createEditFormBuilder($entityDto, $formOptions, $context);
+    }
+
+    public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        assert($entityInstance instanceof Usuario);
+
+        $this->assignPermissionsFromRole($entityInstance);
+        $this->syncInstitution($entityInstance);
+        $this->hashPlainPassword($entityInstance);
+
+        parent::persistEntity($entityManager, $entityInstance);
+    }
+
+    public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
+    {
+        assert($entityInstance instanceof Usuario);
+
+        // The role is only set by the edit form; inline updates (e.g. the "activo" toggle) must not touch permissions
+        if (null !== $entityInstance->getRol()) {
+            $this->removeAllPermissions($entityInstance);
+            $this->assignPermissionsFromRole($entityInstance);
+            $this->syncInstitution($entityInstance);
+            $this->hashPlainPassword($entityInstance);
+        }
+
+        parent::updateEntity($entityManager, $entityInstance);
+    }
+
+    private function displayFields(): iterable
+    {
+        yield Field::new('matricula', 'Matrícula');
+        yield TextField::new('fullName', 'Nombre')->setSortable(false);
+        yield Field::new('correo', 'Correo electrónico');
+        yield ArrayField::new('permisos', 'Rol / Permisos');
+        yield BooleanField::new('activo', 'Activo');
+        yield ArrayField::new('delegacionesUnidadesInstitucion', 'Delegaciones/Unidades/Institución');
+    }
+
+    private function formFields(string $pageName): iterable
+    {
+        yield Field::new('matricula', 'Matrícula / Usuario')->setRequired(true);
+        yield Field::new('nombre', 'Nombre')->setRequired(false);
+        yield Field::new('apellidoPaterno', 'Apellido paterno')->setRequired(false);
+        yield Field::new('apellidoMaterno', 'Apellido materno');
+        yield Field::new('correo', 'Correo electrónico')->setRequired(false);
+        yield Field::new('curp', 'CURP')->setRequired(false);
+        yield Field::new('rfc', 'RFC')->setRequired(false);
+        yield ChoiceField::new('sexo', 'Sexo')
+            ->setChoices(['Masculino' => 'Masculino', 'Femenino' => 'Femenino'])
+            ->setRequired(false);
+        yield BooleanField::new('activo', 'Activo');
+        yield TextField::new('plainPassword', 'Contraseña')
+            ->setFormType(PasswordType::class)
+            ->setRequired(Crud::PAGE_NEW === $pageName)
+            ->setHelp(Crud::PAGE_EDIT === $pageName ? 'Déjalo vacío para conservar la contraseña actual.' : '');
+        yield $this->entityFormField('rol', 'Rol', Rol::class, [
+            'choice_label' => 'nombre',
+            'expanded' => true,
+            'multiple' => false,
+            'required' => true,
+        ]);
+        yield $this->entityFormField('institucion', 'Institución', Institucion::class, [
+            'choice_label' => 'nombre',
+            'query_builder' => AdminRepository::getAllInstituciones(...),
+            'required' => false,
+        ]);
+        yield $this->entityFormField('delegacionInstitucion', 'OOAD-Institución', Delegacion::class, [
+            'choice_label' => 'nombre',
+            'query_builder' => AdminRepository::getAllDelegations(...),
+            'required' => false,
+        ]);
+        yield AssociationField::new('delegaciones', 'OOADs')
+            ->setFormTypeOptions([
+                'choice_label' => 'nombre',
+                'query_builder' => AdminRepository::getAllDelegations(...),
+            ]);
+        yield AssociationField::new('unidades', 'Unidades UMAE / Unidades Enfermería')
+            ->setFormTypeOptions([
+                'class' => Unidad::class,
+                'choice_label' => 'nombreDelegacionUnidad',
+                'query_builder' => AdminRepository::getAllUnidadesUMAEAndUnidadesEnfermeria(...),
+            ]);
+    }
+
+    /**
+     * Form-only EntityType field that works whether or not the property is a mapped Doctrine association.
+     */
+    private function entityFormField(string $property, string $label, string $class, array $options): PlainField
+    {
+        return PlainField::new($property, $label)
+            ->onlyOnForms()
+            ->setFormType(EntityType::class)
+            ->setFormTypeOptions(['class' => $class, ...$options]);
+    }
+
+    private function assignPermissionsFromRole(Usuario $user): void
+    {
+        $permissions = $this->em->getRepository(Permiso::class)->findBy(['rol' => $user->getRol()]);
+
+        foreach ($permissions as $permission) {
+            $user->addPermiso($permission);
         }
     }
 
-    private function setPermisosToUser(Usuario $usuario, Rol $rol): void
+    private function removeAllPermissions(Usuario $user): void
     {
-        $permisos = $this->permissionRepo->findByRolClave($rol->getClave());
-        foreach ($permisos as $permiso) {
-            $usuario->addPermiso($permiso);
+        foreach ($user->getPermisos()->toArray() as $permission) {
+            $user->removePermiso($permission);
         }
+    }
+
+    private function syncInstitution(Usuario $user): void
+    {
+        // A new user has no id yet, so it cannot be linked to any previous institution
+        if (null !== $user->getId()) {
+            $previousInstitution = $this->em->getRepository(Institucion::class)->findOneBy(['usuario' => $user]);
+            $previousInstitution?->setUsuario(null);
+            $previousInstitution?->setCorreo('');
+            $previousInstitution?->setRepresentante('');
+        }
+
+        $newInstitution = $user->getInstitucion();
+        $newInstitution?->setUsuario($user);
+        $newInstitution?->setCorreo($user->getCorreo());
+        $newInstitution?->setRepresentante($user->getFullName());
+    }
+
+    private function hashPlainPassword(Usuario $user): void
+    {
+        $plainPassword = $user->getPlainPassword();
+
+        if (empty($plainPassword)) {
+            return;
+        }
+
+        $user->setContrasena($this->passwordHasher->hashPassword($user, $plainPassword));
     }
 }
