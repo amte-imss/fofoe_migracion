@@ -53,7 +53,7 @@ class Duracion
     #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Modalidad::class, inversedBy: 'duraciones', cascade: ['persist'])]
+    #[ORM\ManyToOne(targetEntity: \App\Entity\EduPer\Modalidad::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'modality_id', referencedColumnName: 'id')]
     private $modalidad;
 

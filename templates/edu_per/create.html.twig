@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('edu-per.create') }}
+    
+    <style>
+        .wrapper-page{
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% include 'edu_per/_menu.twig' %}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Nuevo registro para Educación Permanente</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('edu-per.create') }}
+{% endblock %}

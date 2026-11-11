@@ -1,0 +1,16 @@
+const PERSON = 'person';
+const HOURS = 'hours';
+
+const PREFIX_SIM = 'sim-mod-';
+
+const CODE_RENTA_INSTALACIONES_SIMULADORES = 'sim-mod-6';
+
+const DURACION_LABEL_DEFAULT = 'Duración';
+
+const SIMULACION = 'simulacion';
+
+const LABEL_DURACION_SIMULACION = 'Unidad de Medida';
+
+const OTHER = 'other';
+
+export {PERSON, HOURS, OTHER, DURACION_LABEL_DEFAULT, CODE_RENTA_INSTALACIONES_SIMULADORES, PREFIX_SIM, SIMULACION, LABEL_DURACION_SIMULACION};

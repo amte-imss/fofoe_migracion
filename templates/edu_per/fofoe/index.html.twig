@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    {% include 'fofoe/menu.html.twig' with {'usuario': app.user} %}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Educacion Permanente</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+			window.STATUS_PAGO = '{{ statusPago | default('')}}';
+			window.SOLICITUD_TYPE = '{{ type | default('')}}';
+    </script>
+    {{ encore_entry_script_tags('fofoe.edu-per.index') }}
+{% endblock %}
