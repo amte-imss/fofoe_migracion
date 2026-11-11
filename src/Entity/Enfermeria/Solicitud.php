@@ -13,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'lote_escuelas_enfermeria')]
 class Solicitud
 {
+    public const TYPE_LICENCIATURA = 'licenciatura';
+    public const TYPE_POSGRADO = 'posgrado';
+
 
     /**
      * @var int
@@ -27,6 +30,9 @@ class Solicitud
      */
     #[ORM\Column(type: 'string', length: 10, nullable: false)]
     private $periodo;
+
+    #[ORM\Column(name: 'type', type: 'string', length: 20, nullable: false, options: ['default' => 'licenciatura'])]
+    private string $type = self::TYPE_LICENCIATURA;
 
     /**
      * @var \DateTime
@@ -75,6 +81,28 @@ class Solicitud
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): void
+    {
+        if ($type === null || $type === '') {
+            $this->type = '';
+            return;
+        }
+        if (!in_array($type, [self::TYPE_LICENCIATURA, self::TYPE_POSGRADO], true)) {
+            throw new \InvalidArgumentException('Tipo de solicitud de Enfermería no válido.');
+        }
+        $this->type = $type;
+    }
+
+    public function getTypeFormatted(): string
+    {
+        return $this->type === self::TYPE_POSGRADO ? 'Posgrado' : 'Licenciatura';
     }
 
     /**

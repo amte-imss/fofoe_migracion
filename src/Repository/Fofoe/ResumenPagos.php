@@ -190,7 +190,29 @@ final class ResumenPagos implements ResumenPagosInterface
 
     public function queryResumenEscuelasEnfermeria($filters): array
     {
-        return $this->fetchResumenView('v_estatus_pago_ef');
+        $year = (int) ($filters['year'] ?? Carbon::now()->year);
+        $query = <<<'SQL'
+            SELECT
+                COALESCE(SUM(CASE WHEN p.validado IS NULL THEN 1 ELSE 0 END), 0) AS pendientes_val,
+                COALESCE(SUM(CASE WHEN p.validado = false THEN 1 ELSE 0 END), 0) AS no_validos,
+                COALESCE(SUM(CASE WHEN p.validado = true AND p.requiere_factura = true
+                    AND (p.factura_generada = false OR p.factura_generada IS NULL)
+                    THEN 1 ELSE 0 END), 0) AS pendientes_facturacion,
+                COALESCE(SUM(CASE WHEN p.validado = true AND
+                    (p.requiere_factura = false OR
+                     (p.requiere_factura = true AND p.factura_generada = true))
+                    THEN 1 ELSE 0 END), 0) AS validados_facturados
+            FROM pago p
+            JOIN lote_alumno_escuela_enf a ON a.id = p.escuela_enf_alumno_id
+            JOIN lote_escuelas_enfermeria s ON s.id = a.lote_id
+            WHERE p.fecha_pago IS NOT NULL AND p.is_test = false AND s.type = :type
+              AND p.fecha_pago >= :year_start AND p.fecha_pago < :year_end
+            SQL;
+        return $this->entityManager->getConnection()->executeQuery($query, [
+            'type' => $filters['type'],
+            'year_start' => $year . '-01-01',
+            'year_end' => ($year + 1) . '-01-01',
+        ])->fetchAssociative();
     }
 
     public function queryResumenPosgradoExtNoIMSS($filters): array

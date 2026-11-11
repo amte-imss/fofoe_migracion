@@ -20,7 +20,7 @@ class ResumenPagosController extends DIEControllerController
         Request $request
     ): Response {
         $years       = $referenciaRepository->getYears();
-        $currentYear = $request->request->get('year', Carbon::now()->year);
+        $currentYear = $request->query->getInt('year', Carbon::now()->year);
 
         return $this->render('fofoe/inicio/index.html.twig', [
             'years' => $years,
@@ -32,7 +32,8 @@ class ResumenPagosController extends DIEControllerController
                 'PERMANENTE_PRESENCIAL' => $resumenPagos->resumenPagosEduPer(['year' => $currentYear, 'tipo' => 'pre'])['data'],
                 'PERMANENTE_DISTANCIA'  => $resumenPagos->resumenPagosEduPer(['year' => $currentYear, 'tipo' => 'dis'])['data'],
                 'PERMANENTE_SIMULACION' => $resumenPagos->resumenPagosEduPer(['year' => $currentYear, 'tipo' => 'sim'])['data'],
-                'ESCUELA_ENFERMERIA'    => $resumenPagos->resumePagosEscuelaEnfermeria(['year' => $currentYear])['data'],
+                'ESCUELA_ENFERMERIA_LICENCIATURA' => $resumenPagos->resumePagosEscuelaEnfermeria(['year' => $currentYear, 'type' => 'licenciatura'])['data'],
+                'ESCUELA_ENFERMERIA_POSGRADO' => $resumenPagos->resumePagosEscuelaEnfermeria(['year' => $currentYear, 'type' => 'posgrado'])['data'],
             ],
         ]);
     }

@@ -32,7 +32,7 @@ function EnfermeriaAlumnoIndex({usuario}) {
             <div>
                 <Loader show={isLoading}/>
                 <div className="container">
-                    <p><strong>Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro
+                    <p><strong>Escuelas de Enfermería del Instituto Mexicano del Seguro
                         Social: </strong>
                         <br/>
                         {usuario.solicitud.unidad.nombreEnfermeria}
@@ -40,6 +40,7 @@ function EnfermeriaAlumnoIndex({usuario}) {
                     <p><strong>Alumno: </strong>{usuario.nombre}</p>
                     <p><strong>CURP: </strong>{usuario.curp}</p>
                     <p><strong>Email: </strong>{usuario.email}</p>
+                    <p><strong>Tipo de solicitud: </strong>{usuario.solicitud.typeFormatted}</p>
                     <p><strong>Periodo: </strong>{usuario.solicitud.periodo}</p>
                     <p><strong>Fecha inicio: </strong>{usuario.solicitud.fechaInicioFormatted}</p>
                     <p><strong>Fecha fin: </strong>{usuario.solicitud.fechaFinFormatted}</p>

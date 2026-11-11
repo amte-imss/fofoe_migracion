@@ -38,6 +38,8 @@ class SolicitudController extends DIEControllerController
         $status = $request->query->get('estado', '');
         $filters = [
             'name' => $request->query->get('query', ''),
+            'type' => $request->query->get('type', ''),
+            'year' => $request->query->get('year', ''),
         ];
 
         $data = $this->em->getRepository(Pago::class)->findEscuelaEnfermeriaByStatus($status, $filters);
@@ -54,7 +56,7 @@ class SolicitudController extends DIEControllerController
                     'escuelaEnfermeriaSolicitud' => [
                         'nombre', 'statusFormatted',
                         'solicitud' => [
-                            'id', 'fechaInicioFormatted', 'fechaFinFormatted',
+                            'id', 'typeFormatted', 'fechaInicioFormatted', 'fechaFinFormatted',
                             'unidad' => ['nombre', 'id', 'nombreEnfermeria'],
                         ],
                     ],
@@ -64,7 +66,7 @@ class SolicitudController extends DIEControllerController
     }
 
     #[Route('/solicitud/{id}', name: 'fofoe.enfermeria.show', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function show(int $id): Response
+    public function show(int $id, Request $request): Response
     {
         $pago = $this->em->getRepository(Pago::class)->find($id);
 
@@ -79,7 +81,7 @@ class SolicitudController extends DIEControllerController
                 'escuelaEnfermeriaSolicitud' => [
                     'id', 'nombre', 'statusFormatted', 'idFormatted', 'email', 'status',
                     'solicitud' => [
-                        'id', 'fechaInicioFormatted', 'fechaFinFormatted',
+                        'id', 'type', 'typeFormatted', 'fechaInicioFormatted', 'fechaFinFormatted',
                         'unidad' => ['nombre', 'id', 'createdAtFormatted', 'nombreEnfermeria'],
                     ],
                 ],
@@ -87,6 +89,14 @@ class SolicitudController extends DIEControllerController
             ],
         ]);
 
-        return $this->render('enfermeria/fofoe/show.html.twig', ['pago' => $data]);
+        $paymentYear = $pago->getFechaPago() instanceof \DateTimeInterface
+            ? (int) $pago->getFechaPago()->format('Y')
+            : (int) date('Y');
+        $year = $request->query->getInt('year', $paymentYear);
+
+        return $this->render('enfermeria/fofoe/show.html.twig', [
+            'pago' => $data,
+            'year' => $year > 0 ? $year : $paymentYear,
+        ]);
     }
 }
