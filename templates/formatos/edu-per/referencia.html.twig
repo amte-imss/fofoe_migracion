@@ -1,8 +1,7 @@
 {%extends'formatos/base.html.twig'%}
 
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout-formato-fofoe.css')) }}">
-    <link rel="stylesheet" href="{{ absolute_url(asset('build/layout.css')) }}">
+    <style>{{ pdf_css|raw }}</style>
     <style>
         .center{
             text-align: center;
@@ -44,7 +43,7 @@
 
     <div class="container" style="border-bottom: 1px solid #a3a3a3">
         <div class="row">
-            <img src="{{absolute_url(asset('build/images/logo_IMSS.png'))}}" alt="IMSS" style="float: left; width: 80px" />
+            <img src="{{ logo_data_uri }}" alt="IMSS" style="float: left; width: 80px" />
             <h1 class="mt-20 mb-20" style="text-align: center; font-weight: bold; color: black;">Instituto Mexicano del Seguro Social</h1>
         </div>
         <p style="text-align: right; margin-top: 50px" class="mb-20" ><strong>Número de solicitud: {{ user.idFormatted|default("") }}</strong></p>

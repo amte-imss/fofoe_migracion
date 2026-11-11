@@ -141,7 +141,7 @@
         {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
         <div class="section-header"><div class="section-icon" style="background:#e6f4ee;"><i class="ti ti-school" style="color:var(--imss-green);"></i></div><span class="section-label">Educación Permanente</span><div class="section-divider"></div></div>
         <div class="row g-3 mb-4">
-            <div class="col-sm-6 col-lg-3"><a href="#" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-notebook" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Edu. Per.</div><div class="mod-sub">Educación permanente</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
+            <div class="col-sm-6 col-lg-3"><a href="{{ path('edu-per.index') }}" class="module-card p-4"><div class="d-flex align-items-center gap-3"><div class="mod-icon" style="background:#e6f4ee;"><i class="ti ti-notebook" style="color:var(--imss-green);"></i></div><div class="flex-fill"><div class="mod-title">Solicitudes Edu. Per.</div><div class="mod-sub">Educación permanente</div></div><i class="ti ti-chevron-right mod-arrow"></i></div></a></div>
         </div>
         {% endif %}
 

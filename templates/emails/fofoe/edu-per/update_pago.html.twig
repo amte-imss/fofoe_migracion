@@ -1,0 +1,30 @@
+{% extends 'emails/base.html.twig' %}
+{% block preheader %}
+    <span class="preheader">Actualización de validación de pago para curso de simulacion.</span>
+{% endblock %}
+{% block body %}
+    <td>
+        <main>
+            <h1 class="text-center text-green">Sistema de Administración del FOFOE</h1>
+            <p>Estimado, {{solicitud.participant}}</p>
+
+            <p>
+                El Instituto Mexicano del Seguro Social, te informamos que el pago para el curso de de Educación Permanente "{{ solicitud.curso.name }}"
+                ha sido
+                {% if status %}
+                    <span>Aceptado</span>
+                {% else %}
+                    <span>Rechazado</span>
+                {% endif %}
+            </p>
+
+            <p>Recibe un cordial saludo y quedamos a tus órdenes para cualquier aclaración o duda; comunícate con nosotros por medio del correo electrónico factura.fofoe@imss.gob.mx.</p>
+
+            <div class="text-center text-green">
+                <p>Atentamente</p>
+                <br><br>
+                Sistema de Administración del FOFOE
+            </div>
+        </main>
+    </td>
+{% endblock %}

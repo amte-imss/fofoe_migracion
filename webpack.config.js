@@ -58,6 +58,14 @@ Encore
     // ── FOFOE / Enfermería ───────────────────────────────────────────────────
     .addEntry('fofoe.enfermeria.index', './assets/js/enfermeria/pages/fofoe/index.js')
     .addEntry('fofoe.enfermeria.show',  './assets/js/enfermeria/pages/fofoe/show.js')
+    // Educación Permanente
+    .addEntry('edu-per.index', './assets/js/edu_per/pages/index.js')
+    .addEntry('edu-per.create', './assets/js/edu_per/pages/create.js')
+    .addEntry('edu-per.login', './assets/js/edu_per/pages/login.js')
+    .addEntry('edu-per.participant.index', './assets/js/edu_per/pages/participant/index.js')
+    .addEntry('edu-per.participant.cargaComprobante', './assets/js/edu_per/pages/participant/cargaComprobante.js')
+    .addEntry('fofoe.edu-per.index', './assets/js/edu_per/pages/fofoe/index.js')
+    .addEntry('fofoe.edu-per.show', './assets/js/edu_per/pages/fofoe/show.js')
     .addStyleEntry('layout-formato-fofoe', './assets/css/formatos/fofoe/layout.scss')
 
     // ── Estilos compartidos ──────────────────────────────────────────────────
@@ -106,6 +114,10 @@ Encore
     .addEntry('admin.institucion.edit','./assets/js/admin/institucion/EditPage.js')
 
     .addEntry('admin.came.institucion.index','./assets/js/admin/conveniocame/institucion/IndexPage.js')
+
+    .addEntry('easyadmin.agreement-super.index', './assets/js/admin/AgreementSuper/IndexPage.js')
+    .addEntry('easyadmin.files.pagos.index', './assets/js/admin/files/Pago/IndexPage.js')
+    .addEntry('easyadmin.files.solicitud-ce.index', './assets/js/admin/files/SolicitudCE/IndexPage.js')
 
     // ── Imágenes ─────────────────────────────────────────────────────────────
     .copyFiles({ from: './assets/images', to: 'images/[path][name].[ext]' })

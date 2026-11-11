@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('loader') }}
+    {{ encore_entry_link_tags('fofoe.edu-per.show') }}
+    
+    <style>
+        .wrapper-page{
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% include 'fofoe/menu.html.twig' with {'usuario': app.user} %}
+
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Educación Permanente</h1>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="wrapper-page"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+			window.Pago = {{ pago | json_encode | raw }};
+            window.SOLICITUD_TYPE = '{{ type | default('')}}';
+    </script>
+    {{ encore_entry_script_tags('fofoe.edu-per.show') }}
+
+{% endblock %}

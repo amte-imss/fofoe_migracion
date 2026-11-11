@@ -3,102 +3,53 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Permiso;
-use App\Repository\PermissionRepository;
-use App\Repository\RoleRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\Admin\AdminRepository;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/permisos')]
-class PermisoCrudController extends AbstractController
+#[IsGranted('ROLE_SUPER')]
+class PermisoCrudController extends AbstractCrudController
 {
-    public function __construct(
-        private EntityManagerInterface $em,
-        private PermissionRepository   $permissionRepo,
-        private RoleRepository         $roleRepo
-    ) {}
-
-    #[Route('', name: 'admin.permisos.index', methods: ['GET'])]
-    public function index(): Response
+    public static function getEntityFqcn(): string
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        return $this->render('admin/permisos/index.html.twig', [
-            'permisos' => $this->permissionRepo->findAllOrdered(),
-            'roles'    => $this->roleRepo->findAllOrdered(),
-        ]);
+        return Permiso::class;
     }
 
-    #[Route('/nuevo', name: 'admin.permisos.new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function configureCrud(Crud $crud): Crud
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        if ($request->isMethod('POST')) {
-            return $this->save(new Permiso(), $request);
-        }
-
-        return $this->render('admin/permisos/form.html.twig', [
-            'permiso' => new Permiso(),
-            'roles'   => $this->roleRepo->findAllOrdered(),
-            'accion'  => 'Nuevo permiso',
-        ]);
+        return $crud
+            ->setEntityLabelInSingular('Permiso')
+            ->setEntityLabelInPlural('Permisos')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Permisos');
     }
 
-    #[Route('/{id}/editar', name: 'admin.permisos.edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request): Response
+    public function configureActions(Actions $actions): Actions
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        $permiso = $this->permissionRepo->find($id);
-        if (!$permiso) {
-            throw $this->createNotFoundException('Permiso no encontrado.');
-        }
-
-        if ($request->isMethod('POST')) {
-            return $this->save($permiso, $request);
-        }
-
-        return $this->render('admin/permisos/form.html.twig', [
-            'permiso' => $permiso,
-            'roles'   => $this->roleRepo->findAllOrdered(),
-            'accion'  => 'Editar permiso',
-        ]);
+        return $actions->update(
+            Crud::PAGE_INDEX,
+            Action::NEW,
+            fn(Action $action): Action => $action->setLabel('Crear permiso')
+        );
     }
 
-    #[Route('/{id}/eliminar', name: 'admin.permisos.delete', methods: ['POST'])]
-    public function delete(int $id): Response
+    public function configureFields(string $pageName): iterable
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        $permiso = $this->permissionRepo->find($id);
-        if ($permiso) {
-            $this->em->remove($permiso);
-            $this->em->flush();
-            $this->addFlash('success', 'Permiso eliminado.');
-        }
-
-        return $this->redirectToRoute('admin.permisos.index');
-    }
-
-    private function save(Permiso $permiso, Request $request): Response
-    {
-        $data = $request->request;
-        $permiso->setNombre($data->get('nombre', ''));
-        $permiso->setClave(strtoupper($data->get('clave', '')));
-
-        $rolId = (int) $data->get('rolId', 0);
-        if ($rolId) {
-            $rol = $this->roleRepo->find($rolId);
-            $permiso->setRol($rol);
-        }
-
-        $this->em->persist($permiso);
-        $this->em->flush();
-
-        $this->addFlash('success', 'Permiso guardado correctamente.');
-        return $this->redirectToRoute('admin.permisos.index');
+        yield IdField::new('id')->hideOnForm();
+        yield Field::new('nombre', 'Nombre');
+        yield TextField::new('rol.nombre', 'Rol')->onlyOnIndex();
+        yield AssociationField::new('rol', 'Rol')
+            ->onlyOnForms()
+            ->setFormTypeOptions([
+                'choice_label' => 'nombre',
+                'query_builder' => AdminRepository::getAllRoles(...),
+            ]);
+        yield Field::new('clave', 'Clave');
     }
 }

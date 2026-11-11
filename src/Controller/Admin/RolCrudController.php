@@ -3,91 +3,56 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Rol;
-use App\Repository\RoleRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use App\Repository\Admin\AdminRepository;
+use App\Util\AdminUtil;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
+use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/admin/roles')]
-class RolCrudController extends AbstractController
+#[IsGranted('ROLE_SUPER')]
+class RolCrudController extends AbstractCrudController
 {
-    public function __construct(
-        private EntityManagerInterface $em,
-        private RoleRepository         $roleRepo
-    ) {}
-
-    #[Route('', name: 'admin.roles.index', methods: ['GET'])]
-    public function index(): Response
+    public static function getEntityFqcn(): string
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        return $this->render('admin/roles/index.html.twig', [
-            'roles' => $this->roleRepo->findAllOrdered(),
-        ]);
+        return Rol::class;
     }
 
-    #[Route('/nuevo', name: 'admin.roles.new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function configureCrud(Crud $crud): Crud
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        if ($request->isMethod('POST')) {
-            return $this->save(new Rol(), $request);
-        }
-
-        return $this->render('admin/roles/form.html.twig', [
-            'rol'   => new Rol(),
-            'accion' => 'Nuevo rol',
-        ]);
+        return $crud
+            ->setEntityLabelInSingular('Rol')
+            ->setEntityLabelInPlural('Roles')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Roles');
     }
 
-    #[Route('/{id}/editar', name: 'admin.roles.edit', methods: ['GET', 'POST'])]
-    public function edit(int $id, Request $request): Response
+    public function configureActions(Actions $actions): Actions
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        $rol = $this->roleRepo->find($id);
-        if (!$rol) {
-            throw $this->createNotFoundException('Rol no encontrado.');
-        }
-
-        if ($request->isMethod('POST')) {
-            return $this->save($rol, $request);
-        }
-
-        return $this->render('admin/roles/form.html.twig', [
-            'rol'   => $rol,
-            'accion' => 'Editar rol',
-        ]);
+        return $actions->update(
+            Crud::PAGE_INDEX,
+            Action::NEW,
+            fn(Action $action): Action => $action->setLabel('Crear rol')
+        );
     }
 
-    #[Route('/{id}/eliminar', name: 'admin.roles.delete', methods: ['POST'])]
-    public function delete(int $id): Response
+    public function configureFields(string $pageName): iterable
     {
-        $this->denyAccessUnlessGranted('ROLE_SUPER');
-
-        $rol = $this->roleRepo->find($id);
-        if ($rol) {
-            $this->em->remove($rol);
-            $this->em->flush();
-            $this->addFlash('success', 'Rol eliminado.');
-        }
-
-        return $this->redirectToRoute('admin.roles.index');
-    }
-
-    private function save(Rol $rol, Request $request): Response
-    {
-        $data = $request->request;
-        $rol->setNombre($data->get('nombre', ''));
-        $rol->setClave(strtoupper($data->get('clave', '')));
-
-        $this->em->persist($rol);
-        $this->em->flush();
-
-        $this->addFlash('success', 'Rol guardado correctamente.');
-        return $this->redirectToRoute('admin.roles.index');
+        yield IdField::new('id')->hideOnForm();
+        yield Field::new('nombre', 'Nombre');
+        yield Field::new('clave', 'Clave');
+        yield AssociationField::new('permisos', 'Permisos')
+            ->onlyOnForms()
+            ->renderAsNativeWidget()
+            ->setFormTypeOptions([
+                'choice_label' => AdminUtil::getPermissionName(...),
+                'query_builder' => AdminRepository::getAll(...),
+                'expanded' => true,
+                'multiple' => true,
+                'by_reference' => false,
+            ]);
     }
 }

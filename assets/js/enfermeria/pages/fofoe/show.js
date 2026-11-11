@@ -14,11 +14,17 @@ const numberFormat = new Intl.NumberFormat('es-MX', {
     maximumFractionDigits: 2
 })
 
-function ShowPage({pago}) {
+function ShowPage({pago, year}) {
 
     const [isLoading, setIsLoading] = React.useState(false);
     const [showPopup, setShowPopup] = React.useState(false);
     const [showRechazoPopup, setShowRechazoPopup] = React.useState(false);
+
+    const listUrl = (status) => {
+        const type = pago.escuelaEnfermeriaSolicitud.solicitud.type;
+        const params = new URLSearchParams({estado: status, type, year: String(year)});
+        return getSchemeAndHttpHost(`/fofoe/pagos/enfermeria/solicitud?${params}`);
+    };
 
     const handleAceptarPago = () => {
         Swal.fire(
@@ -40,7 +46,7 @@ function ShowPage({pago}) {
                             confirmButtonText: 'Aceptar',
                         }
                     ).then(() => {
-                        window.location.href = '/';
+                        window.location.href = listUrl(pago.requiereFactura ? 'invoice_pending' : 'validated');
                     })
                 }).finally(() => {
                     setIsLoading(false)
@@ -63,7 +69,7 @@ function ShowPage({pago}) {
                     confirmButtonText: 'Aceptar',
                 }
             ).then(() => {
-                window.location.href = getSchemeAndHttpHost();
+                window.location.href = listUrl('validated');
             })
         }).finally(() => {
             setIsLoading(false);
@@ -82,7 +88,7 @@ function ShowPage({pago}) {
                     confirmButtonText: 'Aceptar',
                 }
             ).then(() => {
-                window.location.href = getSchemeAndHttpHost();
+                window.location.href = listUrl('rejected');
             })
         }).finally(() => {
             setIsLoading(false)
@@ -126,6 +132,7 @@ function ShowPage({pago}) {
                                     Solicitud: <strong>{pago.escuelaEnfermeriaSolicitud.idFormatted}</strong></p>
                                     <p className="mb-5">Fecha de registro: <strong>{pago.fechaPagoFormatted}</strong>
                                     </p>
+                                    <p className="mb-5">Tipo de solicitud: <strong>{pago.escuelaEnfermeriaSolicitud.solicitud.typeFormatted}</strong></p>
                                     <p className="mb-5">Tipo de pago: <strong>Único</strong></p>
                                     <p className="mb-5">Monto total de la
                                         solicitud: <strong>$ {numberFormat.format(pago.monto)}</strong></p>
@@ -353,6 +360,6 @@ const FormRechazo =  ({onClose, onSubmit}) => {
 document.addEventListener('DOMContentLoaded', () => {
     const root = createRoot(document.getElementById('wrapper-page'));
     root.render(
-        <ShowPage pago={window.Pago}/>
+        <ShowPage pago={window.Pago} year={window.YEAR}/>
     );
 })

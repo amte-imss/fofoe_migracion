@@ -5,17 +5,19 @@ import Loader from "../../../components/Loader/Loader";
 import {filterSimulacionInstitucionTipoUsuario, getSchemeAndHttpHost} from "../../../utils";
 
 
-function IndexPage({statusPago}) {
+function IndexPage({statusPago, type, year}) {
 	const [isLoading, setIsLoading] = React.useState(true);
 	const [pagos, setPagos] = React.useState([]);
+	const [query, setQuery] = React.useState('');
+	const [search, setSearch] = React.useState('');
 
 	React.useEffect(() => {
-		api.getFofoeSolicitudes(statusPago).then(data => {
+		api.getFofoeSolicitudes(statusPago, search, type, year).then(data => {
 			setPagos(data.data);
 		}).finally(() => {
 			setIsLoading(false);
 		});
-	}, [])
+	}, [statusPago, search, type, year])
 
 	return (
 		<>
@@ -28,12 +30,12 @@ function IndexPage({statusPago}) {
 								<div className="form-group">
 									<input name="query" className="form-control" type="text"
 												 placeholder="Nombre"
-												 width=""/>
+												 value={query} onChange={event => setQuery(event.target.value)} width=""/>
 								</div>
 								<span className="help-block"> </span></div>
 							<div className="col-md-2 mt-20">
 								<div className="form-group">
-									<button className="form-control btn btn-success">Buscar</button>
+									<button className="form-control btn btn-success" onClick={() => setSearch(query)}>Buscar</button>
 								</div>
 							</div>
 						</div>
@@ -46,6 +48,7 @@ function IndexPage({statusPago}) {
 											<th>Fecha Creación</th>
 											<th>Escuela Enfermeria</th>
 											<th>Alumno</th>
+											<th>Tipo</th>
 											<th>Periodo</th>
 											<th>Estatus</th>
 											<th></th>
@@ -59,10 +62,11 @@ function IndexPage({statusPago}) {
 														<td>{item.fechaPagoFormatted}</td>
 														<td>{item.escuelaEnfermeriaSolicitud.solicitud.unidad.nombreEnfermeria}</td>
 														<td>{item.escuelaEnfermeriaSolicitud.nombre}</td>
+														<td>{item.escuelaEnfermeriaSolicitud.solicitud.typeFormatted}</td>
 														<td>{item.escuelaEnfermeriaSolicitud.solicitud.fechaInicioFormatted} - {item.escuelaEnfermeriaSolicitud.solicitud.fechaFinFormatted}</td>
 														<td>{item.statusFormatted || 'En proceso'}</td>
 														<td>
-															<a href={`${getSchemeAndHttpHost()}/fofoe/enfermeria/solicitud/${item.id}`}>Detalle</a>
+																	<a href={getSchemeAndHttpHost(`/fofoe/enfermeria/solicitud/${item.id}?year=${encodeURIComponent(year || '')}`)}>Detalle</a>
 														</td>
 													</tr>
 												)
@@ -82,5 +86,5 @@ function IndexPage({statusPago}) {
 }
 
 createRoot(document.getElementById('wrapper-page')).render(
-	<IndexPage statusPago={window.STATUS_PAGO}/>
+	<IndexPage statusPago={window.STATUS_PAGO} type={window.SOLICITUD_TYPE} year={window.YEAR}/>
 )

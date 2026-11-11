@@ -47,13 +47,23 @@ export const FOFOE_TIPO_PAGOS = {
     'sufijo_url': 'edu-per/solicitud/simulacion',
     'sufijo_api': '/edu-per/solicitud/simulacion'
   },
-  'ESCUELA_ENFERMERIA': {
+  'ESCUELA_ENFERMERIA_LICENCIATURA': {
     'pendientes_val': 'wait_validation',
     'no_validos': 'rejected',
     'pendientes_facturacion': 'invoice_pending',
     'validados_facturados': 'validated',
     'sufijo_url': 'enfermeria/solicitud',
-    'sufijo_api': '/enfermeria/solicitud'
+    'sufijo_api': '/enfermeria/solicitud',
+    'type': 'licenciatura'
+  },
+  'ESCUELA_ENFERMERIA_POSGRADO': {
+    'pendientes_val': 'wait_validation',
+    'no_validos': 'rejected',
+    'pendientes_facturacion': 'invoice_pending',
+    'validados_facturados': 'validated',
+    'sufijo_url': 'enfermeria/solicitud',
+    'sufijo_api': '/enfermeria/solicitud',
+    'type': 'posgrado'
   }
 }
 

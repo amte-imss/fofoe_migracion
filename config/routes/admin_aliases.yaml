@@ -1,0 +1,8 @@
+admin.home:
+    alias: admin
+
+admin.files.pagos:
+    alias: admin_files_pagos
+
+admin.files.solicitud-ce:
+    alias: admin_files_solicitud_ce

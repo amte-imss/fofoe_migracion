@@ -6,6 +6,7 @@ use App\Entity\Posgrado\Residencia;
 use Doctrine\ORM\QueryBuilder;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FieldCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Collection\FilterCollection;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\SearchDto;
@@ -17,6 +18,16 @@ abstract class AbstractResidenciaCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Residencia::class;
+    }
+
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setSearchFields([
+            'delegacion', 'especialidad', 'sede', 'folio', 'ciclo',
+            'residente.nacionalidad', 'residente.usuario.nombre',
+            'residente.usuario.apellidoPaterno', 'residente.usuario.apellidoMaterno',
+            'residente.usuario.correo',
+        ]);
     }
 
     public function createIndexQueryBuilder(

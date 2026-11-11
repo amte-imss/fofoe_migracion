@@ -49,9 +49,9 @@ class ConveniosCamexController extends DIEControllerController
     {
         if ($request->isXmlHttpRequest()) {
             $serializer = new ConvenioNormalizer();
-            $page       = $request->get('page', 1);
-            $perPage    = $request->get('perPage', 20);
-            $search     = $request->get('search', '');
+            $page       = (int) $this->input($request, 'page', 1);
+            $perPage    = (int) $this->input($request, 'perPage', 20);
+            $search     = (string) $this->input($request, 'search', '');
 
             /** @var \App\Entity\Usuario $user */
             $user = $this->getUser();
@@ -154,12 +154,12 @@ class ConveniosCamexController extends DIEControllerController
             try {
                 /** @var \App\Entity\Convenio $data */
                 $data   = $formulario->getData();
-                $params = $request->get('appbundle_convenio_admin');
+                $params = $request->request->all('appbundle_convenio_admin');
 
                 $data->setVigencia($data->getFechaVenceConvenio());
-                $data->setCartaIntencion(boolval($params['cartaIntencion']));
-                $data->setTodasDelegaciones(boolval($params['todasDelegaciones']));
-                $data->setTodosCiclosAcademicos(boolval($params['todosCiclosAcademicos']));
+                $data->setCartaIntencion(!empty($params['cartaIntencion']));
+                $data->setTodasDelegaciones(!empty($params['todasDelegaciones']));
+                $data->setTodosCiclosAcademicos(!empty($params['todosCiclosAcademicos']));
 
                 if ($this->isGranted('ROLE_JDES') || $this->isGranted('ROLE_JDES_MINUS')) {
                     $data->setIsUmae(true);
@@ -180,7 +180,7 @@ class ConveniosCamexController extends DIEControllerController
                 $this->em->persist($data);
                 $this->em->flush();
 
-                if (isset($params['delegaciones'])) {
+                if (!empty($params['delegaciones'])) {
                     foreach ($params['delegaciones'] as $delegacionId) {
                         $dc = new ConvenioDelegacion();
                         $dc->setConvenio($data);
@@ -190,7 +190,7 @@ class ConveniosCamexController extends DIEControllerController
                     $data->setDelegacion($delegacionRepo->find($params['delegaciones'][0]));
                 }
 
-                if (isset($params['ciclosAcademicos'])) {
+                if (!empty($params['ciclosAcademicos'])) {
                     foreach ($params['ciclosAcademicos'] as $cicloId) {
                         $cca = new ConvenioCicloAcademico();
                         $cca->setConvenio($data);
@@ -253,7 +253,7 @@ class ConveniosCamexController extends DIEControllerController
         if ($formulario->isSubmitted() && $formulario->isValid()) {
             /** @var \App\Entity\Convenio $data */
             $data   = $formulario->getData();
-            $params = $request->get('appbundle_convenio_admin');
+            $params = $request->request->all('appbundle_convenio_admin');
 
             $data->setVigencia($data->getFechaVenceConvenio());
 
@@ -264,7 +264,7 @@ class ConveniosCamexController extends DIEControllerController
                 $this->em->remove($cca);
             }
 
-            if (isset($params['delegaciones'])) {
+            if (!empty($params['delegaciones'])) {
                 foreach ($params['delegaciones'] as $delegacionId) {
                     $dc = new ConvenioDelegacion();
                     $dc->setConvenio($convenio);
@@ -274,7 +274,7 @@ class ConveniosCamexController extends DIEControllerController
                 $data->setDelegacion($delegacionRepo->find($params['delegaciones'][0]));
             }
 
-            if (isset($params['ciclosAcademicos'])) {
+            if (!empty($params['ciclosAcademicos'])) {
                 foreach ($params['ciclosAcademicos'] as $cicloId) {
                     $cca = new ConvenioCicloAcademico();
                     $cca->setConvenio($convenio);
@@ -283,9 +283,9 @@ class ConveniosCamexController extends DIEControllerController
                 }
             }
 
-            $data->setCartaIntencion(boolval($params['cartaIntencion']));
-            $data->setTodasDelegaciones(boolval($params['todasDelegaciones']));
-            $data->setTodosCiclosAcademicos(boolval($params['todosCiclosAcademicos']));
+            $data->setCartaIntencion(!empty($params['cartaIntencion']));
+            $data->setTodasDelegaciones(!empty($params['todasDelegaciones']));
+            $data->setTodosCiclosAcademicos(!empty($params['todosCiclosAcademicos']));
 
             $this->em->persist($data);
             $this->em->flush();
@@ -305,7 +305,7 @@ class ConveniosCamexController extends DIEControllerController
     #[Route('/admin/convenioscame/convenioscame/show', name: 'admin.convenioscame.convenioscame.show', methods: ['GET', 'POST'])]
     public function show(Request $request): Response
     {
-        $convenio = $this->em->getRepository(Convenio::class)->find($request->get('id'));
+        $convenio = $this->em->getRepository(Convenio::class)->find($this->input($request, 'id'));
 
         return $this->render('admin/conveniocamex/show.html.twig', [
             'convenio' => $convenio,
@@ -319,7 +319,7 @@ class ConveniosCamexController extends DIEControllerController
         $conveniosColl = ['status' => 'no', 'data' => null];
 
         $institucionRepo = $this->em->getRepository(EntityInstitucion::class);
-        $objsInstituciones = $institucionRepo->getInstitucionPorRFC($request->get('rfc'));
+        $objsInstituciones = $institucionRepo->getInstitucionPorRFC($this->input($request, 'rfc'));
 
         $convenioRepo = $this->em->getRepository(Convenio::class);
         $conveniosColl['data'] = $convenioRepo->getConveniosPorRfcDeInstitucion($objsInstituciones);
@@ -337,7 +337,7 @@ class ConveniosCamexController extends DIEControllerController
     public function getCarrera(Request $request): Response
     {
         $esOtra  = ['status' => 'no'];
-        $carrera = $this->em->getRepository(Carrera::class)->find($request->get('selectedId'));
+        $carrera = $this->em->getRepository(Carrera::class)->find($this->input($request, 'selectedId'));
 
         if (str_contains(strtolower($carrera->getNombre()), 'otra')) {
             $esOtra = ['status' => 'si'];
@@ -350,7 +350,7 @@ class ConveniosCamexController extends DIEControllerController
     public function getNivelAcademico(Request $request): Response
     {
         $result = ['status' => 'no', 'data' => null];
-        $nivel  = $this->em->getRepository(\App\Entity\NivelAcademico::class)->find($request->get('selectedId'));
+        $nivel  = $this->em->getRepository(\App\Entity\NivelAcademico::class)->find($this->input($request, 'selectedId'));
 
         if (!empty($nivel)) {
             $result['status'] = 'si';
@@ -364,7 +364,7 @@ class ConveniosCamexController extends DIEControllerController
     public function getDisciplina(Request $request): Response
     {
         $result     = ['status' => 'no', 'data' => null];
-        $disciplina = $this->em->getRepository(\App\Entity\Disciplina::class)->find($request->get('selectedId'));
+        $disciplina = $this->em->getRepository(\App\Entity\Disciplina::class)->find($this->input($request, 'selectedId'));
 
         if (!empty($disciplina)) {
             $result['status'] = 'si';

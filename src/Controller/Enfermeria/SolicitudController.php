@@ -11,10 +11,12 @@ use App\Form\Type\Enfermeria\AlumnoType;
 use App\Form\Type\Enfermeria\SolicitudType;
 use App\Repository\ConfiguracionGlobalRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
@@ -70,7 +72,7 @@ class SolicitudController extends DIEControllerController
                 'json',
                 [
                     'attributes' => [
-                        'id', 'periodo', 'createdAtFormatted', 'fechaInicioFormatted',
+                        'id', 'type', 'typeFormatted', 'periodo', 'createdAtFormatted', 'fechaInicioFormatted',
                         'fechaFinFormatted', 'periodoFormatted', 'unidad' => ['id', 'nombre', 'claveUnidad', 'nombreEnfermeria'],
                     ],
                 ]
@@ -108,7 +110,7 @@ class SolicitudController extends DIEControllerController
             'json',
             [
                 'attributes' => [
-                    'id', 'periodo', 'fechaInicioFormatted', 'fechaFinFormatted', 'periodoFormatted',
+                    'id', 'type', 'typeFormatted', 'periodo', 'fechaInicioFormatted', 'fechaFinFormatted', 'periodoFormatted',
                     'alumnos' => ['id', 'nombre', 'email', 'promedio', 'tipo', 'curp', 'monto', 'status', 'statusFormatted'],
                 ],
             ]
@@ -139,6 +141,9 @@ class SolicitudController extends DIEControllerController
         if ($formulario->isSubmitted() && $formulario->isValid()) {
             /** @var Solicitud $data */
             $data = $formulario->getData();
+            if ($data->getType() === Solicitud::TYPE_POSGRADO) {
+                $data->setPeriodo('cuatri');
+            }
             $this->em->persist($data);
             $this->em->flush();
 
@@ -169,7 +174,16 @@ class SolicitudController extends DIEControllerController
         if ($formulario->isSubmitted() && $formulario->isValid()) {
             /** @var Alumno $data */
             $data = $formulario->getData();
-            $monto = $configuracionGlobalRepository->findMontoEF($data->getTipo());
+            $solicitud = $data->getSolicitud();
+            $monto = $solicitud ? $configuracionGlobalRepository->findMontoEF($data->getTipo(), $solicitud->getType()) : null;
+            if (!$monto) {
+                $formulario->get('tipo')->addError(new FormError('Tipo de alumno no permitido o cuota no configurada para esta solicitud.'));
+                return new JsonResponse([
+                    'status' => false,
+                    'message' => 'Tipo de alumno no permitido o cuota no configurada.',
+                    'errors' => $this->getFormErrors($formulario),
+                ], 400);
+            }
             $data->setMonto((float) $monto->getValor());
             $this->em->persist($data);
             $this->em->flush();
@@ -205,9 +219,9 @@ class SolicitudController extends DIEControllerController
             return $this->httpErrorResponse('Not Found', Response::HTTP_NOT_FOUND);
         }
 
-        $content = "CURP,NOMBRE,EMAIL,TIPO ALUMNO,MONTO,ESTADO PROCESO\n";
+        $content = "CURP,NOMBRE,EMAIL,TIPO SOLICITUD,TIPO ALUMNO,MONTO,ESTADO PROCESO\n";
         foreach ($solicitud->getAlumnos() as $alumno) {
-            $content .= "{$alumno->getCurp()},{$alumno->getNombre()},{$alumno->getEmail()},{$alumno->getTipo()},{$alumno->getMonto()},{$alumno->getStatusFormatted()}\n";
+            $content .= "{$alumno->getCurp()},{$alumno->getNombre()},{$alumno->getEmail()},{$solicitud->getTypeFormatted()},{$alumno->getTipo()},{$alumno->getMonto()},{$alumno->getStatusFormatted()}\n";
         }
 
         return new Response($content, 200, [

@@ -21,9 +21,10 @@
         <div class='container-fluid'>
             <div class='container'>
                 <h1 class="text-bold text-center mb-20">Bienvenido</h1>
-                <h2 class="text-bold text-center mb-20">Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h2>
+                <h2 class="text-bold text-center mb-20">Escuelas de Enfermería del Instituto Mexicano del Seguro Social</h2>
                 <h2 class="text-bold text-center mb-20">{{ solicitud.unidad.nombreEnfermeria }}</h2>
-                <h3 class="text-bold text-center mb-20">Tipo: {{ solicitud.periodo | capitalize }}</h3>
+                <h3 class="text-bold text-center mb-20">Tipo de solicitud: {{ solicitud.typeFormatted }}</h3>
+                <h3 class="text-bold text-center mb-20">Periodo: {{ solicitud.periodoFormatted }}</h3>
                 <h3 class="text-bold text-center mb-20">Periodo: {{ solicitud.fechaInicioFormatted }}
                     - {{ solicitud.fechaFinFormatted }}</h3>
                 <div class="row">

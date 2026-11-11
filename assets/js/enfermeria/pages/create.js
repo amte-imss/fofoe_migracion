@@ -15,9 +15,11 @@ import 'sweetalert2/src/sweetalert2.scss';
 import readXlsxFile from "read-excel-file";
 import './create.css';
 
-const validTypes = ['EXTERNO', 'HIJO DE TRABAJADOR', 'EXTRAORDINARIO'];
-
 function EnfermeriaCreate({asCame, escuelaId, ooad}) {
+    const [type, setType] = React.useState('');
+    const validTypes = type === 'posgrado'
+        ? ['EXTERNO', 'HIJO DE TRABAJADOR']
+        : type === 'licenciatura' ? ['EXTERNO', 'HIJO DE TRABAJADOR', 'EXTRAORDINARIO'] : [];
     const [isLoading, setIsLoading] = React.useState(true);
     const [errors, setErrors] = React.useState({});
     const [showTable, setShowTable] = React.useState(false);
@@ -40,7 +42,6 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
     }
 
     React.useEffect(() => {
-        document.querySelector('[name="solicitud[periodo]"]').value = 'semestral';
         if ((asCame || (!asCame && !escuelaId)) && ooad) {
             // CAME con OOAD, o IE sin escuela asignada pero con OOAD: filtrar por OOAD
             fetch(getSchemeAndHttpHost(`/came/api/unidad_enfermeria/${ooad}`)).then(response => response.json()).then(({data}) => {
@@ -71,7 +72,7 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
                 });
             }
         }
-    }, [data])
+    }, [data, type])
 
     const onProcessCsv = (event) => {
         setIsLoading(true);
@@ -134,10 +135,14 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
         const inputValues = {};
         inputValues['solicitud[fechaInicio]'] = event.target['fechaInicio'].value;
         inputValues['solicitud[fechaFin]']    = event.target['fechaFin'].value;
-        inputValues['solicitud[periodo]']     = event.target['solicitud[periodo]'].value;
+        inputValues['solicitud[type]']        = type;
+        inputValues['solicitud[periodo]']     = type === 'posgrado' ? 'cuatri' : event.target['solicitud[periodo]'].value;
         inputValues['solicitud[unidad]']      = event.target['solicitud[unidad]'].value;
         api.storeSolicitud(objectToFormData(inputValues)).then(({data}) => {
             return storeAlumnos(data.id);
+        }).catch(() => {
+            setShowPopup(false);
+            Swal.fire('No se pudo registrar la solicitud', 'Verifique los datos e inténtelo de nuevo.', 'error');
         }).finally(() => {
             setIsLoading(false);
         });
@@ -256,6 +261,24 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
                                 <input type="hidden" name={'solicitud[unidad]'} value={escuelaId}/>
                             }
                             <fieldset className="fieldset">
+                                <div className="row">
+                                    <div className="col-md-12">
+                                        <div className="form-group">
+                                            <label htmlFor="solicitud-type">Tipo de solicitud<span className="text-danger">*</span></label>
+                                            <select id="solicitud-type" name="solicitud[type]" className="form-control"
+                                                    defaultValue="" required onChange={event => {
+                                                        setType(event.target.value);
+                                                        setData([]);
+                                                        setShowTable(false);
+                                                    }}>
+                                                <option value="">Seleccionar...</option>
+                                                <option value="licenciatura">Licenciatura</option>
+                                                <option value="posgrado">Posgrado</option>
+                                            </select>
+                                            <p className="help-block">{errors["solicitud[type]"]}</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 {
                                     asCame &&
                                     <div className="row">
@@ -287,18 +310,15 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
                                             className={`form-group ${errors["solicitud[periodo]"] ? 'has-error' : ''}`}>
                                             <label htmlFor="input-tipo-periodo">Tipo periodo<span
                                                 className="text-danger">*</span></label>
-                                            <select
-                                                className="form-control"
-                                                id="input-tipo-periodo"
-                                                name={'solicitud[periodo]'}
-                                                required
-                                                readOnly
-                                            >
-                                                <option value="">Seleccionar...</option>
+                                            {type === 'posgrado' ? <>
+                                                <input id="input-tipo-periodo" className="form-control" readOnly value="Cuatrimestre"/>
+                                                <input type="hidden" name="solicitud[periodo]" value="cuatri"/>
+                                            </> : <select className="form-control" id="input-tipo-periodo"
+                                                         name="solicitud[periodo]" defaultValue="semestral" required>
                                                 <option value="anual">Anual</option>
                                                 <option value="semestral">Semestral</option>
                                                 <option value="cuatri">Cuatrimestre</option>
-                                            </select>
+                                            </select>}
                                             <p className="help-block">{errors["solicitud[periodo]"]}</p>
                                         </div>
                                     </div>
@@ -324,15 +344,17 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
                                 <div className="row">
                                     <div className="col-md-4">
                                         <div className={`form-group ${errors["file"] ? 'has-error' : ''}`}>
-                                            <InputFile handleInputChange={onProcessXlsx}/>
+                                            {type ? <InputFile key={type} handleInputChange={onProcessXlsx}/> :
+                                                <p>Seleccione primero el tipo de solicitud.</p>}
                                         </div>
                                     </div>
                                     <div className="col-md-4">
                                         <div className={`form-group`}>
                                             <label htmlFor="link-layout"> </label>
-                                            <a id="link-layout" href={`${getSchemeAndHttpHost('/files/layout.xlsx')}`}
-                                               target={'_blank'}
-                                               className={'form-contol'}>Descargar layout de carga</a>
+                                            {type && <a id="link-layout"
+                                                        href={getSchemeAndHttpHost(type === 'posgrado' ? '/files/layout-posgrado.xlsx' : '/files/layout.xlsx')}
+                                                        target="_blank" rel="noopener noreferrer"
+                                                        className="form-contol">Descargar layout de {type === 'licenciatura' ? 'licenciatura' : 'posgrado'}</a>}
                                         </div>
                                     </div>
                                     <div className="col-md-4">
@@ -345,16 +367,16 @@ function EnfermeriaCreate({asCame, escuelaId, ooad}) {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="row">
+                                {type && <div className="row">
                                     <div className="col-md-6">
                                         <p><strong>Nota: </strong> Los tipos de alumno permitidos son los siguientes</p>
                                         <ul>
                                             <li>Externo</li>
-                                            <li>Hijo de trabajador</li>
-                                            <li>Extraordinario</li>
+                                            <li>Hijo de trabajador IMSS</li>
+                                            {type === 'licenciatura' && <li>Extraordinario</li>}
                                         </ul>
                                     </div>
-                                </div>
+                                </div>}
                             </fieldset>
                         </form>
                     </FormValidator>

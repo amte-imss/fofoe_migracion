@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('edu-per.login') }}
+    {{ encore_entry_link_tags('loader') }}
+    
+    <style>
+        .wrapper-page {
+            margin-top: 20px;
+            margin-bottom: 80px;
+        }
+
+        #captcha {
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="section-md">
+        <div class='container-fluid'>
+            <div class='container'>
+                <h1 class="text-bold text-center mb-20">Bienvenido</h1>
+                <h2 class="text-bold text-center mb-20">Educación Permanente</h2>
+                <h3 class="text-bold text-center mb-20">{{ solicitud.curso.name }}</h3>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-1"></div>
+                            <div class="col-md-10" style="display: initial;">
+                                <form class="form" action="" method="post">
+                                    <div class="form-group">
+                                        <label for="password">Email</label>
+                                        <input
+                                                required
+                                                type="email" class="form-control  form__input" id="password"
+                                                name="login[email]">
+                                        <span class="help-block form__error password-error "></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="f-username">Contraseña</label>
+                                        <input type="password" required=""
+                                               id="f-username"
+                                               class="form-control form__input"
+                                               name="login[password]">
+                                        <span class="help-block form__error f-username-error"></span>
+                                    </div>
+                                    <div class="captcha-before"></div>
+                                    <div class="row mt-20">
+                                        <div class="col-md-12">
+                                            <label for="accept_agreement">
+                                                <input class=" form__input"
+                                                       id="f-agreement"
+                                                       type="checkbox"
+                                                       style="margin-right: 10px;"
+                                                       name="accept_agreement"
+                                                       required="">
+                                                ACEPTO LAS <a href="/aviso-privacidad" target="_blank">POLÍTICAS DE PAGO DE CUOTAS DE RECUPERACIÓN AL FOFOE</a>
+                                            </label>
+                                            <div class="form__error f-agreement-error"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-20">
+                                        <div class="col-md-12">
+                                            <input type="submit" class="btn btn-success btn-block form__submit"
+                                                   value="Ingresar"/>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+			window.Solicitud = {{ solicitud | json_encode | raw }};
+			window.Login_Errors = {{ errors | json_encode | raw }};
+			window.Captcha_Errors = {{ error_captcha | json_encode | raw }};
+			window.Login_Errors_Credentials = '{{ error_login }}';
+    </script>
+    {{ encore_entry_script_tags('edu-per.login') }}
+{% endblock %}

@@ -490,7 +490,7 @@ class ConvenioRepository extends ServiceEntityRepository implements ConvenioRepo
             ->where('1 = 1');
 
         if (!empty($filters['came_delegacion'])) {
-            $sub = $this->_em->createQueryBuilder()
+            $sub = $this->getEntityManager()->createQueryBuilder()
                 ->from('App\Entity\ConvenioDelegacion', 'delegacionConvenio')
                 ->select('convenioTmp.id')
                 ->join('delegacionConvenio.delegacion', 'delegacionTmp')

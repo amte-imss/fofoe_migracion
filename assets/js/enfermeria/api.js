@@ -26,8 +26,9 @@ class Api {
 		}).then(response => this.toJson(response));
 	}
 
-	getFofoeSolicitudes(statusPago) {
-		return fetch(getSchemeAndHttpHost(`/fofoe/enfermeria/solicitud?estado=${statusPago}`)).then(response => this.toJson(response));
+	getFofoeSolicitudes(statusPago, query = '', type = '', year = '') {
+		const params = new URLSearchParams({estado: statusPago, query, type, year});
+		return fetch(getSchemeAndHttpHost(`/fofoe/enfermeria/solicitud?${params}`)).then(response => this.toJson(response));
 	}
 
 	setStatusPago(pago, status, formData) {

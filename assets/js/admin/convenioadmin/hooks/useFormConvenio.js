@@ -37,10 +37,11 @@ export default function useFormConvenio({setIsLoading, convenio, isCame, usuario
 		if (convenio) {
 			setHasConvenios(true);
 			await sleep(300);
-
-			await apiConvenio.getConvenios(convenio.rfc).then(data => {
+            const institucionId = convenio.institucion ? convenio.institucion.id : null;
+			await apiConvenio.getConvenios(convenio.rfc).then(async data => {
 				setInstituciones(data.instituciones);
 				formRef.current['appbundle_convenio_admin[institucion]'].value = convenio.institucion.id;
+                console.log('convenio.institucion.id', convenio.institucion.id);
 			})
 			formRef.current['appbundle_convenio_admin[rfc]'].value = convenio.rfc;
 			formRef.current['appbundle_convenio_admin[razon_social]'].value = convenio.razon_social;
@@ -64,7 +65,8 @@ export default function useFormConvenio({setIsLoading, convenio, isCame, usuario
 			formRef.current['appbundle_convenio_admin[recibe_signsecond]'].value = convenio.recibe_signsecond;
 
 			if (convenio.tipo === 'Específico') {
-				await apiConvenio.getConveniosGeneralesByInstitucion(formRef.current['appbundle_convenio_admin[institucion]'].value).then(async ({data}) => {
+                console.log('convenio.convenio_general', formRef.current['appbundle_convenio_admin[institucion]'].value);
+				await apiConvenio.getConveniosGeneralesByInstitucion(institucionId).then(async ({data}) => {
 					setShowConveniosGenerales(true);
 					setConveniosGenerales(data);
 					await sleep(500);

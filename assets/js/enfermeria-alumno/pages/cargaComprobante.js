@@ -358,12 +358,13 @@ const DatosSolicitud = ({solicitud, usuario}) => {
 			<div className="row">
 				<div className={'die_container'}>
 					<p>
-						<strong>Licenciatura en Escuelas de Enfermería del Instituto Mexicano del Seguro Social: </strong>
+						<strong>Escuelas de Enfermería del Instituto Mexicano del Seguro Social: </strong>
 						{solicitud.unidad.nombreEnfermeria }
 					</p>
 					<p><strong>Alumno: </strong> {usuario.nombre}</p>
 					<p><strong>CURP: </strong> {usuario.curp} </p>
 					<p><strong>Email: </strong> {usuario.email} </p>
+					<p><strong>Tipo de solicitud: </strong> {solicitud.typeFormatted} </p>
 					<p><strong>Periodo: </strong> {solicitud.periodo} </p>
 					<p><strong>Monto: </strong>$ {numberFormat.format(usuario.lastPago.monto)}</p>
 					<p><strong>Fecha inicio: </strong> {solicitud.fechaInicioFormatted } </p>

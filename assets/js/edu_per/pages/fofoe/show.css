@@ -1,0 +1,10 @@
+.form-check-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-check-label input[type=checkbox] {
+    margin: 0;
+    width: 16px;
+}

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ConfiguracionGlobal;
+use App\Entity\Enfermeria\Solicitud;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -23,15 +24,25 @@ class ConfiguracionGlobalRepository extends ServiceEntityRepository implements C
         return $this->findByClave(ConfiguracionGlobalRepositoryInterface::MONTO_EF_ALUMNO_HIJO_TRABAJADOR);
     }
 
-    public function findMontoEF(string $clave): ?ConfiguracionGlobal
+    public function findMontoEF(string $clave, string $type = Solicitud::TYPE_LICENCIATURA): ?ConfiguracionGlobal
     {
-        return match(mb_strtolower($clave)) {
-            'externo'                        => $this->findEFMontoAlumnoExterno(),
-            'hijo_trabajador',
-            'hijo de trabajador'             => $this->findEFMontoAlumnoHijoTrabajador(),
-            'extraordinario'                 => $this->findByClave(ConfiguracionGlobalRepositoryInterface::MONTO_EF_EXTRAORDINARIO),
-            default                          => null,
+        $montos = match ($type) {
+            Solicitud::TYPE_POSGRADO => [
+                'externo' => self::MONTO_EF_POSGRADO_ALUMNO_EXTERNO,
+                'hijo_trabajador' => self::MONTO_EF_POSGRADO_ALUMNO_HIJO_TRABAJADOR,
+                'hijo de trabajador' => self::MONTO_EF_POSGRADO_ALUMNO_HIJO_TRABAJADOR,
+            ],
+            Solicitud::TYPE_LICENCIATURA => [
+                'externo' => self::MONTO_EF_ALUMNO_EXTERNO,
+                'hijo_trabajador' => self::MONTO_EF_ALUMNO_HIJO_TRABAJADOR,
+                'hijo de trabajador' => self::MONTO_EF_ALUMNO_HIJO_TRABAJADOR,
+                'extraordinario' => self::MONTO_EF_EXTRAORDINARIO,
+            ],
+            default => [],
         };
+
+        $key = $montos[mb_strtolower(trim($clave))] ?? null;
+        return $key ? $this->findByClave($key) : null;
     }
 
     private function findByClave(string $clave): ?ConfiguracionGlobal

@@ -208,7 +208,7 @@
                 {# ── Edu. Permanente ── #}
                 {% if is_granted('ROLE_EDU_PER') or is_granted('ROLE_SUPER') %}
                 <div class="nav-section-label">Educación Permanente</div>
-                <li class="nav-item"><a class="nav-link spa-link" href="#"><span class="nav-link-icon"><i class="ti ti-school"></i></span><span class="nav-link-title">Solicitudes Edu. Per.</span></a></li>
+                <li class="nav-item"><a class="nav-link spa-link" href="{{ path('edu-per.index') }}"><span class="nav-link-icon"><i class="ti ti-school"></i></span><span class="nav-link-title">Solicitudes Edu. Per.</span></a></li>
                 {% endif %}
 
                 {# ── Catálogos Generales ── #}

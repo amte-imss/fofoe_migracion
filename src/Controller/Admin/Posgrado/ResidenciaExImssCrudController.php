@@ -2,8 +2,10 @@
 
 namespace App\Controller\Admin\Posgrado;
 
+use App\Admin\Field\PlainField;
 use App\Entity\Posgrado\Residencia;
 use App\Entity\Posgrado\ResidenciaInterface;
+use App\Form\Type\Admin\Posgrado\ResidenteType;
 use App\Security\Voter\PosgradoAccessVoter;
 use App\Service\Posgrado\ResidenciaManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +17,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\Field;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\NumberField;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -39,16 +40,10 @@ class ResidenciaExImssCrudController extends AbstractResidenciaCrudController
 
     public function configureCrud(Crud $crud): Crud
     {
-        return $crud
+        return parent::configureCrud($crud)
             ->setEntityLabelInSingular('Residencia Ex IMSS')
             ->setEntityLabelInPlural('Residencias Ex IMSS')
-            ->setPageTitle(Crud::PAGE_INDEX, 'Residencias Extranjeros IMSS')
-            ->setSearchFields([
-                'delegacion.nombre', 'especialidad.nombre', 'sede.nombre', 'folio', 'ciclo',
-                'residente.nacionalidad', 'residente.usuario.nombre',
-                'residente.usuario.apellidoPaterno', 'residente.usuario.apellidoMaterno',
-                'residente.usuario.correo',
-            ]);
+            ->setPageTitle(Crud::PAGE_INDEX, 'Residencias Extranjeros IMSS');
     }
 
     public function configureActions(Actions $actions): Actions
@@ -109,7 +104,11 @@ class ResidenciaExImssCrudController extends AbstractResidenciaCrudController
 
     private function formFields(): iterable
     {
-        // TODO: 'Datos Generales' tab with embedded ResidenteType — pending ResidenteType migration
+        yield FormField::addTab('Datos Generales', 'fa fa-id-card');
+        yield PlainField::new('residente', false)
+            ->onlyOnForms()
+            ->setFormType(ResidenteType::class)
+            ->setFormTypeOption('required', false);
 
         yield FormField::addTab('Datos Residencia', 'fa fa-id-card');
         yield ChoiceField::new('tipo', 'Tipo Residente')
@@ -117,7 +116,7 @@ class ResidenciaExImssCrudController extends AbstractResidenciaCrudController
             ->setColumns(3);
         yield Field::new('ciclo')->setColumns(3);
         yield Field::new('folio', 'Folio IMSS / Núm Oficio')->setColumns(3);
-        yield IntegerField::new('grado')->setColumns(3);
+        yield Field::new('grado')->setColumns(3);
         yield ChoiceField::new('tipoDelegacionUmae', 'OOAD / UMAE')
             ->setChoices(['OOAD' => 'Delegacion', 'UMAE' => 'UMAE'])
             ->setColumns(2);
@@ -130,6 +129,6 @@ class ResidenciaExImssCrudController extends AbstractResidenciaCrudController
         yield ChoiceField::new('tipoMoneda')
             ->setChoices(['MXN' => 'MXN', 'USD' => 'USD'])
             ->setColumns(3);
-        yield BooleanField::new('is_delete', 'Eliminar');
+        yield BooleanField::new('isDelete', 'Eliminar');
     }
 }

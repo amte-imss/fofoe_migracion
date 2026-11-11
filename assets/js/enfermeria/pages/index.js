@@ -75,6 +75,7 @@ function EnfermeriaIndex() {
                                                 <th>Escuela de Enfermería</th>
 												<th>No. Alumnos</th>
 												<th>Tipo</th>
+												<th>Periodo</th>
 												<th></th>
 											</tr>
 											</thead>
@@ -87,6 +88,7 @@ function EnfermeriaIndex() {
 															<td>{item[0].id}</td>
                                                             <td>{item[0].unidad.nombreEnfermeria}</td>
 															<td> {item.totalAlumnos} </td>
+															<td>{item[0].typeFormatted}</td>
 															<td>{item[0].periodoFormatted}</td>
 															<td>
 																<a href={getSchemeAndHttpHost(`/enfermeria/solicitud/${item[0].id}`)}>Detalle</a>
